@@ -173,6 +173,15 @@ async function probes() {
     attributes: { app: str(APP + "-probe"), kind: str("probe"), sampleYear: i32(2024) }, expires: ExpirationTime.fromSeconds(600) } as any)).txHash)
   await run("bare number attribute (ms timestamp)", async () => (await wallet_.createEntity({ payload: jsonToPayload({ probe: true }), contentType: "application/json",
     attributes: { app: str(APP + "-probe"), kind: str("probe"), tested: Date.now() }, expires: ExpirationTime.fromSeconds(600) } as any)).txHash)
+  // can another wallet pass itself off as the curator by copying attributes?
+  await run("spoofed obs from a non-curator wallet", async () => {
+    const fake = { eid: "spoof-test", doc: "spoof", district: "Nadia", place: "SPOOF test row (synthetic)", contaminant: "arsenic", stat: "single",
+      mgl: "0.001", exceeds: false, year: 2026, page: 1, payload: { note: "spoof test: should never appear as an official record" } }
+    const r = await demoWallets.kitA.createEntity({ ...obsCreate(fake), expires: ExpirationTime.fromSeconds(900) } as any)
+    const all = await publicClient.select({ key: true, creator: true }).where(eq("app", str(APP)), eq("kind", str("obs")), eq("eid", str("spoof-test"))).limit(10).fetch()
+    const official = await publicClient.select({ key: true }).where(eq("app", str(APP)), eq("kind", str("obs")), eq("eid", str("spoof-test"))).createdBy(me).limit(10).fetch()
+    return `tx ${r.txHash}: without createdBy ${all.entities.length} found (creator ${(all.entities[0] as any)?.creator}); with createdBy(curator) ${official.entities.length}`
+  })
   // how large can one atomic batch be? tiny entities vs. the real survey payloads
   for (const n of [40, 80]) {
     await run(`batch of ${n} tiny entities`, async () => {
