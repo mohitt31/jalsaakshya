@@ -155,8 +155,10 @@ async function probes() {
   const out: any[] = []
   const run = async (name: string, f: () => Promise<any>) => {
     const t0 = performance.now()
+    log(`probe: ${name}…`)
     try { const v = await f(); out.push({ name, ok: true, ms: Math.round(performance.now() - t0), result: String(v).slice(0, 200) }) }
     catch (e: any) { out.push({ name, ok: false, ms: Math.round(performance.now() - t0), error: String(e?.shortMessage || e?.details || e?.message || e).slice(0, 400) }) }
+    ;(window as any).jsqProbes = out
   }
   await run("ne() predicate", async () => (await publicClient.select({ key: true }).where(eq("app", str(APP)), ne("kind", str("obs"))).limit(1).fetch()).entities.length)
   await run("exists() predicate", async () => (await publicClient.select({ key: true }).where(eq("app", str(APP)), exists("year")).limit(1).fetch()).entities.length)

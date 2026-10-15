@@ -19,7 +19,7 @@ label.grow{flex:1;min-width:180px}label.check{flex-direction:row;align-items:cen
 input,select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 9px;min-width:0}
 .row{display:flex;gap:6px}
 h2{font:600 22px Georgia,serif;margin:26px 0 6px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(290px,100%),1fr));gap:12px}
 .rec{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--good);border-radius:10px;padding:12px 14px}
 .rec.over{border-left-color:var(--bad)}
 .rec-top{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
