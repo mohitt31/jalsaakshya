@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>JalSaakshya</title>
+<meta name="description" content="Official groundwater arsenic and fluoride survey records for West Bengal villages, cited to the page and read straight from Arkiv.">
+  <script type="module" crossorigin src="/jalsaakshya/assets/main-BUpJK6PS.js"></script>
+  <link rel="modulepreload" crossorigin href="/jalsaakshya/assets/arkiv-DV6kb5JW.js">
+  <link rel="stylesheet" crossorigin href="/jalsaakshya/assets/arkiv-DEASpOzt.css">
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <div class="langs"><button data-lang="en">English</button><button data-lang="hi">हिन्दी</button><button data-lang="bn">বাংলা</button></div>
+    <h1>JalSaakshya <span class="sub">জল সাক্ষ্য · जल साक्ष्य</span></h1>
+    <p class="lead" data-t="tagline"></p>
+    <p class="trust">No server: this page reads <a href="https://arkiv.network" target="_blank" rel="noopener">Arkiv</a> directly. Survey records are shown only if their on-chain creator is the curator wallet <span id="curator"></span>, and they are read-only.</p>
+  </div>
+</header>
+<main class="wrap">
+  <section class="controls card">
+    <label><span data-t="district"></span><select id="district"></select></label>
+    <label><span data-t="contaminant"></span><select id="contaminant"><option value="" data-t="both"></option><option value="arsenic" data-t="arsenic"></option><option value="fluoride" data-t="fluoride"></option></select></label>
+    <label><span data-t="since"></span><select id="since"><option value="" data-t="any"></option><option>2020</option><option>2015</option><option>2010</option></select></label>
+    <label class="grow"><span data-t="place"></span><input id="place" placeholder="e.g. Raghunathpur"></label>
+    <label class="check"><input type="checkbox" id="above"> <span data-t="only_above"></span></label>
+  </section>
+
+  <p class="safety" data-t="safety"></p>
+
+  <section>
+    <h2 data-t="official"></h2>
+    <p id="status" class="muted"></p>
+    <div id="results" class="grid"></div>
+    <button id="more" class="secondary" hidden data-t="more"></button>
+  </section>
+
+  <section>
+    <h2 data-t="community"></h2>
+    <p class="muted small" data-t="community_note"></p>
+    <p id="live" class="live small"></p>
+    <div id="field" class="grid"></div>
+    <details class="card add">
+      <summary data-t="add"></summary>
+      <form id="field-form">
+        <label><span data-t="district"></span><select id="f-district" name="district"></select></label>
+        <label>Village / source<input name="place" required maxlength="100" placeholder="e.g. Bhagwanpur tube well"></label>
+        <label><span data-t="contaminant"></span><select name="contaminant"><option value="arsenic" data-t="arsenic"></option><option value="fluoride" data-t="fluoride"></option></select></label>
+        <label>Reading<span class="row"><input name="value" type="number" step="any" min="0" required><select name="unit"><option value="mg">mg/L</option><option value="ug">µg/L (ppb)</option></select></span></label>
+        <label>Method<select name="method"><option value="kit">field kit</option><option value="lab">lab report</option></select></label>
+        <label>Kit / lab name<input name="kit" maxlength="60"></label>
+        <label class="grow">Note (no names or phone numbers)<input name="note" maxlength="200"></label>
+        <label><span data-t="signer"></span><select id="signer"><option value="burner" data-t="burner"></option><option value="injected" data-t="injected"></option></select></label>
+        <p id="signer-info" class="small muted"></p>
+        <button class="primary" data-t="submit"></button>
+        <p id="form-status" class="small"></p>
+      </form>
+    </details>
+  </section>
+
+  <section>
+    <h2><span data-t="sources"></span> (<span id="src-count">0</span>)</h2>
+    <ul id="sources" class="sources"></ul>
+  </section>
+
+  <section class="card how">
+    <h2 data-t="how"></h2>
+    <ul>
+      <li>Rows come from CGWB and state groundwater reports and published studies. Each row was re-found on its PDF page before publishing; rows whose unit is not printed on the page were left out.</li>
+      <li>A curator wallet published them as read-only Arkiv entities. Anyone can write an entity with the same attributes, but only the curator's entities carry its <code>$creator</code>, which is what this page filters on.</li>
+      <li>Field tests are separate entities that expire after 90 days. Anyone can extend one by confirming it, so a report survives only while people keep re-testing.</li>
+      <li>The data contract is in <a href="https://github.com/mohitt31/jalsaakshya/blob/main/arkiv/schema.md">arkiv/schema.md</a>: any app can query the same entities without us.</li>
+    </ul>
+    <p class="small muted">Limits used: arsenic 0.01 mg/L, fluoride 1.5 mg/L (IS 10500:2012). Research evidence, not household safety advice. <a href="https://github.com/mohitt31/jalsaakshya">Source code (MIT)</a></p>
+  </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "name": "jalsaakshya-web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "test": "node --test --experimental-strip-types src/*.test.ts"
+  },
+  "dependencies": {
+    "@arkiv-network/sdk": "^0.8.1",
+    "viem": "^2.57.7"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vite": "^5.4.21"
+  }
+}
