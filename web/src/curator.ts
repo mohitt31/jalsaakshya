@@ -156,7 +156,8 @@ async function probes() {
   const run = async (name: string, f: () => Promise<any>) => {
     const t0 = performance.now()
     log(`probe: ${name}…`)
-    try { const v = await f(); out.push({ name, ok: true, ms: Math.round(performance.now() - t0), result: String(v).slice(0, 200) }) }
+    const limit = new Promise((_, rej) => setTimeout(() => rej(new Error("no response after 25 s")), 25000))
+    try { const v = await Promise.race([f(), limit]); out.push({ name, ok: true, ms: Math.round(performance.now() - t0), result: String(v).slice(0, 200) }) }
     catch (e: any) { out.push({ name, ok: false, ms: Math.round(performance.now() - t0), error: String(e?.shortMessage || e?.details || e?.message || e).slice(0, 400) }) }
     ;(window as any).jsqProbes = out
   }
