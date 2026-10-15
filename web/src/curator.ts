@@ -110,7 +110,7 @@ async function registerLab() {
 }
 
 // ---- synthetic demo data (clearly labelled) -------------------------------------------------
-const demoWallets = { kitA: burnerWallet("jalsaakshya.demo.kitA"), kitB: burnerWallet("jalsaakshya.demo.kitB"), lab: burnerWallet("jalsaakshya.demo.lab") }
+const demoWallets = { kitA: burnerWallet("jalsaakshya.demo.kitA"), kitB: burnerWallet("jalsaakshya.demo.kitB"), lab: burnerWallet("jalsaakshya.demo.lab"), app: burnerWallet() }
 
 async function fundDemo() {
   for (const [name, w] of Object.entries(demoWallets)) {
