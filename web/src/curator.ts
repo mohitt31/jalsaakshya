@@ -170,6 +170,23 @@ async function probes() {
     attributes: { app: str(APP + "-probe"), kind: str("probe"), sampleYear: i32(2024) }, expires: ExpirationTime.fromSeconds(600) } as any)).txHash)
   await run("bare number attribute (ms timestamp)", async () => (await wallet_.createEntity({ payload: jsonToPayload({ probe: true }), contentType: "application/json",
     attributes: { app: str(APP + "-probe"), kind: str("probe"), tested: Date.now() }, expires: ExpirationTime.fromSeconds(600) } as any)).txHash)
+  // how large can one atomic batch be? tiny entities vs. the real survey payloads
+  for (const n of [40, 80]) {
+    await run(`batch of ${n} tiny entities`, async () => {
+      const creates = Array.from({ length: n }, (_, i) => ({ payload: jsonToPayload({ i }), contentType: "application/json",
+        attributes: { app: str(APP + "-probe"), kind: str("probe"), n: i32(i) }, expires: ExpirationTime.fromSeconds(600) }))
+      const r = await wallet_.executeBatch({ creates } as any); return `${r.txHash} ${r.createdEntities.length}`
+    })
+  }
+  const data = await (await fetch(import.meta.env.BASE_URL + "data/records.json")).json()
+  for (const n of [35, 40]) {
+    await run(`batch of ${n} survey-sized entities (probe namespace)`, async () => {
+      const creates = data.records.slice(0, n).map((r: any) => ({ ...obsCreate(r), attributes: { ...obsCreate(r).attributes, app: str(APP + "-probe") }, expires: ExpirationTime.fromSeconds(600) }))
+      const bytes = creates.reduce((m: number, c: any) => m + c.payload.length, 0)
+      try { const r = await wallet_.executeBatch({ creates } as any); return `ok ${r.createdEntities.length} entities, payload ${bytes} bytes` }
+      catch (e: any) { throw new Error(`payload ${bytes} bytes: ${e?.shortMessage || e?.message} | ${String(e?.details || e?.cause?.message || "").slice(0, 200)}`) }
+    })
+  }
   ;(window as any).jsqProbes = out
   log(`<pre class="small">${JSON.stringify(out, null, 1).replace(/</g, "&lt;")}</pre>`)
 }
