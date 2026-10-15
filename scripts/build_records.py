@@ -73,9 +73,21 @@ def main():
     sources = []
     for doc, n in sorted(docs.items(), key=lambda t: -t[1]):
         m = metas[doc]
-        sources.append({"doc": doc, "records": n, "publisher": (m.get("publisher") or "unknown")[:60],
-                        "pub_year": m.get("year"), "payload": {"title": m.get("title"), "url": m.get("url"),
-                        "publisher": m.get("publisher"), "year": m.get("year"), "authors": m.get("authors", [])[:6]}})
+        url = m.get("url") or ""
+        publisher = m.get("publisher") or ("PubMed" if "pubmed" in url else "CGWB" if "cgwb.gov.in" in url else "unknown")
+        title = m.get("title") or url
+        if title.startswith("http"):  # metadata had no title: describe it from what is known, never invent one
+            if "pubmed" in url:
+                pmid = url.rstrip("/").split("/")[-1]
+                who = f"{m['authors'][0]} et al. " if m.get("authors") else ""
+                title = f"{who}{'(' + str(m['year']) + '), ' if m.get('year') else ''}PubMed {pmid} (abstract)"
+            elif "NAQUIM" in url:
+                title = "NAQUIM aquifer mapping report, Purulia (CGWB, PDF)"
+            else:
+                title = "CGWB report (PDF)"
+        sources.append({"doc": doc, "records": n, "publisher": publisher[:60], "pub_year": m.get("year"),
+                        "payload": {"title": title, "url": url, "publisher": publisher, "year": m.get("year"),
+                                    "authors": (m.get("authors") or [])[:6]}})
     data = {"generated_from": "NeerTathya evidence snapshot, commit b43d03f53fcce671d1b3114b11f3a3ada6ba3830",
             "limits_mgl": LIMITS, "sources": sources, "records": out, "dropped": dict(dropped)}
     OUT.write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")))
