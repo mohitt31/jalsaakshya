@@ -7,14 +7,9 @@ import { CURATOR } from "./config"
 
 export { CURATOR }
 export const APP = "jalsaakshya/v1"
-export const LIMITS: Record<string, number> = { arsenic: 0.01, fluoride: 1.5 }
+export { LIMITS, LIFETIME } from "./model"
 export const EXPLORER = "https://tiramisu.explorer.arkiv.network"
 
-// Lifetimes per entity type (seconds). They follow product logic:
-//  - source: a government report stays citable for two survey cycles
-//  - obs:    a survey row is evidence until the next published survey supersedes it
-//  - field:  a community kit test is a snapshot; it fades in 90 days unless someone re-tests or confirms it
-export const LIFETIME = { source: 730 * 86400, obs: 365 * 86400, field: 90 * 86400 }
 
 export const publicClient = createPublicClient({ chain: tiramisu, transport: http() })
 

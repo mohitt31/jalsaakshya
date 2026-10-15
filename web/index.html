@@ -35,26 +35,33 @@
   </section>
 
   <section>
-    <h2 data-t="community"></h2>
-    <p class="muted small" data-t="community_note"></p>
+    <h2 data-t="sites_title"></h2>
+    <p class="muted small" data-t="sites_note"></p>
+    <p id="site-summary" class="small"></p>
     <p id="live" class="live small"></p>
-    <div id="field" class="grid"></div>
+    <div id="sites" class="grid"></div>
     <details class="card add">
       <summary data-t="add"></summary>
-      <form id="field-form">
-        <label><span data-t="district"></span><select id="f-district" name="district"></select></label>
-        <label>Village / source<input name="place" required maxlength="100" placeholder="e.g. Bhagwanpur tube well"></label>
+      <form id="test-form">
+        <label>Source<select id="f-site" name="site"></select></label>
+        <span id="new-site" class="row wrap">
+          <label class="grow">Village and well<input name="place" maxlength="100" placeholder="e.g. Bhagwanpur, school tube well"></label>
+          <label>Type<select name="srctype"><option>tube well</option><option>dug well</option><option>hand pump</option><option>piped supply</option><option>community plant</option></select></label>
+        </span>
         <label><span data-t="contaminant"></span><select name="contaminant"><option value="arsenic" data-t="arsenic"></option><option value="fluoride" data-t="fluoride"></option></select></label>
-        <label>Reading<span class="row"><input name="value" type="number" step="any" min="0" required><select name="unit"><option value="mg">mg/L</option><option value="ug">µg/L (ppb)</option></select></span></label>
-        <label>Method<select name="method"><option value="kit">field kit</option><option value="lab">lab report</option></select></label>
-        <label>Kit / lab name<input name="kit" maxlength="60"></label>
+        <label>Reading<span class="row"><input name="value" type="number" step="any" min="0" required><select name="unit"><option value="ug">µg/L (ppb)</option><option value="mg">mg/L</option></select></span></label>
+        <label>Method<select name="method"><option value="kit">field test kit</option><option value="lab">lab result</option></select></label>
+        <label>Kit or lab name<input name="kit" maxlength="60"></label>
         <label class="grow">Note (no names or phone numbers)<input name="note" maxlength="200"></label>
+        <p id="hint" class="small warn"></p>
         <label><span data-t="signer"></span><select id="signer"><option value="burner" data-t="burner"></option><option value="injected" data-t="injected"></option></select></label>
         <p id="signer-info" class="small muted"></p>
         <button class="primary" data-t="submit"></button>
         <p id="form-status" class="small"></p>
       </form>
     </details>
+    <h3 data-t="labs_title"></h3>
+    <ul id="labs" class="sources small"></ul>
   </section>
 
   <section>
@@ -65,9 +72,10 @@
   <section class="card how">
     <h2 data-t="how"></h2>
     <ul>
-      <li>Rows come from CGWB and state groundwater reports and published studies. Each row was re-found on its PDF page before publishing; rows whose unit is not printed on the page were left out.</li>
-      <li>A curator wallet published them as read-only Arkiv entities. Anyone can write an entity with the same attributes, but only the curator's entities carry its <code>$creator</code>, which is what this page filters on.</li>
-      <li>Field tests are separate entities that expire after 90 days. Anyone can extend one by confirming it, so a report survives only while people keep re-testing.</li>
+      <li><b>Official records.</b> Rows from CGWB and state groundwater reports and published studies, each re-found on its PDF page before publishing; rows whose unit is not printed on the page were left out. A curator wallet published them as read-only Arkiv entities, and this page shows only entities whose on-chain <code>$creator</code> is that wallet.</li>
+      <li><b>Sources and tests.</b> JJM/NRDWP guidelines require a chemical test of every drinking-water source at least once a year, so a lab result stays current for 365 days. A field-kit reading is screening only (UDWQMP 5.1.1: kit positives go to a lab) and fades after 90 days. When no current test remains, the source shows <i>test overdue</i> instead of a stale "safe".</li>
+      <li><b>Who counts as a lab.</b> The curator keeps a registry of lab wallets on Arkiv. A "lab result" from any other wallet is treated as screening.</li>
+      <li><b>Why the near-limit rule.</b> Field kits under-read close to the limit: in published evaluations, kits read wells at 10-27 µg/L as safe (George et al. 2012) and read 21% of wells above 50 µg/L as safe (van Geen et al. 2005). Readings from half the limit upward are flagged for a lab.</li>
       <li>The data contract is in <a href="https://github.com/mohitt31/jalsaakshya/blob/main/arkiv/schema.md">arkiv/schema.md</a>: any app can query the same entities without us.</li>
     </ul>
     <p class="small muted">Limits used: arsenic 0.01 mg/L, fluoride 1.5 mg/L (IS 10500:2012). Research evidence, not household safety advice. <a href="https://github.com/mohitt31/jalsaakshya">Source code (MIT)</a></p>

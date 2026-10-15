@@ -12,5 +12,14 @@
 <label>Max transactions <input id="maxtx" type="number" value="1" min="1"></label></p>
 <button id="go" class="primary">Publish missing records</button>
 </div>
+<div class="card"><h3>Lab registry</h3>
+<p class="small muted">Demo lab wallet in this browser: <span id="demo-lab" class="mono"></span></p>
+<p><label>Lab wallet <input id="lab-wallet" size="44"></label> <label>Name <input id="lab-name" value="Demo lab (synthetic, for judging)"></label>
+<label>District <input id="lab-district" value="Nadia"></label> <label class="check"><input id="lab-demo" type="checkbox" checked> demo</label></p>
+<button id="lab-go" class="secondary">Register lab</button></div>
+<div class="card"><h3>Synthetic demo data</h3>
+<p class="small muted">Clearly labelled demo sources in Nadia so judges can see every status. Not real measurements.</p>
+<button id="fund" class="secondary">Fund demo wallets (0.1 GLM each)</button> <button id="seed" class="secondary">Seed demo sources</button></div>
+<div class="card"><h3>Friction probes</h3><button id="probe" class="secondary">Run probes</button></div>
 <ol id="log" class="log"></ol>
 </main><script type="module" src="/src/curator.ts"></script></body></html>
