@@ -68,6 +68,16 @@ const en = {
   how5: "The data contract is in {schema}: any app can query the same entities without us.",
   footer: "Limits used: arsenic 10 µg/L, fluoride 1.5 mg/L (IS 10500:2012). Research evidence, not household safety advice.",
   code: "Source code (MIT)",
+  verify_link: "Link", whatsapp: "Share on WhatsApp", verify_on: "Check on Arkiv",
+  v_title: "Checked on Arkiv", v_kind_obs: "Official survey record", v_kind_site: "Drinking-water source", v_kind_test: "Test result",
+  v_kind_lab: "Registered lab", v_kind_source: "Report", v_status: "Current status",
+  v_official: "Published by the curator wallet: this is an official record.",
+  v_not_official: "NOT published by the curator wallet: this is not an official record.",
+  v_lab: "Signed by a registered lab: {n}.", v_community: "Signed by a tester's own wallet. Nobody has verified it.",
+  v_creator: "Created by", v_readonly: "Read-only: nobody can edit it, not even the wallet that created it.", v_editable: "Its owner can edit it.",
+  v_expires: "Stays current on Arkiv for {d} more.",
+  v_missing: "This link does not point to a current JalSaakshya entity. It may have expired, or the link is wrong.",
+  v_check: "Check it yourself with any Arkiv client", v_close: "Close",
 }
 export type Labels = typeof en
 
@@ -123,6 +133,16 @@ const hi: Partial<Labels> = {
   how5: "डेटा का ढाँचा {schema} में है: कोई भी ऐप हमारे बिना इन्हीं एंटिटी को पढ़ सकता है।",
   footer: "सीमाएँ: आर्सेनिक 10 µg/L, फ्लोराइड 1.5 mg/L (IS 10500:2012)। यह शोध का प्रमाण है, घरेलू सुरक्षा सलाह नहीं।",
   code: "सोर्स कोड (MIT)",
+  verify_link: "लिंक", whatsapp: "WhatsApp पर भेजें", verify_on: "Arkiv पर जाँचें",
+  v_title: "Arkiv पर जाँचा गया", v_kind_obs: "सरकारी सर्वे रिकॉर्ड", v_kind_site: "पीने के पानी का स्रोत", v_kind_test: "जाँच का नतीजा",
+  v_kind_lab: "दर्ज लैब", v_kind_source: "रिपोर्ट", v_status: "अभी की स्थिति",
+  v_official: "क्यूरेटर वॉलेट ने प्रकाशित किया: यह सरकारी रिकॉर्ड है।",
+  v_not_official: "क्यूरेटर वॉलेट ने प्रकाशित नहीं किया: यह सरकारी रिकॉर्ड नहीं है।",
+  v_lab: "दर्ज लैब ने साइन किया: {n}।", v_community: "जाँचकर्ता के अपने वॉलेट से साइन। किसी ने सत्यापित नहीं किया।",
+  v_creator: "बनाने वाला", v_readonly: "बदला नहीं जा सकता: कोई भी इसे नहीं बदल सकता, बनाने वाला भी नहीं।", v_editable: "इसका मालिक इसे बदल सकता है।",
+  v_expires: "Arkiv पर {d} और मान्य रहेगा।",
+  v_missing: "यह लिंक JalSaakshya की किसी मौजूदा एंटिटी का नहीं है। शायद यह समाप्त हो गई, या लिंक गलत है।",
+  v_check: "किसी भी Arkiv क्लाइंट से खुद जाँचें", v_close: "बंद करें",
 }
 
 const bn: Partial<Labels> = {
@@ -177,6 +197,16 @@ const bn: Partial<Labels> = {
   how5: "তথ্যের কাঠামো {schema}-এ আছে: যে কোনো অ্যাপ আমাদের ছাড়াই এই এন্টিটিগুলি পড়তে পারে।",
   footer: "সীমা: আর্সেনিক ১০ µg/L, ফ্লোরাইড ১.৫ mg/L (IS 10500:2012)। এটি গবেষণার প্রমাণ, ঘরোয়া নিরাপত্তার পরামর্শ নয়।",
   code: "সোর্স কোড (MIT)",
+  verify_link: "লিংক", whatsapp: "WhatsApp-এ পাঠান", verify_on: "Arkiv-এ যাচাই করুন",
+  v_title: "Arkiv-এ যাচাই করা হয়েছে", v_kind_obs: "সরকারি সমীক্ষার রেকর্ড", v_kind_site: "পানীয় জলের উৎস", v_kind_test: "পরীক্ষার ফল",
+  v_kind_lab: "তালিকাভুক্ত ল্যাব", v_kind_source: "রিপোর্ট", v_status: "এখনকার অবস্থা",
+  v_official: "কিউরেটর ওয়ালেট প্রকাশ করেছে: এটি সরকারি রেকর্ড।",
+  v_not_official: "কিউরেটর ওয়ালেট প্রকাশ করেনি: এটি সরকারি রেকর্ড নয়।",
+  v_lab: "তালিকাভুক্ত ল্যাব সই করেছে: {n}।", v_community: "পরীক্ষকের নিজের ওয়ালেটে সই। কেউ যাচাই করেনি।",
+  v_creator: "তৈরি করেছে", v_readonly: "বদলানো যায় না: কেউ এটি বদলাতে পারে না, যে তৈরি করেছে সেও না।", v_editable: "এর মালিক এটি বদলাতে পারেন।",
+  v_expires: "Arkiv-এ আরও {d} চালু থাকবে।",
+  v_missing: "এই লিংক JalSaakshya-র কোনো চালু এন্টিটির নয়। হয়তো মেয়াদ শেষ, বা লিংক ভুল।",
+  v_check: "যে কোনো Arkiv ক্লায়েন্টে নিজে যাচাই করুন", v_close: "বন্ধ করুন",
 }
 
 export const LABELS: Record<Lang, Partial<Labels>> & { en: Labels } = { en, hi, bn }

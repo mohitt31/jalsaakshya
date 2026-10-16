@@ -50,3 +50,11 @@ code{font-size:13px}
 .tests{padding-left:18px;font-size:13px;margin:6px 0}
 .row.wrap{flex-wrap:wrap;gap:10px 16px;align-items:flex-end;width:100%}
 h3{font:600 17px Georgia,serif;margin:18px 0 4px}
+
+.share{margin:6px 0 2px}.share a{text-decoration:none;border-bottom:1px dotted currentColor}
+.verify{margin-top:18px;border-left:6px solid var(--accent)}
+.verify.good{border-left-color:var(--good)}.verify.bad{border-left-color:var(--bad)}.verify.warn{border-left-color:var(--warn)}
+.verify h2{margin:2px 0 4px}
+.checks{list-style:none;padding:0;margin:10px 0}.checks li{padding:4px 0;border-top:1px solid var(--line);overflow-wrap:anywhere}
+.checks li.good b{color:var(--good)}.checks li.bad b{color:var(--bad)}.checks li.warn b{color:var(--warn)}
+.verify pre{white-space:pre-wrap;overflow-wrap:anywhere}

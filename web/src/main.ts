@@ -89,6 +89,7 @@ function obsCard(e: any) {
     <div class="val"><span class="num">${amount(v, c)}</span> ${esc(tc(c))} <span class="muted">· ${t("limit")} ${amount(lim, c)} · ${esc(statLabel(attr(e, "stat")))}</span></div>
     <div class="small ${yr && NOW_YEAR - yr > 3 ? "warn" : "muted"}">${yr ? t("sampled", { y: yr, n: NOW_YEAR - yr }) : t("year_unknown")}</div>
     <div class="cite">${t("source")}: <a href="${esc(link)}" target="_blank" rel="noopener">${esc(s.title || attr(e, "doc"))}${pg ? `, ${t("page")} ${pg}` : ""}</a>${p.well_id ? ` · ${t("well")} ${esc(p.well_id)}` : ""}${p.source_type ? ` · ${esc(p.source_type)}` : ""}</div>
+    ${shareRow(e.key, `${attr(e, "place")}, ${dname(attr(e, "district"))}: ${amount(v, c)} ${tc(c)} (${t("limit")} ${amount(lim, c)}). ${t("source")}: ${s.title || attr(e, "doc")}${pg ? `, ${t("page")} ${pg}` : ""}`)}
     <details><summary>${t("row")}</summary><p class="mono small">${esc(p.row_text)}</p>
       <p class="small muted">${esc(p.header || "")} · ${t("unit_from", { b: esc(p.unit_basis), v: `${esc(p.value_text)} ${esc(p.unit)}` })}</p>
       <p class="small">${t("entity")} <span class="mono">${short(e.key)}</span> · ${t("creator")} <a class="mono" href="${addrLink(e.creator)}" target="_blank" rel="noopener">${short(e.creator)}</a> ✓ · ${t("readonly")} · ${t("expires", { d: daysLeft(e.expiresAt) })}</p></details>
@@ -122,6 +123,75 @@ function renderStatus() {
 }
 function rerenderRecords() { $("results").innerHTML = shownEnts.map(obsCard).join(""); if (page) renderStatus() }
 
+// ---- share and verify ------------------------------------------------------------------------
+// Numbers travel on WhatsApp. A shared link carries the Arkiv entity key, so whoever opens it sees
+// who created that entity on chain, whether it can be edited, and how long it stays current.
+const verifyUrl = (key: string) => `${location.origin}${location.pathname}?e=${key}&lang=${lang}`
+function shareRow(key: string, text: string) {
+  const url = verifyUrl(key)
+  const wa = `https://wa.me/?text=${encodeURIComponent(`${text}\n${t("verify_on")}: ${url}`)}`
+  return `<div class="share small"><a href="${esc(url)}">${t("verify_link")}</a> · <a href="${esc(wa)}" target="_blank" rel="noopener">${t("whatsapp")}</a></div>`
+}
+
+const KIND_LABEL: Record<string, keyof Labels> = { obs: "v_kind_obs", site: "v_kind_site", test: "v_kind_test", lab: "v_kind_lab", source: "v_kind_source" }
+
+/** Read one entity by key and show what Arkiv says about it. Returns its district, if it has one. */
+async function showVerify(key: `0x${string}`): Promise<string | undefined> {
+  const box = $("verify")
+  box.hidden = false
+  box.innerHTML = `<p class="muted">${t("loading")}</p>`
+  let e: any
+  try { e = await publicClient.getEntity(key) } catch { e = null }
+  if (!e || attr(e, "app") !== APP) {
+    box.innerHTML = `<div class="card verify bad"><h2>${t("v_title")}</h2><p>${t("v_missing")}</p><p class="mono small">${esc(key)}</p></div>`
+    return
+  }
+  const kind = String(attr(e, "kind")), creator = String(e.creator || "")
+  const lab = labs.get(creator.toLowerCase())
+  let who: string, cls: string
+  if (["obs", "source", "lab"].includes(kind)) {
+    const ok = !!CURATOR && creator.toLowerCase() === CURATOR.toLowerCase()
+    who = t(ok ? "v_official" : "v_not_official"); cls = ok ? "good" : "bad"
+  } else if (kind === "test" && attr(e, "method") === "lab" && lab) { who = t("v_lab", { n: attr(lab, "name") }); cls = "good" }
+  else { who = t("v_community"); cls = "warn" }
+  const c = attr(e, "contaminant")
+  let what = ""
+  if (kind === "obs") {
+    const src = sources.get(attr(e, "doc")) || {}, pg = attr(e, "page")
+    const link = src.url ? `${src.url}${pg ? `#page=${pg}` : ""}` : "#"
+    what = `<p class="val"><span class="num">${amount(attr(e, "mgl"), c)}</span> ${esc(tc(c))} · ${t("limit")} ${amount(LIMITS[c], c)}</p>
+      <p>${esc(attr(e, "place"))}, ${esc(dname(attr(e, "district")))} · ${t("source")}: <a href="${esc(link)}" target="_blank" rel="noopener">${esc(src.title || attr(e, "doc"))}${pg ? `, ${t("page")} ${pg}` : ""}</a></p>
+      <p class="mono small">${esc(e.toJson()?.row_text ?? "")}</p>`
+  } else if (kind === "test") {
+    what = `<p class="val"><span class="num">${amount(attr(e, "mgl"), c)}</span> ${esc(tc(c))} · ${t(attr(e, "method") === "lab" ? "m_lab" : "m_kit")} · ${new Date(Number(attr(e, "tested")) * 1000).toLocaleDateString(LOCALE[lang])}</p>
+      <p>${esc(attr(e, "place"))}, ${esc(dname(attr(e, "district")))}</p>`
+  } else if (kind === "site") {
+    const tt = await publicClient.select({ key: true, creator: true, expiresAt: true, attributes: true })
+      .where(eq("app", str(APP)), eq("kind", str("test")), eq("site", str(attr(e, "site")))).limit(200).fetch()
+    const v = verdict((tt.entities as any[]).map(toTest), new Set(labs.keys()))
+    what = `<p><b>${esc(attr(e, "place"))}</b>, ${esc(dname(attr(e, "district")))} · ${esc(srcType(attr(e, "srctype")))}</p>
+      <p>${t("v_status")}: <span class="badge st-${v.state}">${t(STATE_LABEL[v.state])}</span> ${v.mgl !== undefined ? `${amount(v.mgl, v.contaminant)} ${esc(tc(v.contaminant!))} · ` : ""}${esc(t(`r_${v.code}` as keyof Labels, { n: v.testers }))}</p>`
+  } else if (kind === "lab") {
+    what = `<p><b>${esc(attr(e, "name"))}</b> · ${esc(dname(attr(e, "district")))} · ${short(String(attr(e, "wallet")))}</p>`
+  }
+  const ro = e.creationFlags?.readonly
+  box.innerHTML = `<div class="card verify ${cls}">
+    <div class="rec-top"><h2>${t("v_title")}</h2><button id="v-close" class="secondary">${t("v_close")}</button></div>
+    <p class="small muted">${t(KIND_LABEL[kind] ?? "v_kind_obs")}${attr(e, "demo") ? ` · <span class="badge demo">${t("demo_data")}</span>` : ""}</p>
+    ${what}
+    <ul class="checks">
+      <li class="${cls}"><b>${who}</b></li>
+      <li>${t("v_creator")} <a class="mono" href="${addrLink(creator)}" target="_blank" rel="noopener">${esc(creator)}</a></li>
+      <li>${ro ? t("v_readonly") : t("v_editable")}</li>
+      <li>${t("v_expires", { d: daysLeft(e.expiresAt) })}</li>
+    </ul>
+    <details><summary>${t("v_check")}</summary><pre class="mono small">publicClient.getEntity("${esc(key)}")</pre></details>
+  </div>`
+  $("v-close").addEventListener("click", () => { box.hidden = true; history.replaceState(null, "", `?district=${encodeURIComponent(district())}`) })
+  const d = attr(e, "district")
+  return DISTRICTS.includes(d) ? d : undefined
+}
+
 // ---- drinking-water sources and their tests ---------------------------------------------------
 function toTest(e: any): Test {
   return { key: e.key, creator: e.creator, site: attr(e, "site"), contaminant: attr(e, "contaminant"), mgl: parseFloat(attr(e, "mgl")),
@@ -146,6 +216,7 @@ function siteCard(id: string, s: any) {
     <div class="rec-top"><b>${esc(attr(s, "place"))}</b><span class="badge st-${v.state}">${t(STATE_LABEL[v.state])}</span></div>
     <div class="small muted">${esc(srcType(attr(s, "srctype")))}${attr(s, "demo") ? ` · <span class="badge demo">${t("demo_data")}</span>` : ""} · ${t("listed", { d: daysLeft(s.expiresAt) })}</div>
     <div class="val">${v.mgl !== undefined ? `<span class="num">${amount(v.mgl, v.contaminant)}</span> ${esc(tc(v.contaminant!))} ` : ""}<span class="small">${esc(t(`r_${v.code}` as keyof Labels, { n: v.testers }))}${lab ? ` · ${esc(attr(lab, "name"))}` : ""}</span></div>
+    ${shareRow(s.key, `${attr(s, "place")}, ${dname(attr(s, "district"))}: ${t(STATE_LABEL[v.state])}${v.mgl !== undefined ? ` · ${amount(v.mgl, v.contaminant)} ${tc(v.contaminant!)}` : ""} · ${t(`r_${v.code}` as keyof Labels, { n: v.testers })}`)}
     <details><summary>${t("tests", { n: mine.length })}</summary><ul class="tests">${rows || `<li class="muted">${t("no_live")}</li>`}</ul></details>
   </article>`
 }
@@ -288,6 +359,12 @@ async function main() {
   applyLang()
   head = await publicClient.getBlockNumber()
   await loadRegistry().catch(() => {})
+  const ek = q.get("e")
+  if (ek && /^0x[0-9a-fA-F]{64}$/.test(ek)) {
+    const d = await showVerify(ek as `0x${string}`)
+    if (d && !q.get("district")) $<HTMLSelectElement>("district").value = d
+    $("verify").scrollIntoView()
+  }
   search(); loadSites(); showSigner(); live()
 }
 main()
