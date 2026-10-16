@@ -31,7 +31,7 @@ const dname = (d: string) => lang === "en" ? d : DISTRICT_NAMES[lang][DISTRICTS.
 // Arsenic is read in µg/L (ppb) in the field and in IS 10500; fluoride in mg/L.
 function amount(v: number | string, c?: string) {
   const n = typeof v === "string" ? parseFloat(v) : v
-  if (c === "arsenic") { const u = n * 1000; return `${u >= 100 ? u.toFixed(0) : u.toFixed(1)} µg/L` }
+  if (c === "arsenic") { const u = Math.round(n * 10000) / 10; return `${u >= 100 || Number.isInteger(u) ? u.toFixed(0) : u.toFixed(1)} µg/L` }
   return c === "fluoride" ? `${n.toFixed(2)} mg/L` : mgl(n)
 }
 const statLabel = (s: string) => (LABELS.en as any)[`stat_${s}`] ? t(`stat_${s}` as keyof Labels) : s
@@ -107,7 +107,9 @@ async function search(append = false) {
       $("results").innerHTML = ""
       shownEnts = []
     } else page = await page.next()
-    const ents = (page.entities as any[]).sort((a, b) => parseFloat(attr(b, "mgl")) - parseFloat(attr(a, "mgl")))
+    // worst first, as a multiple of each contaminant's limit
+    const ratio = (e: any) => parseFloat(attr(e, "mgl")) / LIMITS[attr(e, "contaminant")]
+    const ents = (page.entities as any[]).sort((a, b) => ratio(b) - ratio(a))
     shownEnts.push(...ents)
     $("results").insertAdjacentHTML("beforeend", ents.map(obsCard).join(""))
     renderStatus()
