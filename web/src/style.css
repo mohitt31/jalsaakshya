@@ -12,6 +12,7 @@ a{color:var(--accent)}
 .trust{font-size:14px;opacity:.9;max-width:760px}
 .langs{display:flex;gap:6px;justify-content:flex-end}
 .langs button{background:transparent;border:1px solid #ffffff55;color:#fff;border-radius:16px;padding:3px 10px;cursor:pointer;font-size:13px}
+.langs button.on{background:#ffffff;color:#1f4f47;border-color:#fff;font-weight:600}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
 .controls{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:flex-end;margin-top:-14px;position:relative}
 label{display:flex;flex-direction:column;font-size:13px;color:var(--muted);gap:4px}

@@ -34,6 +34,7 @@ export type Verdict = {
   mgl?: number
   testers: number
   latest?: Test
+  code: "lab_over" | "lab_within" | "kit_after_lab" | "none" | "kit_over" | "kit_near" | "kit_safe_many" | "kit_safe_one"
   reason: string
 }
 
@@ -64,22 +65,24 @@ export function verdict(tests: Test[], labs: Set<string>): Verdict {
     const laterWarning = live.find((t) => t.tested > newestLab && !labs.has(t.creator.toLowerCase()) && needsLab(t))
     if (!over && laterWarning) {
       return { state: "confirm", basis: "kit", contaminant: laterWarning.contaminant, mgl: laterWarning.mgl,
-        testers: 1, latest: laterWarning, reason: "a kit warning came after the last lab result: needs a new lab test" }
+        testers: 1, latest: laterWarning, code: "kit_after_lab", reason: "a kit warning came after the last lab result: needs a new lab test" }
     }
     return { state: over ? "unsafe" : "safe", basis: "lab", contaminant: worst.contaminant, mgl: worst.mgl,
       testers: new Set(lab.map((t) => t.creator.toLowerCase())).size, latest: worst,
-      reason: over ? "registered lab result above the limit" : "registered lab result within the limit" }
+      code: over ? "lab_over" : "lab_within", reason: over ? "registered lab result above the limit" : "registered lab result within the limit" }
   }
   // a "lab" result from a wallet that is not in the curator's lab registry counts only as screening
   const kits = live.filter((t) => t.method === "kit" || !labs.has(t.creator.toLowerCase()))
-  if (!kits.length) return { state: "overdue", basis: "none", testers: 0, reason: "no current test: annual test is due" }
+  if (!kits.length) return { state: "overdue", basis: "none", testers: 0, code: "none", reason: "no current test: annual test is due" }
   const testers = new Set(kits.map((t) => t.creator.toLowerCase())).size
   const worst = [...kits].sort((a, b) => b.mgl / LIMITS[b.contaminant] - a.mgl / LIMITS[a.contaminant])[0]
   if (needsLab(worst)) {
     return { state: "confirm", basis: "kit", contaminant: worst.contaminant, mgl: worst.mgl, testers, latest: worst,
+      code: worst.mgl > LIMITS[worst.contaminant] ? "kit_over" : "kit_near",
       reason: worst.mgl > LIMITS[worst.contaminant] ? "kit reading above the limit: needs lab confirmation"
         : "kit reading close to the limit, where kits under-read: needs lab confirmation" }
   }
   return { state: "safe", basis: "kit", contaminant: worst.contaminant, mgl: worst.mgl, testers, latest: worst,
+    code: testers > 1 ? "kit_safe_many" : "kit_safe_one",
     reason: testers > 1 ? `kit screening within the limit, ${testers} independent testers` : "kit screening within the limit, one tester" }
 }

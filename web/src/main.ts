@@ -6,7 +6,7 @@ import {
   balanceOf, txLink, addrLink, short, mgl, attr,
 } from "./arkiv"
 import { verdict, siteId, needsLab, type Test } from "./model"
-import { DISTRICTS, LABELS, type Lang } from "./i18n"
+import { DISTRICTS, DISTRICT_NAMES, LABELS, type Lang, type Labels } from "./i18n"
 import { testBatch } from "./writes"
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T
@@ -20,12 +20,25 @@ const labs = new Map<string, any>()          // lowercased wallet -> registry en
 let sites = new Map<string, any>()            // site id -> canonical site entity (earliest created)
 let tests: any[] = []
 let page: any = null
+let shownEnts: any[] = []
 
-function t(k: keyof typeof LABELS.en): string { return (LABELS[lang] as any)[k] ?? LABELS.en[k] }
+function t(k: keyof Labels, vars: Record<string, unknown> = {}): string {
+  const s = (LABELS[lang] as any)[k] ?? LABELS.en[k]
+  return s.replace(/\{(\w+)\}/g, (_: string, v: string) => String(vars[v] ?? ""))
+}
+const tc = (c: string) => t(`c_${c}` as keyof Labels) || c
+const dname = (d: string) => lang === "en" ? d : DISTRICT_NAMES[lang][DISTRICTS.indexOf(d)] ?? d
+// Arsenic is read in µg/L (ppb) in the field and in IS 10500; fluoride in mg/L.
+function amount(v: number | string, c?: string) {
+  const n = typeof v === "string" ? parseFloat(v) : v
+  if (c === "arsenic") { const u = n * 1000; return `${u >= 100 ? u.toFixed(0) : u.toFixed(1)} µg/L` }
+  return c === "fluoride" ? `${n.toFixed(2)} mg/L` : mgl(n)
+}
+const statLabel = (s: string) => (LABELS.en as any)[`stat_${s}`] ? t(`stat_${s}` as keyof Labels) : s
 const district = () => $<HTMLSelectElement>("district").value
 function daysLeft(expiresAt: bigint) {
   const d = Number(expiresAt - head) * BLOCK_SECONDS / 86400
-  return d < 1 ? "<1 day" : `${Math.round(d)} days`
+  return d < 1 ? t("lt_day") : t("days", { n: Math.round(d) })
 }
 const errText = (e: any) => String(e?.shortMessage || e?.message || e).slice(0, 300)
 
@@ -56,11 +69,12 @@ async function loadRegistry() {
   for (const e of src.entities as any[]) sources.set(attr(e, "doc"), { key: e.key, ...e.toJson(), records: attr(e, "records") })
   for (const e of lab.entities as any[]) labs.set(String(attr(e, "wallet")).toLowerCase(), e)
   $("sources").innerHTML = [...sources.values()].sort((a, b) => b.records - a.records).map((s) =>
-    `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.title)}</a> <span class="muted">· ${esc(s.publisher)} ${esc(s.year ?? "")} · ${s.records} records</span></li>`).join("")
+    `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.title)}</a> <span class="muted">· ${esc(s.publisher)} ${esc(s.year ?? "")} · ${t("records", { n: s.records })}</span></li>`).join("")
   $("src-count").textContent = String(sources.size)
   $("labs").innerHTML = labs.size ? [...labs.values()].map((e) =>
-    `<li><b>${esc(attr(e, "name"))}</b>${attr(e, "demo") ? ' <span class="badge demo">demo</span>' : ""} · ${esc(attr(e, "district"))} · wallet <a class="mono" href="${addrLink(attr(e, "wallet"))}" target="_blank" rel="noopener">${short(attr(e, "wallet"))}</a> · listing renews in ${daysLeft(e.expiresAt)}</li>`).join("")
-    : `<li class="muted">No labs registered yet.</li>`
+    `<li><b>${esc(attr(e, "name"))}</b>${attr(e, "demo") ? ` <span class="badge demo">${t("demo")}</span>` : ""} · ${t("lab_line", { d: esc(dname(attr(e, "district"))),
+      w: `<a class="mono" href="${addrLink(attr(e, "wallet"))}" target="_blank" rel="noopener">${short(attr(e, "wallet"))}</a>`, r: daysLeft(e.expiresAt) })}</li>`).join("")
+    : `<li class="muted">${t("no_labs")}</li>`
 }
 
 function obsCard(e: any) {
@@ -72,12 +86,12 @@ function obsCard(e: any) {
   const over = v > lim
   return `<article class="rec ${over ? "over" : "ok"}">
     <div class="rec-top"><b>${esc(attr(e, "place"))}</b><span class="badge ${over ? "bad" : "good"}">${over ? t("above") : t("within")}</span></div>
-    <div class="val"><span class="num">${mgl(v)}</span> ${esc(c)} <span class="muted">· ${t("limit")} ${mgl(lim)} · ${esc(attr(e, "stat"))}</span></div>
-    <div class="small ${yr && NOW_YEAR - yr > 3 ? "warn" : "muted"}">${yr ? `${t("sampled")} ${yr} · ${NOW_YEAR - yr} ${t("years_old")}` : t("year_unknown")}</div>
-    <div class="cite">${t("source")}: <a href="${esc(link)}" target="_blank" rel="noopener">${esc(s.title || attr(e, "doc"))}${pg ? `, p. ${pg}` : ""}</a>${p.well_id ? ` · well ${esc(p.well_id)}` : ""}${p.source_type ? ` · ${esc(p.source_type)}` : ""}</div>
+    <div class="val"><span class="num">${amount(v, c)}</span> ${esc(tc(c))} <span class="muted">· ${t("limit")} ${amount(lim, c)} · ${esc(statLabel(attr(e, "stat")))}</span></div>
+    <div class="small ${yr && NOW_YEAR - yr > 3 ? "warn" : "muted"}">${yr ? t("sampled", { y: yr, n: NOW_YEAR - yr }) : t("year_unknown")}</div>
+    <div class="cite">${t("source")}: <a href="${esc(link)}" target="_blank" rel="noopener">${esc(s.title || attr(e, "doc"))}${pg ? `, ${t("page")} ${pg}` : ""}</a>${p.well_id ? ` · ${t("well")} ${esc(p.well_id)}` : ""}${p.source_type ? ` · ${esc(p.source_type)}` : ""}</div>
     <details><summary>${t("row")}</summary><p class="mono small">${esc(p.row_text)}</p>
-      <p class="small muted">${esc(p.header || "")} · unit from ${esc(p.unit_basis)} (printed as “${esc(p.value_text)} ${esc(p.unit)}”)</p>
-      <p class="small">Arkiv entity <span class="mono">${short(e.key)}</span> · ${t("creator")} <a class="mono" href="${addrLink(e.creator)}" target="_blank" rel="noopener">${short(e.creator)}</a> ✓ · read-only · expires in ${daysLeft(e.expiresAt)}</p></details>
+      <p class="small muted">${esc(p.header || "")} · ${t("unit_from", { b: esc(p.unit_basis), v: `${esc(p.value_text)} ${esc(p.unit)}` })}</p>
+      <p class="small">${t("entity")} <span class="mono">${short(e.key)}</span> · ${t("creator")} <a class="mono" href="${addrLink(e.creator)}" target="_blank" rel="noopener">${short(e.creator)}</a> ✓ · ${t("readonly")} · ${t("expires", { d: daysLeft(e.expiresAt) })}</p></details>
   </article>`
 }
 
@@ -91,14 +105,20 @@ async function search(append = false) {
       page = await publicClient.select({ key: true, creator: true, expiresAt: true, payload: true, attributes: true })
         .where(and(filters())).createdBy(CURATOR).atBlock(head).limit(30).fetch()
       $("results").innerHTML = ""
+      shownEnts = []
     } else page = await page.next()
     const ents = (page.entities as any[]).sort((a, b) => parseFloat(attr(b, "mgl")) - parseFloat(attr(a, "mgl")))
+    shownEnts.push(...ents)
     $("results").insertAdjacentHTML("beforeend", ents.map(obsCard).join(""))
-    const shown = $("results").children.length
-    $("status").textContent = shown ? `${shown} ${t("shown")} · ${district()}` : t("none")
+    renderStatus()
     $("more").hidden = !page.hasNextPage()
-  } catch (err) { $("status").textContent = `Arkiv query failed: ${errText(err)}` }
+  } catch (err) { $("status").textContent = `${t("query_failed")} ${errText(err)}` }
 }
+
+function renderStatus() {
+  $("status").textContent = shownEnts.length ? t("shown", { n: shownEnts.length, d: dname(district()) }) : t("none")
+}
+function rerenderRecords() { $("results").innerHTML = shownEnts.map(obsCard).join(""); if (page) renderStatus() }
 
 // ---- drinking-water sources and their tests ---------------------------------------------------
 function toTest(e: any): Test {
@@ -106,6 +126,9 @@ function toTest(e: any): Test {
     method: attr(e, "method"), tested: Number(attr(e, "tested")), expiresInDays: Number(e.expiresAt - head) * BLOCK_SECONDS / 86400 }
 }
 
+const LOCALE: Record<Lang, string> = { en: "en-IN", hi: "hi-IN", bn: "bn-IN" }
+const SRC_TYPES: Record<string, keyof Labels> = { "tube well": "t_tube", "dug well": "t_dug", "hand pump": "t_hand", "piped supply": "t_piped", "community plant": "t_plant" }
+const srcType = (s: string) => SRC_TYPES[s] ? t(SRC_TYPES[s]) : s
 const STATE_LABEL: Record<string, keyof typeof LABELS.en> = { unsafe: "st_unsafe", safe: "st_safe", confirm: "st_confirm", overdue: "st_overdue" }
 
 function siteCard(id: string, s: any) {
@@ -114,14 +137,14 @@ function siteCard(id: string, s: any) {
   const lab = v.basis === "lab" && v.latest ? labs.get(v.latest.creator.toLowerCase()) : null
   const rows = [...mine].sort((a, b) => Number(attr(b, "tested")) - Number(attr(a, "tested"))).map((x) => {
     const reg = labs.get(String(x.creator).toLowerCase())
-    const who = attr(x, "method") === "lab" && reg ? `lab ✓ ${esc(attr(reg, "name"))}` : `${esc(attr(x, "method"))} · ${short(x.creator)}`
-    return `<li>${new Date(Number(attr(x, "tested")) * 1000).toLocaleDateString()} · <b>${mgl(attr(x, "mgl"))}</b> ${esc(attr(x, "contaminant"))} · ${who} · fades in ${daysLeft(x.expiresAt)}${attr(x, "demo") ? ' <span class="badge demo">demo</span>' : ""}</li>`
+    const who = attr(x, "method") === "lab" && reg ? `${t("lab_ok")} ${esc(attr(reg, "name"))}` : `${t(attr(x, "method") === "lab" ? "m_lab" : "m_kit")} · ${short(x.creator)}`
+    return `<li>${new Date(Number(attr(x, "tested")) * 1000).toLocaleDateString(LOCALE[lang])} · <b>${amount(attr(x, "mgl"), attr(x, "contaminant"))}</b> ${esc(tc(attr(x, "contaminant")))} · ${who} · ${t("fades", { d: daysLeft(x.expiresAt) })}${attr(x, "demo") ? ` <span class="badge demo">${t("demo")}</span>` : ""}</li>`
   }).join("")
   return `<article class="site st-${v.state}" data-site="${esc(id)}">
     <div class="rec-top"><b>${esc(attr(s, "place"))}</b><span class="badge st-${v.state}">${t(STATE_LABEL[v.state])}</span></div>
-    <div class="small muted">${esc(attr(s, "srctype"))}${attr(s, "demo") ? ' · <span class="badge demo">demo data</span>' : ""} · listed for ${daysLeft(s.expiresAt)} unless retested</div>
-    <div class="val">${v.mgl !== undefined ? `<span class="num">${mgl(v.mgl)}</span> ${esc(v.contaminant)} ` : ""}<span class="small">${esc(v.reason)}${lab ? ` · ${esc(attr(lab, "name"))}` : ""}</span></div>
-    <details><summary>${mine.length} ${t("tests")}</summary><ul class="tests">${rows || `<li class="muted">${t("no_live")}</li>`}</ul></details>
+    <div class="small muted">${esc(srcType(attr(s, "srctype")))}${attr(s, "demo") ? ` · <span class="badge demo">${t("demo_data")}</span>` : ""} · ${t("listed", { d: daysLeft(s.expiresAt) })}</div>
+    <div class="val">${v.mgl !== undefined ? `<span class="num">${amount(v.mgl, v.contaminant)}</span> ${esc(tc(v.contaminant!))} ` : ""}<span class="small">${esc(t(`r_${v.code}` as keyof Labels, { n: v.testers }))}${lab ? ` · ${esc(attr(lab, "name"))}` : ""}</span></div>
+    <details><summary>${t("tests", { n: mine.length })}</summary><ul class="tests">${rows || `<li class="muted">${t("no_live")}</li>`}</ul></details>
   </article>`
 }
 
@@ -147,7 +170,7 @@ function renderSites() {
   $("sites").innerHTML = cards.length ? cards.map((c) => siteCard(c.id, c.s)).join("") : `<p class="muted">${t("no_sites")}</p>`
   $("f-site").innerHTML = `<option value="">${t("new_site")}</option>` + [...sites.entries()].map(([id, s]) => `<option value="${esc(id)}">${esc(attr(s, "place"))}</option>`).join("")
   const counts = cards.reduce((m, c) => (m[c.v.state] = (m[c.v.state] || 0) + 1, m), {} as Record<string, number>)
-  $("site-summary").textContent = cards.length ? `${cards.length} ${t("sources_listed")} · ${counts.unsafe || 0} ${t("st_unsafe")} · ${counts.confirm || 0} ${t("st_confirm")} · ${counts.overdue || 0} ${t("st_overdue")} · ${counts.safe || 0} ${t("st_safe")}` : ""
+  $("site-summary").textContent = cards.length ? t("summary", { n: cards.length, u: counts.unsafe || 0, c: counts.confirm || 0, o: counts.overdue || 0, s: counts.safe || 0 }) : ""
 }
 
 async function signer() { return $<HTMLSelectElement>("signer").value === "injected" ? injectedWallet() : burnerWallet() }
@@ -157,7 +180,7 @@ async function showSigner() {
   if ($<HTMLSelectElement>("signer").value === "injected") { box.textContent = t("injected_note"); return }
   const a = burnerWallet().account!.address
   const b = await balanceOf(a).catch(() => 0)
-  const reg = labs.has(a.toLowerCase()) ? " · registered lab ✓" : ""
+  const reg = labs.has(a.toLowerCase()) ? ` · ${t("reg_lab")}` : ""
   box.innerHTML = `${t("burner_note")} <a class="mono" href="${addrLink(a)}" target="_blank" rel="noopener">${short(a)}</a> · ${b.toFixed(3)} GLM${reg} · <a href="https://hub.arkiv.network/faucet" target="_blank" rel="noopener">faucet</a>`
 }
 
@@ -169,7 +192,7 @@ function updateHint() {
   const value = fd.get("unit") === "ug" ? raw / 1000 : raw
   const c = String(fd.get("contaminant"))
   box.textContent = fd.get("method") === "kit" && needsLab({ contaminant: c, mgl: value })
-    ? `${mgl(value)} is ${value > LIMITS[c] ? "above" : "close to"} the ${mgl(LIMITS[c])} limit. A kit result this high must be confirmed by a lab (UDWQMP 5.1.1), so it will show as "needs lab confirmation".`
+    ? t("hint_lab", { v: amount(value, c), rel: t(value > LIMITS[c] ? "rel_above" : "rel_close"), l: amount(LIMITS[c], c) })
     : ""
 }
 
@@ -208,7 +231,7 @@ function live() {
         try {
           const e: any = await publicClient.getEntity(ev.entityKey)
           if (attr(e, "app") !== APP || attr(e, "kind") !== "test") return
-          $("live").textContent = `${t("live_new")} ${mgl(attr(e, "mgl"))} ${attr(e, "contaminant")} at ${attr(e, "place")}, ${attr(e, "district")}`
+          $("live").textContent = t("live_new", { v: amount(attr(e, "mgl"), attr(e, "contaminant")), c: tc(attr(e, "contaminant")), p: attr(e, "place"), d: dname(attr(e, "district")) })
           if (attr(e, "district") === district()) loadSites()
         } catch { /* not ours, or gone */ }
       },
@@ -219,17 +242,36 @@ function live() {
 }
 
 // ---- wiring ---------------------------------------------------------------------------------
+const LINKS: Record<string, string> = {
+  arkiv: `<a href="https://arkiv.network" target="_blank" rel="noopener">Arkiv</a>`,
+  schema: `<a href="https://github.com/mohitt31/jalsaakshya/blob/main/arkiv/schema.md" target="_blank" rel="noopener">arkiv/schema.md</a>`,
+}
 function applyLang() {
   document.documentElement.lang = lang
+  try { localStorage.setItem("jalsaakshya.lang", lang) } catch { /* ignore */ }
   document.querySelectorAll<HTMLElement>("[data-t]").forEach((el) => { el.textContent = t(el.dataset.t as any) })
+  // trusted strings from i18n.ts that carry markup or links
+  document.querySelectorAll<HTMLElement>("[data-th]").forEach((el) => {
+    el.innerHTML = t(el.dataset.th as any, { ...LINKS, curator: CURATOR ? `<a class="mono" href="${addrLink(CURATOR)}" target="_blank" rel="noopener">${short(CURATOR)}</a>` : "" })
+  })
+  document.querySelectorAll<HTMLInputElement>("[data-tp]").forEach((el) => { el.placeholder = t(el.dataset.tp as any) })
+  document.querySelectorAll<HTMLElement>("[data-lang]").forEach((b) => b.classList.toggle("on", b.dataset.lang === lang))
+  const sel = $<HTMLSelectElement>("district"), cur = sel.value
+  sel.innerHTML = DISTRICTS.map((d) => `<option value="${d}">${dname(d)}</option>`).join("")
+  sel.value = cur || "Purulia"
 }
 
 async function main() {
-  $("district").innerHTML = DISTRICTS.map((d) => `<option>${d}</option>`).join("")
   const q = new URLSearchParams(location.search)
+  let saved: string | null = null
+  try { saved = localStorage.getItem("jalsaakshya.lang") } catch { /* ignore */ }
+  const want = q.get("lang") || saved
+  if (want === "hi" || want === "bn" || want === "en") lang = want
+  $("district").innerHTML = DISTRICTS.map((d) => `<option value="${d}">${d}</option>`).join("")
   $<HTMLSelectElement>("district").value = q.get("district") || "Purulia"
-  $("curator").innerHTML = CURATOR ? `<a class="mono" href="${addrLink(CURATOR)}" target="_blank" rel="noopener">${short(CURATOR)}</a>` : "not set"
-  document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach((b) => b.addEventListener("click", () => { lang = b.dataset.lang as Lang; applyLang(); renderSites() }))
+  document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach((b) => b.addEventListener("click", () => {
+    lang = b.dataset.lang as Lang; applyLang(); renderSites(); rerenderRecords(); loadRegistry().catch(() => {}); showSigner(); updateHint()
+  }))
   $("district").addEventListener("change", () => { search(); loadSites(); history.replaceState(null, "", `?district=${encodeURIComponent(district())}`) })
   ;["contaminant", "above", "since"].forEach((id) => $(id).addEventListener("change", () => search()))
   $("place").addEventListener("change", () => search())

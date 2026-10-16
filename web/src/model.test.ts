@@ -17,7 +17,7 @@ test("kit reading near the arsenic limit needs a lab, even if below it", () => {
 
 test("kit reading above the limit is a lab referral, not a verdict", () => {
   const v = verdict([t({ mgl: 0.05 })], labs)
-  assert.equal(v.state, "confirm"); assert.match(v.reason, /above the limit/)
+  assert.equal(v.state, "confirm"); assert.match(v.reason, /above the limit/); assert.equal(v.code, "kit_over")
 })
 
 test("low kit readings are safe screening and count independent testers", () => {
@@ -32,7 +32,7 @@ test("a registered lab result overrides older kit readings", () => {
 
 test("a kit warning after the last lab result re-opens the question", () => {
   const v = verdict([t({ mgl: 0.05, tested: 5 }), t({ method: "lab", creator: "0xLAB", mgl: 0.004, tested: 3 })], labs)
-  assert.equal(v.state, "confirm"); assert.match(v.reason, /after the last lab result/)
+  assert.equal(v.state, "confirm"); assert.match(v.reason, /after the last lab result/); assert.equal(v.code, "kit_after_lab")
 })
 
 test("a lab result from an unregistered wallet is treated as a kit-level claim", () => {
