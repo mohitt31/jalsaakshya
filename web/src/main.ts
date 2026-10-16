@@ -224,17 +224,20 @@ async function submitTest(ev: Event) {
 }
 
 // Live: a WebSocket subscription, so new tests appear without a refresh loop.
+// The subscription carries every entity on the chain, so an event is only a trigger: at most one
+// query for this district's tests every few seconds, never one RPC call per chain event.
+let liveTimer: ReturnType<typeof setTimeout> | null = null
+async function refreshLive() {
+  liveTimer = null
+  const before = new Set(tests.map((x) => x.key))
+  await loadSites()
+  const fresh = tests.filter((x) => !before.has(x.key)).sort((a, b) => Number(attr(b, "tested")) - Number(attr(a, "tested")))[0]
+  if (fresh) $("live").textContent = t("live_new", { v: amount(attr(fresh, "mgl"), attr(fresh, "contaminant")), c: tc(attr(fresh, "contaminant")), p: attr(fresh, "place"), d: dname(attr(fresh, "district")) })
+}
 function live() {
   try {
     socketClient().watchEntityEvents({
-      onEntityCreated: async (ev: any) => {
-        try {
-          const e: any = await publicClient.getEntity(ev.entityKey)
-          if (attr(e, "app") !== APP || attr(e, "kind") !== "test") return
-          $("live").textContent = t("live_new", { v: amount(attr(e, "mgl"), attr(e, "contaminant")), c: tc(attr(e, "contaminant")), p: attr(e, "place"), d: dname(attr(e, "district")) })
-          if (attr(e, "district") === district()) loadSites()
-        } catch { /* not ours, or gone */ }
-      },
+      onEntityCreated: () => { liveTimer ??= setTimeout(refreshLive, 8000) },
       onError: () => { $("live").textContent = t("live_off") },
     })
     $("live").textContent = t("live_on")
