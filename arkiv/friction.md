@@ -2,7 +2,7 @@
 
 Environment for everything below, unless a line says otherwise:
 - `@arkiv-network/sdk` **0.8.1**, `viem` **2.57.7**, bundled with Vite 5 and run in a Chromium-based browser (the Claude desktop app's browser pane), Tiramisu testnet (chain ID `7738577`), public RPC with no access key.
-- Dates: 15 October 2026 (IST). Wallets: see [onchain.md](onchain.md).
+- Dates: 15 to 17 October 2026 (IST). Wallets: see [onchain.md](onchain.md).
 - Every item was reproduced from our own code. The probes live in `web/src/curator.ts` (`probes()`), and
   the "Run probes" button on `/curator.html` re-runs them. Items marked **worked** are paths we tested that
   behaved as documented, written up with the same detail.
@@ -108,6 +108,33 @@ docs that a browser wallet is needed to use the faucet.
 **Surface:** the README shipped inside `@arkiv-network/sdk@0.8.1` (`node_modules/@arkiv-network/sdk/README.md`).
 
 **Actual:** the install section says `"@arkiv-network/sdk": "^0.6.0"`. Fix: update the snippet to `^0.8.1`.
+
+## 7. `watchEntityEvents` has no filter, so "is this ours?" costs one RPC call per chain event
+
+**Surface:** `watchEntityEvents` over the WebSocket transport, and the public HTTP RPC's rate limit.
+
+**Expected:** a way to subscribe to the entities an app cares about (an attribute such as `app = "jalsaakshya/v1"`,
+or a creator), as queries allow.
+
+**Actual:** `WatchEntityEventsParameters` takes handlers, `fromBlock` and `pollingInterval`, and nothing to
+filter by (`dist/index-DaNeJUw8.d.ts` in 0.8.1). `EntityCreatedEvent` carries `entityKey`, `owner`, `expiresAt`
+and `creationFlags`, but no attributes. To tell whether a new entity is one of our `test` entities, our first
+version called `getEntity(entityKey)` for every created event. On 17 October (IST), with other teams writing
+to Tiramisu, one page load in the Nadia view logged **144 `HTTP 429` responses**. The RPC answers with
+`ratelimit: limit=600, remaining=…, reset=10`, and once it starts returning 429s, the page's own district
+queries fail too: the records list and the sources list stayed empty.
+
+**Steps to reproduce:** subscribe with `createPublicClient({ chain: tiramisu, transport: webSocket() })
+.watchEntityEvents({ onEntityCreated: (e) => publicClient.getEntity(e.entityKey) })` and leave the page open
+while the chain is busy.
+
+**What we did:** the event is now only a trigger. The app runs one query for the open district at most every
+8 seconds and diffs the result (`refreshLive` in `web/src/main.ts`). After the change, the same page logged no
+new 429s.
+
+**What would fix it:** an attribute or creator filter on `watchEntityEvents` (the node already evaluates the
+same predicates for queries), or attributes in `EntityCreatedEvent`. The rate limit (600 requests per 10 s)
+could also be documented next to the public RPC URL.
 
 ---
 

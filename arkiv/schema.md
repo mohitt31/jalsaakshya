@@ -148,6 +148,10 @@ createPublicClient({ chain: tiramisu, transport: webSocket() })
   .watchEntityEvents({ onEntityCreated })   // new tests refresh the district without polling
 ```
 
+The subscription delivers every entity created on Tiramisu, not only ours. An event is therefore only a
+trigger: the app runs query 4 for the open district at most once every 8 seconds, instead of fetching each
+new entity by key (our first version did that and hit the public RPC's rate limit, see friction.md).
+
 The official-records query is pinned with `.atBlock(head)` so its cursor stays valid across pages.
 Curator console (`curator.html`) also runs `createdBy(curator)` with `kind = "obs"` across all pages to
 skip rows that are already published, so publishing can resume after an interruption.
