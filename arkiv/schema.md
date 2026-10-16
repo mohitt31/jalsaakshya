@@ -152,6 +152,11 @@ The subscription delivers every entity created on Tiramisu, not only ours. An ev
 trigger: the app runs query 4 for the open district at most once every 8 seconds, instead of fetching each
 new entity by key (our first version did that and hit the public RPC's rate limit, see friction.md).
 
+```ts
+// 7. A shared link: read one entity by key and show what Arkiv says about it
+publicClient.getEntity(key)   // -> $creator (curator / registered lab / tester), creationFlags.readonly, expiresAt
+```
+
 The official-records query is pinned with `.atBlock(head)` so its cursor stays valid across pages.
 Curator console (`curator.html`) also runs `createdBy(curator)` with `kind = "obs"` across all pages to
 skip rows that are already published, so publishing can resume after an interruption.

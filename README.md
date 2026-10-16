@@ -45,6 +45,12 @@ Under Jal Jeevan Mission, five women in every village are trained to test drinki
   | Lab result | 365 days (annual chemical test) |
   | Kit reading | 90 days (screening) |
   | Source | 365 days after its latest test; each new test renews it |
+- **Share a verifiable link.** Every record and every source has *Share on WhatsApp*. The message carries a link with the Arkiv entity key. Whoever opens it gets a *Checked on Arkiv* panel, read from the chain, showing:
+  - who created the entity (curator, registered lab, or a tester's own wallet);
+  - whether it is read-only;
+  - how long it stays current.
+
+  A forwarded number becomes one anyone can check.
 - **Live.** New tests appear over a WebSocket subscription without reloading the page.
 - **Languages.** The whole interface is in English, Hindi and Bengali, including statuses, reasons and district names.
 

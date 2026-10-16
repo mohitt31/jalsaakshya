@@ -48,6 +48,12 @@ JalSaakshya puts both problems in one phone page, in Hindi, Bengali and English.
 
 - **A tester** records a reading against a named well in Bengali or Hindi. If a reading of, say, 6 µg/L arsenic would pass on the kit's colour chart, the app shows straight away that it needs a lab (the half-limit rule). The test is signed by the tester's wallet, so nobody can edit or quietly delete it later, including us.
 - **Block staff and NGOs** get one list of sources in their district, sorted by urgency, with the reason for each status. Their visit list is the *needs lab confirmation* and *test overdue* sources, not a spreadsheet of kit readings from several years ago.
+- **Anyone who receives a forwarded number** can check it. Every record and source card has *Share on WhatsApp*. The message carries a link that opens a *Checked on Arkiv* panel, read from the chain by entity key. It says:
+  - whether the curator published the value, a registered lab signed it, or only a tester's own wallet did;
+  - whether anyone can edit it;
+  - how long it stays current.
+
+  WhatsApp is how water results travel in a village. Today a forwarded screenshot cannot be checked. A JalSaakshya link can.
 - **A panchayat member or journalist** can type a block name (for example "Raghunathpur" in Purulia, where fluoride reaches 4.30 mg/L in the CGWB aquifer report). They get the value, the PDF page and the row as printed, and can show the official number at a meeting.
 
 **It works today:**
@@ -88,15 +94,16 @@ Each feature, what the user sees, and the code:
 
 | Feature | How and why | Code |
 |---|---|---|
-| **`$creator` + `createdBy()`** | Official records, report list and lab registry are read only with `.createdBy(CURATOR)`. A copy of a survey row with identical attributes written by any other wallet never appears as official. Each card shows "created by curator 0x048A…3760 ✓". A "lab result" counts only if its `$creator` is a wallet in the curator's registry. Otherwise it is treated as a kit screening. | [main.ts#L106](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/main.ts#L106), [main.ts#L67](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/main.ts#L67), [model.ts#L56](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/model.ts#L56) |
+| **`$creator` + `createdBy()`** | Official records, report list and lab registry are read only with `.createdBy(CURATOR)`. A copy of a survey row with identical attributes written by any other wallet never appears as official. Each card shows "created by curator 0x048A…3760 ✓". A "lab result" counts only if its `$creator` is a wallet in the curator's registry. Otherwise it is treated as a kit screening. | [main.ts#L107](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/main.ts#L107), [main.ts#L67](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/main.ts#L67), [model.ts#L56](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/model.ts#L56) |
+| **Read by key, `$creator` and creation flags in the UX** | A shared link (`?e=<entity key>`) runs `getEntity(key)` and shows the reader what Arkiv itself says: the `$creator`, classified as curator, registered lab or community wallet; `creationFlags.readonly`; and the remaining lifetime from `expiresAt`. For a source, it also queries the source's live tests and shows the current status. | [main.ts#L139](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/main.ts#L139), [main.ts#L130](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/main.ts#L130) |
 | **Typed attributes vs payload** | What we filter on is in attributes: `district`, `contaminant`, `place` (str), `mgl` (dec), `year`/`page` (i32), `exceeds` (bool), `tested` (u64), `wallet` (addr). What we only display is in the JSON payload: the printed value and unit, the unit's basis, the table row text, notes. | [writes.ts#L13](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/writes.ts#L13), [schema.md](arkiv/schema.md) |
 | **Compound queries and ranges** | The filter bar builds one `and([...])`: `eq` on district and contaminant, `gt("mgl", dec(limit))` for "only above the limit", `gte("year", i32(…))` for "sampled since", and `startsWith("place", …)` for the village search. | [main.ts#L46](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/main.ts#L46) |
-| **Cursor pagination pinned to a block** | The records query is pinned with `.atBlock(head)`, so "Load more" (`page.next()`) keeps working while someone reads (see friction #4). | [main.ts#L109](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/main.ts#L109) |
+| **Cursor pagination pinned to a block** | The records query is pinned with `.atBlock(head)`, so "Load more" (`page.next()`) keeps working while someone reads (see friction #4). | [main.ts#L110](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/main.ts#L110) |
 | **Entity Expiration per type** | Lifetimes follow the rules the data lives under: lab test 365 d (annual test mandate), kit test 90 d (screening), site 365 d, lab listing 365 d (renewed yearly by the curator), survey row 365 d, report 730 d. Status rule 3 depends on it: when every test of a source has expired, the source shows *test overdue*. | [model.ts#L20](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/model.ts#L20), [writes.ts#L25](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/writes.ts#L25) |
 | **Lifetime Extension + `permissionlessExtension`** | A source (`site`) is created with `permissionlessExtension: true`. Every new test of that source, by anyone, extends the site by another 365 days. A well stays listed while people keep testing it and drops off a year after its last test. In the demo, the lab wallet extended a site created by tester A, and the site's owner did not change. The card shows "listed for N days unless retested". | [writes.ts#L36](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/writes.ts#L36), [writes.ts#L41](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/writes.ts#L41) |
 | **`readonly` creation flag** | Survey rows, reports, sites and tests are `readonly`. Lab listings are not, so the curator can delist a lab. | [writes.ts#L13](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/writes.ts#L13) |
-| **Atomic batch writes** | Adding a test is one `executeBatch`: either `[create site, create test]`, or `[create test]` plus the extension of the existing site. A test never lands without its site's renewal. Publishing also used batches: each report's `source` entity lands in the same transaction as its first rows (49 transactions for 1,186 entities). | [main.ts#L222](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/main.ts#L222), [curator.ts#L81](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/curator.ts#L81) |
-| **WebSocket entity events** | `watchEntityEvents` on a `webSocket()` transport with no `fromBlock`, so it is a real subscription. A new test appears with "New test: …" and the status updates without a reload. Events are a trigger for one district query every 8 s at most (friction #7). | [main.ts#L239](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/main.ts#L239) |
+| **Atomic batch writes** | Adding a test is one `executeBatch`: either `[create site, create test]`, or `[create test]` plus the extension of the existing site. A test never lands without its site's renewal. Publishing also used batches: each report's `source` entity lands in the same transaction as its first rows (49 transactions for 1,186 entities). | [main.ts#L293](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/main.ts#L293), [curator.ts#L81](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/curator.ts#L81) |
+| **WebSocket entity events** | `watchEntityEvents` on a `webSocket()` transport with no `fromBlock`, so it is a real subscription. A new test appears with "New test: …" and the status updates without a reload. Events are a trigger for one district query every 8 s at most (friction #7). | [main.ts#L310](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/main.ts#L310) |
 
 ## Friction report
 
@@ -150,7 +157,12 @@ Any judge who adds a test from the app creates `site`/`test` entities from their
    - Click *Publish to Arkiv*. The transaction link opens on the explorer: one test create plus one extension of the source.
    - In a second tab on the same district, the live line shows the new test, and source B moves from *Within limit* to *Needs lab confirmation*.
 5. **Spoofing does not work.** The curator console (`/curator.html` → *Run probes*) writes an `obs` entity with the curator's exact attributes from a different wallet. The probe output shows that the query finds it without `createdBy`, and finds 0 with `createdBy(curator)`.
-6. **Languages.** Use the हिन्दी / বাংলা buttons at the top. Records, statuses, reasons, the form and district names switch, and the choice is remembered.
+6. **Verify a shared link.** On any card, click *Link* (or *Share on WhatsApp* and open the link from the message).
+   - The *Checked on Arkiv* panel comes from `getEntity(key)`.
+   - For a survey record, it reads "Published by the curator wallet", read-only, and current for N days.
+   - For a demo kit test, it reads "Signed by a tester's own wallet. Nobody has verified it."
+   - Change one hex digit of the key in the URL and it reads "does not point to a current JalSaakshya entity".
+7. **Languages.** Use the हिन्दी / বাংলা buttons at the top. Records, statuses, reasons, the form and district names switch, and the choice is remembered.
 
 ## Pre-existing work we reused
 
@@ -174,7 +186,7 @@ TypeScript SDK, WebSocket events, Docs, Hub, Faucet, Block Explorer.
 
 ## Which LLMs did we use?
 
-Claude (Anthropic), through Claude Code, for research, code and documentation. Every on-chain number and claim in this repo was checked against the chain or the cited source.
+Claude (Anthropic), through Claude Code, for research, code, documentation and the demo video's narration script (the voice is Kokoro text-to-speech). Every on-chain number and claim in this repo was checked against the chain or the cited source.
 
 ## The one thing Arkiv should improve first
 
