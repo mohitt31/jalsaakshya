@@ -1,6 +1,6 @@
 # JalSaakshya · জল সাক্ষ্য · जल साक्ष्य
 
-**Live app:** https://mohitt31.github.io/jalsaakshya/ (English, हिन्दी, বাংলা; works on a phone)
+**Live app:** https://mohitt31.github.io/jalsaakshya/ (English, हिन्दी, বাংলা; works on a phone) · **Demo video:** [media/jalsaakshya-demo.mp4](media/jalsaakshya-demo.mp4) (2:51)
 
 JalSaakshya ("water evidence") has two parts:
 

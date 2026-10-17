@@ -8,7 +8,7 @@ Tracks entered: **Best Indian Use Case** (primary), **Security**, **Censorship R
 - **Schema:** [arkiv/schema.md](https://github.com/mohitt31/jalsaakshya/blob/main/arkiv/schema.md)
 - **Friction:** [arkiv/friction.md](https://github.com/mohitt31/jalsaakshya/blob/main/arkiv/friction.md)
 - **On-chain evidence:** [arkiv/onchain.md](https://github.com/mohitt31/jalsaakshya/blob/main/arkiv/onchain.md)
-- **Demo video (≤ 3 min):** {{VIDEO}}
+- **Demo video (2:51):** {{VIDEO}}. A copy is in the repo at [media/jalsaakshya-demo.mp4](https://github.com/mohitt31/jalsaakshya/blob/main/media/jalsaakshya-demo.mp4).
 
 ## Tagline
 
@@ -146,18 +146,18 @@ Any judge who adds a test from the app creates `site`/`test` entities from their
    ```
    Page through all `kind = "obs"` rows from the curator and you get 1,173.
 3. **Every status.** Open https://mohitt31.github.io/jalsaakshya/?district=Nadia and scroll to *Drinking-water sources*. You see:
-   - one *Unsafe (lab)* source (the demo lab's result is 41 µg/L);
-   - one *Needs lab confirmation* source (a kit reading of 1.20 mg/L fluoride, near the limit);
-   - one *Test overdue* source (listed, but with no current test);
-   - one *Within limit* source (two independent testers).
+   - **A**: *Unsafe (lab)*. The demo lab's result is 41 µg/L.
+   - **B**: *Needs lab confirmation*. Two testers read 3–4 µg/L on kits, then our demo-video test read 6 µg/L, which is half the limit or more. B's listing was renewed to 365 days by that test.
+   - **C**: *Needs lab confirmation*. A kit read 1.20 mg/L fluoride, close to the limit.
+   - **D**: *Test overdue*. It is listed but has no current test.
 
    Open *current tests* on a card to see each test's creator, its method and when it fades.
 4. **Add a test (write + atomic batch + extension + live).**
    - Open *Add a test result*. The page creates a test wallet in your browser.
    - Fund it from the [faucet](https://hub.arkiv.network/faucet) (or choose MetaMask).
-   - Pick *Demo source B (synthetic)* and enter a kit reading of 6 µg/L arsenic. The hint says it needs a lab.
+   - Pick *Demo source D (synthetic)*, which is test overdue, and enter a kit reading of 3 µg/L arsenic. Enter 6 µg/L instead to see the "needs a lab" hint.
    - Click *Publish to Arkiv*. The transaction link opens on the explorer: one test create plus one extension of the source.
-   - In a second tab on the same district, the live line shows the new test, and source B moves from *Within limit* to *Needs lab confirmation*.
+   - In a second tab on the same district, the live line shows the new test, and source D moves from *Test overdue* to *Within limit*. Its "listed for" days reset to 365.
 5. **Spoofing does not work.** The curator console (`/curator.html` → *Run probes*) writes an `obs` entity with the curator's exact attributes from a different wallet. The probe output shows that the query finds it without `createdBy`, and finds 0 with `createdBy(curator)` (last run: tx `0xbfe422c5a3b4eaa3cc35292b7a8169bec3af1d93f0d1db90b115014287643c45`).
 6. **Verify a shared link.** On any card, click *Link* (or *Share on WhatsApp* and open the link from the message).
    - The *Checked on Arkiv* panel comes from `getEntity(key)`.

@@ -15,6 +15,16 @@ Explorer: https://tiramisu.explorer.arkiv.network
 Any other wallet that adds a test through the app also creates `site`/`test` entities; the app labels
 those with their creator.
 
+## Demo-video test (17 Oct 2026)
+
+The in-app test wallet `0x83EF…146d` was funded with 0.1 test GLM by the curator. It then added a 6 µg/L arsenic kit reading to *Demo source B (synthetic)*, with the note "Synthetic reading recorded for the demo video": one atomic batch of a `test` create plus a Lifetime Extension of the source.
+- tx `0x9950d0481352eb81dd32f0dd51503419948f5b0d739bab993c8287e65e3edb12`, block 701123.
+
+## Spoof probe (17 Oct 2026)
+
+Demo tester A wrote an `obs` entity with the curator's exact attributes. `createdBy(curator)` returned 0 of it.
+- tx `0xbfe422c5a3b4eaa3cc35292b7a8169bec3af1d93f0d1db90b115014287643c45` (expired after 15 minutes by design).
+
 ## Publishing the survey dataset (15 Oct 2026)
 
 1,173 `obs` entities and 13 `source` entities in 49 atomic batches (each document's `source` entity
