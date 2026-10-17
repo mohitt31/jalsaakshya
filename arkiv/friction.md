@@ -26,6 +26,8 @@ The limit is on bytes, not on the number of operations:
 | 35 survey rows (our real `obs` entities) | 18,895 | ok |
 | 40 survey rows | 21,661 | HTTP 413 on `eth_estimateGas` |
 
+All four rows reproduced again on 17 October from the probe button (tiny batches in tx `0x912e07c4…` and `0x7439bf66…`).
+
 Our first publishing attempt used 50 rows per batch and failed this way; 40 failed too; 30 worked. We published
 the dataset in 49 batches of up to 30 rows.
 
@@ -69,6 +71,7 @@ charset it prints is the one it enforces. We use lowercase `snake_case` names ev
 (and `... AND EXISTS(year)`).
 **Second run (15:40 IST, same code):** both requests got no response within 25 s (our probe timeout), while
 `eth_blockNumber` and normal `select()` queries on the same page answered in ~0.3 s.
+**Third run (17 October, ~01:30 IST):** both rejected again with the first-run message, in 471 ms (`ne`) and 349 ms (`exists`).
 
 **Steps to reproduce:** `publicClient.select({ key: true }).where(eq("app", str(APP)), ne("kind", str("obs"))).limit(1).fetch()`.
 
@@ -143,7 +146,8 @@ could also be documented next to the public RPC URL.
 | Surface | What we did | Result |
 |---|---|---|
 | Typed attribute check in the SDK | `tested: Date.now()` as a bare number | Rejected before signing with a clear message: "use u64(...) for ... timestamps". Good. |
-| `createdBy()` | official records and the lab registry are read only with `.createdBy(curator)` | Records written by other wallets with identical attributes are not returned. |
+| `createdBy()` | official records and the lab registry are read only with `.createdBy(curator)` | Spoof probe (17 Oct): demo wallet `0xAac7…43c5` wrote an `obs` entity with the curator's exact attributes (tx `0xbfe422c5a3b4eaa3cc35292b7a8169bec3af1d93f0d1db90b115014287643c45`). The same query found it without `createdBy` (1 result, creator `0xAac7…43c5`) and returned 0 with `createdBy(curator)`. |
+| `getEntity(key)` with `creationFlags` | shared links (`?e=<key>`) read one entity and show its `$creator`, `creationFlags.readonly` and `expiresAt` | Returns the flags as set at creation (`readonly: true` on survey rows); a wrong key throws, which the app shows as "not a current JalSaakshya entity". |
 | Numeric ranges on `dec` and `i32` | `gt("mgl", dec("1.5"))`, `gte("year", i32(2015))` | Every returned row satisfied the range (checked in the app for Purulia fluoride). |
 | `startsWith` | village prefix search | Works, case-sensitive (we upper-case the first letter). |
 | `.atBlock()` + cursor | official records paged 30 at a time | Stable across pages. |
