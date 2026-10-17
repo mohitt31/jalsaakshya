@@ -1,9 +1,9 @@
 // JalSaakshya: groundwater evidence for West Bengal, read straight from Arkiv. No backend.
 import { bool, dec, i32, str } from "@arkiv-network/sdk/attr"
-import { and, eq, gt, gte, startsWith, type Expression } from "@arkiv-network/sdk/query"
+import { and, eq, gt, gte, or, render, startsWith, type Expression } from "@arkiv-network/sdk/query"
 import {
   APP, CURATOR, LIMITS, publicClient, socketClient, burnerWallet, injectedWallet,
-  balanceOf, txLink, addrLink, short, mgl, attr,
+  balanceOf, txLink, addrLink, short, mgl, attr, countWhere, readStats, onReadStats,
 } from "./arkiv"
 import { verdict, siteId, needsLab, type Test } from "./model"
 import { DISTRICTS, DISTRICT_NAMES, LABELS, type Lang, type Labels } from "./i18n"
@@ -65,14 +65,17 @@ function filters() {
 
 async function loadRegistry() {
   if (!CURATOR) return
-  const [src, lab] = await Promise.all([
-    publicClient.select({ key: true, payload: true, attributes: true })
-      .where(eq("app", str(APP)), eq("kind", str("source"))).createdBy(CURATOR).limit(200).fetch(),
-    publicClient.select({ key: true, expiresAt: true, attributes: true })
-      .where(eq("app", str(APP)), eq("kind", str("lab"))).createdBy(CURATOR).limit(200).fetch(),
-  ])
-  for (const e of src.entities as any[]) sources.set(attr(e, "doc"), { key: e.key, ...e.toJson(), records: attr(e, "records") })
-  for (const e of lab.entities as any[]) labs.set(String(attr(e, "wallet")).toLowerCase(), e)
+  // One query for both curator-published registries: every arkiv_query costs the same 100 units.
+  const reg = await publicClient.select({ key: true, expiresAt: true, payload: true, attributes: true })
+    .where(eq("app", str(APP)), or(eq("kind", str("source")), eq("kind", str("lab")))).createdBy(CURATOR).limit(200).fetch()
+  for (const e of reg.entities as any[]) {
+    if (attr(e, "kind") === "source") sources.set(attr(e, "doc"), { key: e.key, ...e.toJson(), records: attr(e, "records") })
+    else labs.set(String(attr(e, "wallet")).toLowerCase(), e)
+  }
+  renderRegistry()
+}
+
+function renderRegistry() {
   $("sources").innerHTML = [...sources.values()].sort((a, b) => b.records - a.records).map((s) =>
     `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.title)}</a> <span class="muted">· ${esc(s.publisher)} ${esc(s.year ?? "")} · ${t("records", { n: s.records })}</span></li>`).join("")
   $("src-count").textContent = String(sources.size)
@@ -109,7 +112,7 @@ async function search(append = false) {
       // Trust comes from $creator: only entities the curator wallet created count as official.
       // The query is pinned to one block so its cursor stays valid while we page.
       page = await publicClient.select({ key: true, creator: true, expiresAt: true, payload: true, attributes: true })
-        .where(and(filters())).createdBy(CURATOR).atBlock(head).limit(30).fetch()
+        .where(and(filters())).createdBy(CURATOR).atBlock(head).limit(60).fetch()
       $("results").innerHTML = ""
       shownEnts = []
     } else page = await page.next()
@@ -231,15 +234,14 @@ function siteCard(id: string, s: any) {
 
 async function loadSites() {
   try {
-    const [s, tt] = await Promise.all([
-      publicClient.select({ key: true, creator: true, createdAt: true, expiresAt: true, attributes: true })
-        .where(eq("app", str(APP)), eq("kind", str("site")), eq("district", str(district()))).limit(200).fetch(),
-      publicClient.select({ key: true, creator: true, expiresAt: true, attributes: true })
-        .where(eq("app", str(APP)), eq("kind", str("test")), eq("district", str(district()))).limit(200).fetch(),
-    ])
+    // Sources and their tests in one query (one 100-unit charge instead of two).
+    const r = await publicClient.select({ key: true, creator: true, createdAt: true, expiresAt: true, attributes: true })
+      .where(eq("app", str(APP)), or(eq("kind", str("site")), eq("kind", str("test"))), eq("district", str(district()))).limit(200).fetch()
+    const all = r.entities as any[]
     sites = new Map()
-    for (const e of [...(s.entities as any[])].sort((a, b) => Number(a.createdAt - b.createdAt))) if (!sites.has(attr(e, "site"))) sites.set(attr(e, "site"), e)
-    tests = tt.entities as any[]
+    for (const e of all.filter((x) => attr(x, "kind") === "site").sort((a, b) => Number(a.createdAt - b.createdAt))) if (!sites.has(attr(e, "site"))) sites.set(attr(e, "site"), e)
+    tests = all.filter((x) => attr(x, "kind") === "test")
+    liveCount = all.length
     renderSites()
   } catch (err) { $("sites").innerHTML = `<p class="warn">${esc(errText(err))}</p>` }
 }
@@ -308,8 +310,16 @@ async function submitTest(ev: Event) {
 // The subscription carries every entity on the chain, so an event is only a trigger: at most one
 // query for this district's tests every few seconds, never one RPC call per chain event.
 let liveTimer: ReturnType<typeof setTimeout> | null = null
+let liveCount = -1
+// The subscription carries every entity created on the chain. Re-querying on each event spent the
+// reader's query budget in minutes (each arkiv_query costs 100 units). Now an event only triggers a
+// free filtered count for this district, at most every 15 s; the 100-unit query runs only if it changed.
 async function refreshLive() {
   liveTimer = null
+  try {
+    const n = await countWhere(render(and([eq("app", str(APP)), or(eq("kind", str("site")), eq("kind", str("test"))), eq("district", str(district()))])))
+    if (n === liveCount) return
+  } catch { return }
   const before = new Set(tests.map((x) => x.key))
   await loadSites()
   const fresh = tests.filter((x) => !before.has(x.key)).sort((a, b) => Number(attr(b, "tested")) - Number(attr(a, "tested")))[0]
@@ -318,11 +328,35 @@ async function refreshLive() {
 function live() {
   try {
     socketClient().watchEntityEvents({
-      onEntityCreated: () => { liveTimer ??= setTimeout(refreshLive, 8000) },
+      onEntityCreated: () => { liveTimer ??= setTimeout(refreshLive, 15000) },
       onError: () => { $("live").textContent = t("live_off") },
     })
     $("live").textContent = t("live_on")
   } catch { $("live").textContent = t("live_off") }
+}
+
+// ---- free on-chain counts and what this visit spent --------------------------------------------
+let counts: { d: string; n: number; over: number; all: number; allOver: number } | null = null
+async function loadCounts() {
+  const base = [eq("app", str(APP)), eq("kind", str("obs"))]
+  const by = ` AND $creator = addr(${CURATOR})`
+  const d = district()
+  try {
+    const [n, over, all, allOver] = await Promise.all([
+      countWhere(render(and([...base, eq("district", str(d))])) + by),
+      countWhere(render(and([...base, eq("district", str(d)), eq("exceeds", bool(true))])) + by),
+      countWhere(render(and(base)) + by),
+      countWhere(render(and([...base, eq("exceeds", bool(true))])) + by),
+    ])
+    counts = { d, n, over, all, allOver }
+  } catch { counts = null }
+  renderCounts()
+}
+function renderCounts() {
+  $("counts").textContent = counts ? t("counts", { n: counts.n, over: counts.over, d: dname(counts.d), all: counts.all, allOver: counts.allOver }) : ""
+}
+function renderReads() {
+  $("reads").textContent = t(readStats.keyed ? "reads_keyed" : "reads", { q: readStats.queries, c: readStats.cost })
 }
 
 // ---- wiring ---------------------------------------------------------------------------------
@@ -354,9 +388,9 @@ async function main() {
   $("district").innerHTML = DISTRICTS.map((d) => `<option value="${d}">${d}</option>`).join("")
   $<HTMLSelectElement>("district").value = q.get("district") || "Purulia"
   document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach((b) => b.addEventListener("click", () => {
-    lang = b.dataset.lang as Lang; applyLang(); renderSites(); rerenderRecords(); loadRegistry().catch(() => {}); showSigner(); updateHint()
+    lang = b.dataset.lang as Lang; applyLang(); renderSites(); rerenderRecords(); renderRegistry(); renderCounts(); renderReads(); showSigner(); updateHint()
   }))
-  $("district").addEventListener("change", () => { search(); loadSites(); history.replaceState(null, "", `?district=${encodeURIComponent(district())}`) })
+  $("district").addEventListener("change", () => { search(); loadSites(); loadCounts(); history.replaceState(null, "", `?district=${encodeURIComponent(district())}`) })
   ;["contaminant", "above", "since"].forEach((id) => $(id).addEventListener("change", () => search()))
   $("place").addEventListener("change", () => search())
   $("more").addEventListener("click", () => search(true))
@@ -375,6 +409,7 @@ async function main() {
     if (d && !q.get("district")) $<HTMLSelectElement>("district").value = d
     $("verify").scrollIntoView()
   }
-  search(); loadSites(); showSigner(); live()
+  onReadStats(renderReads)
+  search(); loadSites(); loadCounts(); showSigner(); live()
 }
 main()

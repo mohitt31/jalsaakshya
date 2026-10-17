@@ -60,3 +60,4 @@ h3{font:600 17px Georgia,serif;margin:18px 0 4px}
 .verify pre{white-space:pre-wrap;overflow-wrap:anywhere}
 .hero .sub{white-space:nowrap}
 @media (max-width:520px){.hero h1{font-size:30px}.hero .sub{display:block;margin:4px 0 0;font-size:16px}}
+.counts{color:var(--accent);margin:2px 0 0}

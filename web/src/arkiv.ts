@@ -1,7 +1,7 @@
 // Shared Arkiv plumbing for JalSaakshya. Everything here runs in the browser; there is no backend.
 import { createPublicClient, createWalletClient } from "@arkiv-network/sdk"
 import { tiramisu } from "@arkiv-network/sdk/chains"
-import { http, webSocket, custom, fallback, type Hex, type Address } from "viem"
+import { http, webSocket, custom, type Hex, type Address } from "viem"
 import { privateKeyToAccount, generatePrivateKey } from "viem/accounts"
 import { CURATOR } from "./config"
 
@@ -11,19 +11,40 @@ export { LIMITS, LIFETIME } from "./model"
 export const EXPLORER = "https://tiramisu.explorer.arkiv.network"
 
 
-// The public RPC rate-limits per IP (HTTP 429). Shared networks (a campus, a mobile carrier's NAT) can hit
-// that limit through other users' traffic, so reads retry with backoff instead of leaving the page empty.
-//
-// Since 17 October the public RPC also caps unauthenticated queries with a per-network budget
-// (ANON_COST_LIMITED). The deployed site can carry an Arkiv access key restricted to its own origin
-// (VITE_ARKIV_KEY at build time, never committed). It rides in the URL path, as the Hub documents.
-// If the keyed endpoint fails, the anonymous endpoint is tried next.
+// Reads cost budget. Every arkiv_query costs a flat 100 units (the `arkiv-cost` response header),
+// whatever its size, and unauthenticated reads share a budget of 10,000 units per network per window
+// (about 100 queries). Filtered counts (arkiv_getEntityCount) are not charged. So the app:
+//  - reads anonymously first, spending the reader's own free budget;
+//  - only when the node answers ANON_COST_LIMITED does it retry with the site's access key, sent in the
+//    X-API-KEY header (not the URL) and restricted in the Arkiv Hub to this site's origin. The key is
+//    injected at build time (VITE_ARKIV_KEY) and never committed;
+//  - never retries a 429 in a loop (retryCount 0), and counts what it spends, shown in the footer.
 const KEY = String((import.meta as any).env?.VITE_ARKIV_KEY ?? "").trim()
-const HTTP_URL = tiramisu.rpcUrls.default.http[0].replace(/\/$/, "")
-const opts = { retryCount: 2, retryDelay: 700 }
-const RPC = () => KEY ? fallback([http(`${HTTP_URL}/${KEY}`, opts), http(undefined, opts)]) : http(undefined, opts)
+let keyed = false
+export const readStats = { queries: 0, cost: 0, keyed: false }
+let onRead: (() => void) | undefined
+export function onReadStats(f: () => void) { onRead = f }
+async function arkivFetch(input: string | URL | Request, init?: RequestInit): Promise<Response> {
+  const withKey = (i?: RequestInit): RequestInit => ({ ...i, headers: { ...((i?.headers as Record<string, string>) || {}), "X-API-KEY": KEY } })
+  let r = await fetch(input, keyed && KEY ? withKey(init) : init)
+  if (r.status === 429 && KEY && !keyed) {
+    const body = await r.clone().text().catch(() => "")
+    if (body.includes("ANON_COST_LIMITED")) { keyed = true; readStats.keyed = true; r = await fetch(input, withKey(init)) }
+  }
+  const cost = Number(r.headers.get("arkiv-cost") || 0)
+  if (cost) { readStats.queries++; readStats.cost += cost; onRead?.() }
+  return r
+}
+const RPC = () => http(undefined, { retryCount: 0, fetchFn: arkivFetch })
 export const usesAccessKey = !!KEY
 export const publicClient = createPublicClient({ chain: tiramisu, transport: RPC() })
+
+/** Filtered count over raw JSON-RPC. SDK 0.8.1's getEntityCount() sends empty params (a chain-wide count);
+ *  the node accepts `[{ query }]`. Counts are not charged against the query budget. */
+export async function countWhere(query: string): Promise<number> {
+  const n = await (publicClient as any).request({ method: "arkiv_getEntityCount", params: [{ query }] })
+  return Number(n)
+}
 
 let wsClient: ReturnType<typeof createPublicClient> | null = null
 export function socketClient() {

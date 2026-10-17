@@ -77,7 +77,7 @@ const en = {
   v_creator: "Created by", v_readonly: "Read-only: nobody can edit it, not even the wallet that created it.", v_editable: "Its owner can edit it.",
   v_expires: "Stays current on Arkiv for {d} more.",
   v_missing: "This link does not point to a current JalSaakshya entity. It may have expired, or the link is wrong.",
-  v_check: "Check it yourself with any Arkiv client", v_close: "Close", budget: "Arkiv's free query budget for your network is used up for now: the public RPC limits reads without an access key per network. It resets within the hour; please try again later.", v_site_listed: "Listed by a tester's wallet. The status above is computed from its current tests.",
+  v_check: "Check it yourself with any Arkiv client", v_close: "Close", counts: "Counted on Arkiv just now: {n} official records for {d}, {over} above the limit · {all} across West Bengal, {allOver} above the limit.", reads: "This visit read Arkiv with {q} queries ({c} units of the free budget).", reads_keyed: "This visit read Arkiv with {q} queries ({c} units). Your network's free query budget ran out, so JalSaakshya's access key is being used.", budget: "Arkiv's free query budget for your network is used up for now: the public RPC limits reads without an access key per network. It resets within the hour; please try again later.", v_site_listed: "Listed by a tester's wallet. The status above is computed from its current tests.",
 }
 export type Labels = typeof en
 
@@ -142,7 +142,7 @@ const hi: Partial<Labels> = {
   v_creator: "बनाने वाला", v_readonly: "बदला नहीं जा सकता: कोई भी इसे नहीं बदल सकता, बनाने वाला भी नहीं।", v_editable: "इसका मालिक इसे बदल सकता है।",
   v_expires: "Arkiv पर {d} और मान्य रहेगा।",
   v_missing: "यह लिंक JalSaakshya की किसी मौजूदा एंटिटी का नहीं है। शायद यह समाप्त हो गई, या लिंक गलत है।",
-  v_check: "किसी भी Arkiv क्लाइंट से खुद जाँचें", v_close: "बंद करें", budget: "आपके नेटवर्क के लिए Arkiv का मुफ़्त क्वेरी बजट अभी खत्म हो गया है: बिना एक्सेस की के पब्लिक RPC हर नेटवर्क की रीडिंग सीमित करता है। यह एक घंटे के अंदर रीसेट होता है; कृपया थोड़ी देर बाद फिर कोशिश करें।", v_site_listed: "जाँचकर्ता के वॉलेट ने दर्ज किया। ऊपर की स्थिति इसकी ताज़ा जाँचों से निकली है।",
+  v_check: "किसी भी Arkiv क्लाइंट से खुद जाँचें", v_close: "बंद करें", counts: "Arkiv पर अभी गिना गया: {d} के {n} सरकारी रिकॉर्ड, {over} सीमा से ऊपर · पूरे पश्चिम बंगाल में {all}, {allOver} सीमा से ऊपर।", reads: "इस विज़िट में Arkiv से {q} क्वेरी पढ़ी गईं (मुफ़्त बजट के {c} यूनिट)।", reads_keyed: "इस विज़िट में Arkiv से {q} क्वेरी पढ़ी गईं ({c} यूनिट)। आपके नेटवर्क का मुफ़्त बजट खत्म हो गया, इसलिए JalSaakshya की एक्सेस की इस्तेमाल हो रही है।", budget: "आपके नेटवर्क के लिए Arkiv का मुफ़्त क्वेरी बजट अभी खत्म हो गया है: बिना एक्सेस की के पब्लिक RPC हर नेटवर्क की रीडिंग सीमित करता है। यह एक घंटे के अंदर रीसेट होता है; कृपया थोड़ी देर बाद फिर कोशिश करें।", v_site_listed: "जाँचकर्ता के वॉलेट ने दर्ज किया। ऊपर की स्थिति इसकी ताज़ा जाँचों से निकली है।",
 }
 
 const bn: Partial<Labels> = {
@@ -206,7 +206,7 @@ const bn: Partial<Labels> = {
   v_creator: "তৈরি করেছে", v_readonly: "বদলানো যায় না: কেউ এটি বদলাতে পারে না, যে তৈরি করেছে সেও না।", v_editable: "এর মালিক এটি বদলাতে পারেন।",
   v_expires: "Arkiv-এ আরও {d} চালু থাকবে।",
   v_missing: "এই লিংক JalSaakshya-র কোনো চালু এন্টিটির নয়। হয়তো মেয়াদ শেষ, বা লিংক ভুল।",
-  v_check: "যে কোনো Arkiv ক্লায়েন্টে নিজে যাচাই করুন", v_close: "বন্ধ করুন", budget: "আপনার নেটওয়ার্কের জন্য Arkiv-এর বিনামূল্যের কোয়েরি বাজেট এখন শেষ: অ্যাক্সেস কী ছাড়া পাবলিক RPC প্রতিটি নেটওয়ার্কের পড়া সীমিত করে। এক ঘণ্টার মধ্যে রিসেট হয়; একটু পরে আবার চেষ্টা করুন।", v_site_listed: "পরীক্ষকের ওয়ালেট তালিকাভুক্ত করেছে। উপরের অবস্থা এর চালু পরীক্ষাগুলি থেকে হিসাব করা।",
+  v_check: "যে কোনো Arkiv ক্লায়েন্টে নিজে যাচাই করুন", v_close: "বন্ধ করুন", counts: "এইমাত্র Arkiv-এ গোনা: {d}-র {n}টি সরকারি রেকর্ড, {over}টি সীমার উপরে · সারা পশ্চিমবঙ্গে {all}টি, {allOver}টি সীমার উপরে।", reads: "এই ভিজিটে Arkiv থেকে {q}টি কোয়েরি পড়া হয়েছে (বিনামূল্যের বাজেটের {c} ইউনিট)।", reads_keyed: "এই ভিজিটে Arkiv থেকে {q}টি কোয়েরি পড়া হয়েছে ({c} ইউনিট)। আপনার নেটওয়ার্কের বিনামূল্যের বাজেট শেষ, তাই JalSaakshya-র অ্যাক্সেস কী ব্যবহার হচ্ছে।", budget: "আপনার নেটওয়ার্কের জন্য Arkiv-এর বিনামূল্যের কোয়েরি বাজেট এখন শেষ: অ্যাক্সেস কী ছাড়া পাবলিক RPC প্রতিটি নেটওয়ার্কের পড়া সীমিত করে। এক ঘণ্টার মধ্যে রিসেট হয়; একটু পরে আবার চেষ্টা করুন।", v_site_listed: "পরীক্ষকের ওয়ালেট তালিকাভুক্ত করেছে। উপরের অবস্থা এর চালু পরীক্ষাগুলি থেকে হিসাব করা।",
 }
 
 export const LABELS: Record<Lang, Partial<Labels>> & { en: Labels } = { en, hi, bn }
