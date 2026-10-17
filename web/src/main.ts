@@ -360,7 +360,8 @@ async function main() {
   $("signer").addEventListener("change", showSigner)
   $("f-site").addEventListener("change", () => { $("new-site").hidden = !!$<HTMLSelectElement>("f-site").value })
   applyLang()
-  head = await publicClient.getBlockNumber()
+  try { head = await publicClient.getBlockNumber() }
+  catch (err) { $("status").textContent = `${t("query_failed")} ${errText(err)}`; return }
   await loadRegistry().catch(() => {})
   const ek = q.get("e")
   if (ek && /^0x[0-9a-fA-F]{64}$/.test(ek)) {

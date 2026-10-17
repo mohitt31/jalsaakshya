@@ -11,7 +11,10 @@ export { LIMITS, LIFETIME } from "./model"
 export const EXPLORER = "https://tiramisu.explorer.arkiv.network"
 
 
-export const publicClient = createPublicClient({ chain: tiramisu, transport: http() })
+// The public RPC rate-limits per IP (HTTP 429). Shared networks (a campus, a mobile carrier's NAT) can hit
+// that limit through other users' traffic, so reads retry with backoff instead of leaving the page empty.
+const RPC = () => http(undefined, { retryCount: 6, retryDelay: 1200 })
+export const publicClient = createPublicClient({ chain: tiramisu, transport: RPC() })
 
 let wsClient: ReturnType<typeof createPublicClient> | null = null
 export function socketClient() {
@@ -40,7 +43,7 @@ export function burnerAccount(storageKey = BURNER_KEY) {
 
 export function burnerWallet(storageKey = BURNER_KEY) {
   const account = burnerAccount(storageKey)
-  return createWalletClient({ chain: tiramisu, transport: http(), account })
+  return createWalletClient({ chain: tiramisu, transport: RPC(), account })
 }
 
 export async function injectedWallet() {
