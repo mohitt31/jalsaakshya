@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>JalSaakshya</title>
+<meta name="description" content="Official groundwater arsenic and fluoride survey records for West Bengal villages, cited to the page and read straight from Arkiv.">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0f6b5f">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+  <script type="module" crossorigin src="/jalsaakshya/assets/main-BH_YaSOX.js"></script>
+  <link rel="modulepreload" crossorigin href="/jalsaakshya/assets/writes-BROmWoNp.js">
+  <link rel="stylesheet" crossorigin href="/jalsaakshya/assets/writes-Bh4sxNqe.css">
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <div class="langs"><button data-lang="en">English</button><button data-lang="hi">हिन्दी</button><button data-lang="bn">বাংলা</button></div>
+    <h1>JalSaakshya <span class="sub">জল সাক্ষ্য · जल साक्ष्य</span></h1>
+    <p class="lead" data-t="tagline"></p>
+    <p class="trust" data-th="trust"></p>
+  </div>
+</header>
+<main class="wrap">
+  <section class="controls card">
+    <label><span data-t="district"></span><select id="district"></select></label>
+    <label><span data-t="contaminant"></span><select id="contaminant"><option value="" data-t="both"></option><option value="arsenic" data-t="arsenic"></option><option value="fluoride" data-t="fluoride"></option></select></label>
+    <label><span data-t="since"></span><select id="since"><option value="" data-t="any"></option><option>2020</option><option>2015</option><option>2010</option></select></label>
+    <label class="grow"><span data-t="place"></span><input id="place" data-tp="place_ph"></label>
+    <label class="check"><input type="checkbox" id="above"> <span data-t="only_above"></span></label>
+  </section>
+
+  <section id="verify" hidden></section>
+
+  <p class="safety" data-t="safety"></p>
+
+  <section>
+    <h2 data-t="official"></h2>
+    <p id="counts" class="small counts"></p>
+    <p id="status" class="muted"></p>
+    <div id="results" class="grid"></div>
+    <button id="more" class="secondary" hidden data-t="more"></button>
+  </section>
+
+  <section>
+    <h2 data-t="sites_title"></h2>
+    <p class="muted small" data-t="sites_note"></p>
+    <div id="phed" class="card phed" hidden></div>
+    <p id="site-summary" class="small"></p>
+    <p id="visit" class="small share"></p>
+    <p id="live" class="live small"></p>
+    <div id="sites" class="grid"></div>
+    <details class="card add">
+      <summary data-t="add"></summary>
+      <form id="test-form">
+        <label><span data-t="f_source"></span><select id="f-site" name="site"></select></label>
+        <div id="phed-pick" class="pick" hidden>
+          <p class="small"><b data-t="pk_title"></b> <span class="muted" data-t="pk_note"></span></p>
+          <span class="row wrap">
+            <label><span data-t="pk_block"></span><select id="pk-block"></select></label>
+            <label><span data-t="pk_gp"></span><select id="pk-gp"></select></label>
+            <label><span data-t="pk_village"></span><select id="pk-village"></select></label>
+            <label class="grow"><span data-t="pk_source"></span><select id="pk-source"></select></label>
+          </span>
+          <label><span data-t="pk_id"></span><input id="pk-id" size="12" inputmode="numeric" placeholder="5260-023"></label>
+          <p id="pk-chosen" class="small"></p>
+        </div>
+        <span id="new-site" class="row wrap">
+          <label class="grow"><span data-t="f_place"></span><input id="place-input" name="place" maxlength="100" data-tp="f_place_ph"></label>
+          <label><span data-t="f_type"></span><select name="srctype"><option value="tube well" data-t="t_tube"></option><option value="dug well" data-t="t_dug"></option><option value="hand pump" data-t="t_hand"></option><option value="piped supply" data-t="t_piped"></option><option value="community plant" data-t="t_plant"></option></select></label>
+        </span>
+        <label><span data-t="contaminant"></span><select name="contaminant"><option value="arsenic" data-t="arsenic"></option><option value="fluoride" data-t="fluoride"></option></select></label>
+        <label><span data-t="f_reading"></span><span class="row"><input name="value" type="number" step="any" min="0" required><select name="unit"><option value="ug">µg/L (ppb)</option><option value="mg">mg/L</option></select></span></label>
+        <label><span data-t="f_method"></span><select name="method"><option value="kit" data-t="f_kit_m"></option><option value="lab" data-t="f_lab_m"></option></select></label>
+        <label><span data-t="f_kit"></span><input name="kit" maxlength="60"></label>
+        <label class="grow"><span data-t="f_note"></span><input name="note" maxlength="200"></label>
+        <p id="hint" class="small warn"></p>
+        <label><span data-t="signer"></span><select id="signer"><option value="burner" data-t="burner"></option><option value="injected" data-t="injected"></option></select></label>
+        <p id="signer-info" class="small muted"></p>
+        <button class="primary" data-t="submit"></button>
+        <p id="form-status" class="small"></p>
+        <p id="queue" class="small warn"></p>
+      </form>
+    </details>
+    <h3 data-t="labs_title"></h3>
+    <ul id="labs" class="sources small"></ul>
+  </section>
+
+  <section>
+    <h2><span data-t="sources"></span> (<span id="src-count">0</span>)</h2>
+    <ul id="sources" class="sources"></ul>
+  </section>
+
+  <section class="card how">
+    <h2 data-t="how"></h2>
+    <ul>
+      <li data-th="how1"></li>
+      <li data-th="how2"></li>
+      <li data-th="how3"></li>
+      <li data-th="how4"></li>
+      <li data-th="how6"></li>
+      <li data-th="how5"></li>
+    </ul>
+    <p class="small muted"><span data-t="footer"></span> <span id="reads"></span> <a href="https://github.com/mohitt31/jalsaakshya" data-t="code"></a></p>
+  </section>
+</main>
+</body>
+</html>
