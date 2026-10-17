@@ -94,22 +94,23 @@ Each feature, what the user sees, and the code:
 
 | Feature | How and why | Code |
 |---|---|---|
-| **`$creator` + `createdBy()`** | Official records, report list and lab registry are read only with `.createdBy(CURATOR)`. A copy of a survey row with identical attributes written by any other wallet never appears as official. Each card shows "created by curator 0x048A…3760 ✓". A "lab result" counts only if its `$creator` is a wallet in the curator's registry. Otherwise it is treated as a kit screening. | [main.ts#L107](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/main.ts#L107), [main.ts#L67](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/main.ts#L67), [model.ts#L56](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/model.ts#L56) |
-| **Read by key, `$creator` and creation flags in the UX** | A shared link (`?e=<entity key>`) runs `getEntity(key)` and shows the reader what Arkiv itself says: the `$creator`, classified as curator, registered lab or community wallet; `creationFlags.readonly`; and the remaining lifetime from `expiresAt`. For a source, it also queries the source's live tests and shows the current status. | [main.ts#L140](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/main.ts#L140), [main.ts#L130](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/main.ts#L130) |
+| **`$creator` + `createdBy()`** | Official records, report list and lab registry are read only with `.createdBy(CURATOR)`. A copy of a survey row with identical attributes written by any other wallet never appears as official. Each card shows "created by curator 0x048A…3760 ✓". A "lab result" counts only if its `$creator` is a wallet in the curator's registry. Otherwise it is treated as a kit screening. | [main.ts#L112](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/main.ts#L112), [main.ts#L72](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/main.ts#L72), [model.ts#L56](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/model.ts#L56) |
+| **Read by key, `$creator` and creation flags in the UX** | A shared link (`?e=<entity key>`) runs `getEntity(key)` and shows the reader what Arkiv itself says: the `$creator`, classified as curator, registered lab or community wallet; `creationFlags.readonly`; and the remaining lifetime from `expiresAt`. For a source, it also queries the source's live tests and shows the current status. | [main.ts#L145](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/main.ts#L145), [main.ts#L135](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/main.ts#L135) |
 | **Typed attributes vs payload** | What we filter on is in attributes: `district`, `contaminant`, `place` (str), `mgl` (dec), `year`/`page` (i32), `exceeds` (bool), `tested` (u64), `wallet` (addr). What we only display is in the JSON payload: the printed value and unit, the unit's basis, the table row text, notes. | [writes.ts#L13](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/writes.ts#L13), [schema.md](arkiv/schema.md) |
-| **Compound queries and ranges** | The filter bar builds one `and([...])`: `eq` on district and contaminant, `gt("mgl", dec(limit))` for "only above the limit", `gte("year", i32(…))` for "sampled since", and `startsWith("place", …)` for the village search. | [main.ts#L46](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/main.ts#L46) |
-| **Cursor pagination pinned to a block** | The records query is pinned with `.atBlock(head)`, so "Load more" (`page.next()`) keeps working while someone reads (see friction #4). | [main.ts#L110](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/main.ts#L110) |
+| **Compound queries and ranges** | The filter bar builds one `and([...])`: `eq` on district and contaminant, `gt("mgl", dec(limit))` for "only above the limit", `gte("year", i32(…))` for "sampled since", and `startsWith("place", …)` for the village search. | [main.ts#L51](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/main.ts#L51) |
+| **Cursor pagination pinned to a block** | The records query is pinned with `.atBlock(head)`, so "Load more" (`page.next()`) keeps working while someone reads (see friction #4). | [main.ts#L115](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/main.ts#L115) |
 | **Entity Expiration per type** | Lifetimes follow the rules the data lives under: lab test 365 d (annual test mandate), kit test 90 d (screening), site 365 d, lab listing 365 d (renewed yearly by the curator), survey row 365 d, report 730 d. Status rule 3 depends on it: when every test of a source has expired, the source shows *test overdue*. | [model.ts#L20](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/model.ts#L20), [writes.ts#L25](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/writes.ts#L25) |
 | **Lifetime Extension + `permissionlessExtension`** | A source (`site`) is created with `permissionlessExtension: true`. Every new test of that source, by anyone, extends the site by another 365 days. A well stays listed while people keep testing it and drops off a year after its last test. In the demo, the lab wallet extended a site created by tester A, and the site's owner did not change. The card shows "listed for N days unless retested". | [writes.ts#L36](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/writes.ts#L36), [writes.ts#L41](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/writes.ts#L41) |
 | **`readonly` creation flag** | Survey rows, reports, sites and tests are `readonly`. Lab listings are not, so the curator can delist a lab. | [writes.ts#L13](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/writes.ts#L13) |
-| **Atomic batch writes** | Adding a test is one `executeBatch`: either `[create site, create test]`, or `[create test]` plus the extension of the existing site. A test never lands without its site's renewal. Publishing also used batches: each report's `source` entity lands in the same transaction as its first rows (49 transactions for 1,186 entities). | [main.ts#L296](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/main.ts#L296), [curator.ts#L81](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/curator.ts#L81) |
-| **WebSocket entity events** | `watchEntityEvents` on a `webSocket()` transport with no `fromBlock`, so it is a real subscription. A new test appears with "New test: …" and the status updates without a reload. Events are a trigger for one district query every 8 s at most (friction #7). | [main.ts#L313](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/main.ts#L313) |
+| **Atomic batch writes** | Adding a test is one `executeBatch`: either `[create site, create test]`, or `[create test]` plus the extension of the existing site. A test never lands without its site's renewal. Publishing also used batches: each report's `source` entity lands in the same transaction as its first rows (49 transactions for 1,186 entities). | [main.ts#L301](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/main.ts#L301), [curator.ts#L81](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/curator.ts#L81) |
+| **Access keys (Hub)** | The deployed build reads through an access key restricted in the Hub to our site's origin. The key goes in the URL path, and if the keyed endpoint fails a viem `fallback` tries the anonymous endpoint. The key is not in the repo; `scripts/deploy.sh` reads it from a file outside it. As the Hub warns, an origin restriction is attribution rather than hard security. We accept that for a testnet demo, and a production deployment would read through a server. | [arkiv.ts#L24](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/arkiv.ts#L24) |
+| **WebSocket entity events** | `watchEntityEvents` on a `webSocket()` transport with no `fromBlock`, so it is a real subscription. A new test appears with "New test: …" and the status updates without a reload. Events are a trigger for one district query every 8 s at most (friction #7). | [main.ts#L318](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/main.ts#L318) |
 
 ## Friction report
 
 https://github.com/mohitt31/jalsaakshya/blob/main/arkiv/friction.md
 
-Seven issues, each with expected vs actual, versions, steps to reproduce and a suggested fix, plus a table of eleven paths we tested that worked as documented. The probes that reproduce them run from the "Run probes" button on `/curator.html`.
+Eight issues, each with expected vs actual, versions, steps to reproduce and a suggested fix, plus a table of eleven paths we tested that worked as documented. The probes that reproduce them run from the "Run probes" button on `/curator.html`.
 
 ## Wallet addresses that create our Arkiv entities
 
@@ -178,11 +179,14 @@ Any judge who adds a test from the app creates `site`/`test` entities from their
 
 ## Arkiv surfaces we used
 
-TypeScript SDK, WebSocket events, Docs, Hub, Faucet, Block Explorer.
+TypeScript SDK, Direct JSON-RPC (to diagnose the query budget, friction #8), WebSocket events, Docs, Hub, Faucet, Access keys, Block Explorer.
 
 ## How long after we started did we write our first Arkiv entity?
 
-{{FIRST_ENTITY}}
+**2 hours or less.**
+- Our first commit was on 15 October at 14:21 IST.
+- The curator's first entities (the friction probes) followed at about 14:58 IST.
+- The first survey batch landed at 15:09 IST: block 603711, tx `0xac89676f82ec366ac74d337bef59a90f0e8319813e55d295e7a4e2b32d92d18c`.
 
 ## Which LLMs did we use?
 
@@ -190,7 +194,7 @@ Claude (Anthropic), through Claude Code, for research, code, documentation and t
 
 ## The one thing Arkiv should improve first
 
-Make write failures say what actually failed. In 0.8.1, an oversized batch surfaces as "Execution error without revert data" while the cause (HTTP 413) sits one level down. An uppercase attribute name passes the SDK's check and is rejected by the node with a message that lists uppercase as allowed. Both cost us the most time (friction #1 and #2). A close second: a filter on `watchEntityEvents` (friction #7).
+Make write failures say what actually failed. In 0.8.1, an oversized batch surfaces as "Execution error without revert data" while the cause (HTTP 413) sits one level down. An uppercase attribute name passes the SDK's check and is rejected by the node with a message that lists uppercase as allowed. Both cost us the most time (friction #1 and #2). For a backend-free app the most urgent is friction #8. Since 17 October, unauthenticated queries draw on a per-network budget (`ANON_COST_LIMITED`), and our page went empty for everyone on the same network. The SDK has no access-key option, and the docs mention neither the budget nor keys. A close second: a filter on `watchEntityEvents` (friction #7).
 
 ## Security and Censorship Resistance (also entered)
 

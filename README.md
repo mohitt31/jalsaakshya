@@ -88,7 +88,11 @@ npm run build        # static site in ../dist
 ../scripts/deploy.sh # publish dist to the gh-pages branch
 ```
 
-The app needs no keys or settings to read. To add a test, either use the test wallet the page creates in your browser and fund it from the [Tiramisu faucet](https://hub.arkiv.network/faucet), or use MetaMask.
+The app needs no keys or settings to read. Unauthenticated reads draw on Arkiv's per-network query budget.
+
+The deployed site uses an access key restricted in the Arkiv Hub to its own origin:
+- the key is not in this repo;
+- `scripts/deploy.sh` bakes it in from `~/.jalsaakshya-arkiv-key` if that file exists, otherwise the build reads anonymously. To add a test, either use the test wallet the page creates in your browser and fund it from the [Tiramisu faucet](https://hub.arkiv.network/faucet), or use MetaMask.
 
 The curator console is `/curator.html`. It:
 - generates the curator's signing key in the browser;
