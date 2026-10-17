@@ -68,3 +68,5 @@ h3{font:600 17px Georgia,serif;margin:18px 0 4px}
 .phed-t th,.phed-t td{text-align:left;padding:4px 6px;border-bottom:1px solid var(--line)}
 .phed-t th{color:var(--muted);font-weight:500}
 @media (max-width:520px){.phed-t th:nth-child(4),.phed-t td:nth-child(4){display:none}}
+.say{border:0;background:none;cursor:pointer;font-size:18px;padding:0 4px;vertical-align:middle;line-height:1}
+.pick{border:1px dashed var(--line);border-radius:8px;padding:8px 10px;margin:6px 0}

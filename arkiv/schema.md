@@ -129,6 +129,10 @@ Expiration follows the rule the reading lives under:
 - **kit result: 90 days.** A field-kit reading is screening; UDWQMP 5.1.1 says kit positives must be referred
   to a lab. A reading nobody follows up fades instead of standing in for the annual test.
 
+**Sealed.** `readonly` blocks edits but not deletion by the owner, so the batch that creates a test also
+transfers its ownership to `0x000000000000000000000000000000000000dEaD` (key and salt from `predictEntityKeys`,
+then `ownershipChanges`). `$creator` stays the tester; nobody can delete the test before it expires.
+
 A test entered without network waits in the phone's browser storage and is signed and sent when the
 network returns. Its `tested` is the time it was entered, and its lifetime is counted from that moment
 (365 or 90 days minus the time it waited), so a delayed send does not make a test live longer.

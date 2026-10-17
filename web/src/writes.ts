@@ -1,13 +1,14 @@
 // Write builders shared by the app and the curator console.
 import { addr, bool, dec, str, u64 } from "@arkiv-network/sdk/attr"
 import { ExpirationTime, jsonToPayload } from "@arkiv-network/sdk/utils"
-import { APP } from "./arkiv"
+import { APP, publicClient } from "./arkiv"
 import { LIFETIME, LIMITS } from "./model"
 
 export type TestInput = {
   site: string; district: string; place: string; contaminant: string; mgl: number; method: "kit" | "lab"
   srctype?: string; note?: string; kit?: string; entered?: { value: number; unit: string }; demo?: boolean
   tested?: number
+  official_id?: string   // the WB PHED source ID, when the source was picked from PHED's public list
 }
 
 // Arkiv lifetimes must be whole 2-second blocks
@@ -31,8 +32,9 @@ function testCreate(t: TestInput) {
   }
 }
 
-export function siteCreate(t: Pick<TestInput, "site" | "district" | "place" | "srctype" | "demo">) {
+export function siteCreate(t: Pick<TestInput, "site" | "district" | "place" | "srctype" | "demo" | "official_id">) {
   const attributes: Record<string, any> = { app: str(APP), kind: str("site"), site: str(t.site), district: str(t.district), place: str(t.place), srctype: str(t.srctype || "tube well") }
+  if (t.official_id) { attributes.official_id = str(t.official_id); attributes.origin = str("wbphed-list") }
   if (t.demo) attributes.demo = bool(true)
   return {
     payload: jsonToPayload({ described_by: t.demo ? "demo data for judging" : "community" }), contentType: "application/json", attributes,
@@ -46,6 +48,23 @@ export function testBatch(t: TestInput, existingSiteKey?: `0x${string}`) {
   return existingSiteKey
     ? { creates: [testCreate(t)], extensions: [{ entityKey: existingSiteKey, expires: ExpirationTime.fromSeconds(LIFETIME.site) }] }
     : { creates: [siteCreate(t), testCreate(t)] }
+}
+
+// An address nobody holds a key for. An entity owned by it can no longer be deleted or transferred by
+// anyone, including the wallet that created it: it stays on Arkiv until its lifetime ends.
+export const SEAL = "0x000000000000000000000000000000000000dEaD" as const
+
+/**
+ * The same atomic batch, with the test sealed: its key is predicted before sending, and the batch that
+ * creates it also hands its ownership to SEAL. A lab under pressure cannot quietly withdraw an "unsafe"
+ * result, and neither can we. ($creator stays the tester; corrections are new tests.)
+ */
+export async function sealedTestBatch(t: TestInput, existingSiteKey: `0x${string}` | undefined, signer: `0x${string}`) {
+  const b: any = testBatch(t, existingSiteKey)
+  const keys = await (publicClient as any).predictEntityKeys({ owner: signer, count: b.creates.length })
+  b.creates.forEach((c: any, i: number) => { c.salt = keys[i].salt })
+  const testKey = keys[b.creates.length - 1].key as `0x${string}`   // the test is always the last create
+  return { batch: { ...b, ownershipChanges: [{ entityKey: testKey, newOwner: SEAL }] }, testKey }
 }
 
 export function labCreate(l: { wallet: `0x${string}`; name: string; district: string; demo?: boolean }) {

@@ -61,6 +61,8 @@ Under Jal Jeevan Mission, five women in every village are trained to test drinki
 - **Official WB PHED figures (real, Nadia).** WB PHED's public Nadia Water Quality Dashboard gives arsenic tests per block, but not each source's latest result or its date ([what is public](data/phed/README.md)). The curator published the 18 block figures as read-only `blockstat` entities citing the report and its hash. They expire a year after the day they were read.
 - **Visit list for block staff.** One WhatsApp message lists every source in the district that is unsafe, needs lab confirmation or is overdue, each with its check link.
 - **Works offline.** The site installs as an app and opens without network. A test entered offline waits on the phone, is clearly marked "not on Arkiv yet", and is signed and sent when the network returns. Its lifetime counts from when it was taken.
+- **Sealed tests.** `readonly` stops edits, but an owner can still delete. So the same transaction that creates a test hands its ownership to `0x…dEaD`, an address nobody holds a key for. Nobody, the lab, the tester or us, can withdraw an "unsafe" result; it leaves Arkiv only when its lifetime ends. The *Checked on Arkiv* panel shows the owner.
+- **Read aloud.** A 🔊 button reads a source's status and reason, and the "needs a lab" warning, in Hindi, Bengali or English (the phone's own text-to-speech).
 - **Live.** New tests appear over a WebSocket subscription without reloading the page.
 - **Languages.** The whole interface is in English, Hindi and Bengali, including statuses, reasons and district names.
 
@@ -69,7 +71,7 @@ Under Jal Jeevan Mission, five women in every village are trained to test drinki
 | Need | What breaks elsewhere | What Arkiv gives |
 |---|---|---|
 | Proof that a value came from the curated dataset and has not been changed | In Postgres or our own API, whoever runs the server can edit a row and nobody can tell | `$creator` is immutable and the entities are `readonly`; the app reads them with `createdBy(curator)` |
-| A tester's reading must stay theirs | A central database admin can delete or rewrite an inconvenient "unsafe" | Each test is a read-only entity signed by the tester's wallet; nobody can edit it, including us |
+| A tester's reading must stay theirs | A central database admin can delete or rewrite an inconvenient "unsafe" | Each test is a read-only entity signed by the tester's wallet, and sealed in the same transaction (ownership to `0x…dEaD`): nobody can edit or delete it, including the lab and us |
 | Old results must stop counting | A database keeps a three-year-old "safe" unless someone writes a cleanup job | Entity Expiration per type (lab 365 d, kit 90 d), and Lifetime Extension: a source stays listed while people keep testing it |
 | The data must outlive this website | A dead site or a moved PDF takes the evidence with it | Anyone can query `app = "jalsaakshya/v1"` from any client, with the documented [data contract](arkiv/schema.md) |
 | Filtering by place, contaminant and value | IPFS or a blob store needs a separate index; a subgraph needs our contracts and an indexer | Typed attributes with numeric ranges (`mgl > 1.5`, `year >= 2015`) and `startsWith` on place |

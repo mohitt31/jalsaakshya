@@ -26,6 +26,12 @@ Two atomic batches from the curator console:
 Example entity (Nabadwip): `0x116cdd01b1925fa759e1b6eabb3a162f0a67b1c233e7cb76ec04417137f93777`, check it at
 https://mohitt31.github.io/jalsaakshya/?e=0x116cdd01b1925fa759e1b6eabb3a162f0a67b1c233e7cb76ec04417137f93777
 
+## First sealed test (18 Oct 2026)
+
+The in-app test wallet `0x83EF…146d` added a synthetic 2 µg/L arsenic kit reading to *Offline queue test (synthetic)*
+in Hooghly. One transaction created the test, extended the source, and transferred the test's ownership to `0x…dEaD`:
+- tx `0x25696c897bf953f83e68d5ca866156d8830b9efcd373f70da03c9eeb2c1cd9ee`.
+
 ## Offline queue test (18 Oct 2026)
 
 With the browser set to offline, the in-app test wallet `0x83EF…146d` entered a synthetic 3 µg/L arsenic kit reading

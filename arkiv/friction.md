@@ -195,6 +195,24 @@ A backend-free app, which this challenge rewards, sits between the two. We follo
 
 ---
 
+## 9. `readonly` does not stop the owner from deleting, and the docs don't say so next to the flag
+
+- **Surface:** creation flags (`readonly`), `deleteEntity`, `changeOwnership`. `@arkiv-network/sdk` 0.8.1, Tiramisu, 18 Oct 2026.
+- **Expected:** our first docs said a `readonly` test result "cannot be edited or deleted, including by us". We read `readonly` as "immutable".
+- **Actual:** `readonly` blocks updates only. The entity's owner can still delete it before it expires. For us that matters: a lab (or our curator wallet) under pressure could delete an inconvenient "unsafe" result or an official record, and readers would only see it vanish.
+- **What we changed:** ownership is what allows deletion, so we transfer it away.
+  - A new test is sealed in the same atomic batch that creates it: `publicClient.predictEntityKeys({ owner, count })` gives the keys and salts, the creates carry those salts, and `ownershipChanges: [{ entityKey: testKey, newOwner: 0x…dEaD }]` hands the test to an address nobody holds a key for. First sealed test: tx `0x25696c897bf953f83e68d5ca866156d8830b9efcd373f70da03c9eeb2c1cd9ee` (create + site extension + ownership change on a `readonly` entity, one transaction).
+  - The curator console seals the official records and the demo tests with batches of 100 ownership changes, picking up only what each wallet still owns (`createdBy(w).ownedBy(w)`), so it can resume.
+  - The verify panel shows `$owner`: "Sealed: … nobody can delete it" or "only this wallet could delete it".
+- **Trade-off we accept:** after sealing, nobody can extend those entities either; they leave Arkiv on their lifetime, and the curator re-publishes official records when they are renewed.
+- **What would fix it:** one line next to `readonly` in the docs and the SDK's JSDoc: "blocks updates; the owner can still delete. To make an entity undeletable, transfer ownership." `predictEntityKeys` being on the public client (not the wallet client) also tripped other teams; a wallet-client alias would help.
+
+## 10. Lifetimes must be whole 2-second blocks (clear error, worth a doc line)
+
+- **Surface:** `ExpirationTime.fromSeconds`, SDK 0.8.1.
+- **What happened:** we compute some lifetimes from a real date: an official WB PHED figure expires 365 days after the day it was read, and an offline test 90/365 days after it was taken. The first publish failed before signing: "Invalid expiry: a lifetime must be a multiple of the 2s block time, got 31462627 … Try 31462626 or 31462628, or ExpirationTime.fromBlocks(n)."
+- **Verdict:** the message is excellent (it even suggests the two valid values). We now round down to whole blocks. A note on the `fromSeconds` JSDoc would save the round trip.
+
 ## Paths that worked as documented
 
 | Surface | What we did | Result |
@@ -209,6 +227,8 @@ A backend-free app, which this challenge rewards, sits between the two. We follo
 | Permissionless Lifetime Extension | the demo lab wallet extended a `site` created by demo tester A | Allowed, as the creation flag promises; the site's owner is unchanged. |
 | `readonly` creation flag | all `obs`, `source`, `site`, `test` entities | No patch path exists for them; corrections must be new entities. |
 | Cost | 1,173 rows + 13 sources in 49 transactions | About 0.18 test GLM total; 26 entities cost ~0.0038 GLM. |
+| Ownership transfer in a batch | `executeBatch({ creates, extensions, ownershipChanges })` with the test's key from `predictEntityKeys` | Atomic: the `readonly` test is created and handed to `0x…dEaD` in one transaction; the site's extension lands in the same one. |
+| `ownedBy()` with `createdBy()` | the curator console's resumable seal: "what did this wallet create that it still owns?" | Returns exactly the entities not yet sealed; empty when done. |
 | `getEntityCount()` | SDK call, and raw `arkiv_getEntityCount` with `[{ query }]` | The SDK sends empty params and returns the chain-wide count (8,181, later 10,190). The raw method with a query object returns filtered counts (1,173 curator `obs` entities; 92 with `exceeds = true`), and it is not charged against the query budget. We use it for the district summary and to gate the live feed. |
 
 ## The one thing to improve first

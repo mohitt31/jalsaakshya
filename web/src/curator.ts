@@ -1,11 +1,11 @@
 // Curator console: publishes the survey dataset to Arkiv with a wallet that lives only in this browser.
 import { bool, dec, i32, str, u64 } from "@arkiv-network/sdk/attr"
-import { eq } from "@arkiv-network/sdk/query"
+import { eq, or } from "@arkiv-network/sdk/query"
 import { ExpirationTime, jsonToPayload } from "@arkiv-network/sdk/utils"
 import { APP, LIFETIME, publicClient, burnerWallet, balanceOf, txLink, addrLink } from "./arkiv"
 import { parseEther } from "viem"
 import { ne, exists } from "@arkiv-network/sdk/query"
-import { labCreate, testBatch } from "./writes"
+import { labCreate, testBatch, SEAL } from "./writes"
 import { siteId } from "./model"
 
 const $ = (id: string) => document.getElementById(id)!
@@ -132,6 +132,32 @@ async function publishPhed() {
   finally { ;($("phed-go") as HTMLButtonElement).disabled = false }
 }
 
+// ---- seal: hand official records and our demo tests to an address nobody holds a key for ----------
+// readonly stops edits; ownership is what allows deletion. After this, nobody (us included) can delete
+// an official record or a demo test before its lifetime ends. Resumable: it only picks up what each
+// wallet still owns (createdBy + ownedBy), 100 ownership changes per atomic batch.
+async function sealOwned(w: any, label: string, kinds: string[]) {
+  const a = w.account!.address
+  for (let round = 0; round < 40; round++) {
+    const page = await publicClient.select({ key: true })
+      .where(eq("app", str(APP)), or(...kinds.map((k) => eq("kind", str(k))))).createdBy(a).ownedBy(a).limit(100).fetch()
+    const keys = (page.entities as any[]).map((e) => e.key)
+    if (!keys.length) { log(`${label}: nothing left to seal`); return }
+    const res = await w.executeBatch({ ownershipChanges: keys.map((entityKey: string) => ({ entityKey, newOwner: SEAL })) })
+    manifest.txs.push({ kind: "seal", wallet: a, txHash: res.txHash, sealed: keys.length })
+    log(`${label}: sealed ${keys.length} · <a href="${txLink(res.txHash)}" target="_blank" rel="noopener">tx</a>`)
+  }
+}
+async function sealAll() {
+  ;($("seal-go") as HTMLButtonElement).disabled = true
+  try {
+    await sealOwned(wallet, "curator records", ["obs", "source", "blockstat"])
+    for (const [name, w] of Object.entries(demoWallets)) await sealOwned(w, `demo ${name} tests`, ["test"])
+    log("Seal: done.")
+  } catch (err: any) { log(`<b>Error:</b> ${String(err?.shortMessage || err?.message || err).slice(0, 400)}`) }
+  finally { ;($("seal-go") as HTMLButtonElement).disabled = false }
+}
+
 // ---- lab registry -----------------------------------------------------------------------------
 async function registerLab() {
   const wallet = ($("lab-wallet") as HTMLInputElement).value.trim() as `0x${string}`
@@ -241,6 +267,7 @@ async function probes() {
 
 $("go").addEventListener("click", publish)
 $("phed-go").addEventListener("click", publishPhed)
+$("seal-go").addEventListener("click", () => sealAll())
 $("lab-go").addEventListener("click", registerLab)
 $("fund").addEventListener("click", () => fundDemo().catch((e) => log(String(e?.shortMessage || e?.message || e))))
 $("seed").addEventListener("click", () => seedDemo().catch((e) => log(String(e?.shortMessage || e?.message || e))))

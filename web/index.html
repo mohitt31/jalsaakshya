@@ -53,8 +53,19 @@
       <summary data-t="add"></summary>
       <form id="test-form">
         <label><span data-t="f_source"></span><select id="f-site" name="site"></select></label>
+        <div id="phed-pick" class="pick" hidden>
+          <p class="small"><b data-t="pk_title"></b> <span class="muted" data-t="pk_note"></span></p>
+          <span class="row wrap">
+            <label><span data-t="pk_block"></span><select id="pk-block"></select></label>
+            <label><span data-t="pk_gp"></span><select id="pk-gp"></select></label>
+            <label><span data-t="pk_village"></span><select id="pk-village"></select></label>
+            <label class="grow"><span data-t="pk_source"></span><select id="pk-source"></select></label>
+          </span>
+          <label><span data-t="pk_id"></span><input id="pk-id" size="12" inputmode="numeric" placeholder="5260-023"></label>
+          <p id="pk-chosen" class="small"></p>
+        </div>
         <span id="new-site" class="row wrap">
-          <label class="grow"><span data-t="f_place"></span><input name="place" maxlength="100" data-tp="f_place_ph"></label>
+          <label class="grow"><span data-t="f_place"></span><input id="place-input" name="place" maxlength="100" data-tp="f_place_ph"></label>
           <label><span data-t="f_type"></span><select name="srctype"><option value="tube well" data-t="t_tube"></option><option value="dug well" data-t="t_dug"></option><option value="hand pump" data-t="t_hand"></option><option value="piped supply" data-t="t_piped"></option><option value="community plant" data-t="t_plant"></option></select></label>
         </span>
         <label><span data-t="contaminant"></span><select name="contaminant"><option value="arsenic" data-t="arsenic"></option><option value="fluoride" data-t="fluoride"></option></select></label>
@@ -86,6 +97,7 @@
       <li data-th="how2"></li>
       <li data-th="how3"></li>
       <li data-th="how4"></li>
+      <li data-th="how6"></li>
       <li data-th="how5"></li>
     </ul>
     <p class="small muted"><span data-t="footer"></span> <span id="reads"></span> <a href="https://github.com/mohitt31/jalsaakshya" data-t="code"></a></p>
