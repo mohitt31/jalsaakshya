@@ -89,7 +89,7 @@ function obsCard(e: any) {
     <div class="val"><span class="num">${amount(v, c)}</span> ${esc(tc(c))} <span class="muted">· ${t("limit")} ${amount(lim, c)} · ${esc(statLabel(attr(e, "stat")))}</span></div>
     <div class="small ${yr && NOW_YEAR - yr > 3 ? "warn" : "muted"}">${yr ? t("sampled", { y: yr, n: NOW_YEAR - yr }) : t("year_unknown")}</div>
     <div class="cite">${t("source")}: <a href="${esc(link)}" target="_blank" rel="noopener">${esc(s.title || attr(e, "doc"))}${pg ? `, ${t("page")} ${pg}` : ""}</a>${p.well_id ? ` · ${t("well")} ${esc(p.well_id)}` : ""}${p.source_type ? ` · ${esc(p.source_type)}` : ""}</div>
-    ${shareRow(e.key, `${attr(e, "place")}, ${dname(attr(e, "district"))}: ${amount(v, c)} ${tc(c)} (${t("limit")} ${amount(lim, c)}). ${t("source")}: ${s.title || attr(e, "doc")}${pg ? `, ${t("page")} ${pg}` : ""}`)}
+    ${shareRow(e.key, `${where(e)}: ${amount(v, c)} ${tc(c)} (${t("limit")} ${amount(lim, c)}). ${t("source")}: ${s.title || attr(e, "doc")}${pg ? `, ${t("page")} ${pg}` : ""}`)}
     <details><summary>${t("row")}</summary><p class="mono small">${esc(p.row_text)}</p>
       <p class="small muted">${esc(p.header || "")} · ${t("unit_from", { b: esc(p.unit_basis), v: `${esc(p.value_text)} ${esc(p.unit)}` })}</p>
       <p class="small">${t("entity")} <span class="mono">${short(e.key)}</span> · ${t("creator")} <a class="mono" href="${addrLink(e.creator)}" target="_blank" rel="noopener">${short(e.creator)}</a> ✓ · ${t("readonly")} · ${t("expires", { d: daysLeft(e.expiresAt) })}</p></details>
@@ -133,6 +133,7 @@ function shareRow(key: string, text: string) {
   return `<div class="share small"><a href="${esc(url)}">${t("verify_link")}</a> · <a href="${esc(wa)}" target="_blank" rel="noopener">${t("whatsapp")}</a></div>`
 }
 
+const where = (e: any) => { const p = String(attr(e, "place") ?? ""), d = dname(attr(e, "district")); return p && p !== attr(e, "district") ? `${p}, ${d}` : d }
 const KIND_LABEL: Record<string, keyof Labels> = { obs: "v_kind_obs", site: "v_kind_site", test: "v_kind_test", lab: "v_kind_lab", source: "v_kind_source" }
 
 /** Read one entity by key and show what Arkiv says about it. Returns its district, if it has one. */
@@ -143,7 +144,8 @@ async function showVerify(key: `0x${string}`): Promise<string | undefined> {
   let e: any
   try { e = await publicClient.getEntity(key) } catch { e = null }
   if (!e || attr(e, "app") !== APP) {
-    box.innerHTML = `<div class="card verify bad"><h2>${t("v_title")}</h2><p>${t("v_missing")}</p><p class="mono small">${esc(key)}</p></div>`
+    box.innerHTML = `<div class="card verify bad"><div class="rec-top"><h2>${t("v_title")}</h2><button id="v-close" class="secondary">${t("v_close")}</button></div><p>${t("v_missing")}</p><p class="mono small">${esc(key)}</p></div>`
+    $("v-close").addEventListener("click", () => { box.hidden = true; history.replaceState(null, "", `?district=${encodeURIComponent(district())}`) })
     return
   }
   const kind = String(attr(e, "kind")), creator = String(e.creator || "")
@@ -153,6 +155,7 @@ async function showVerify(key: `0x${string}`): Promise<string | undefined> {
     const ok = !!CURATOR && creator.toLowerCase() === CURATOR.toLowerCase()
     who = t(ok ? "v_official" : "v_not_official"); cls = ok ? "good" : "bad"
   } else if (kind === "test" && attr(e, "method") === "lab" && lab) { who = t("v_lab", { n: attr(lab, "name") }); cls = "good" }
+  else if (kind === "site") { who = t("v_site_listed"); cls = "" }
   else { who = t("v_community"); cls = "warn" }
   const c = attr(e, "contaminant")
   let what = ""
@@ -160,11 +163,11 @@ async function showVerify(key: `0x${string}`): Promise<string | undefined> {
     const src = sources.get(attr(e, "doc")) || {}, pg = attr(e, "page")
     const link = src.url ? `${src.url}${pg ? `#page=${pg}` : ""}` : "#"
     what = `<p class="val"><span class="num">${amount(attr(e, "mgl"), c)}</span> ${esc(tc(c))} · ${t("limit")} ${amount(LIMITS[c], c)}</p>
-      <p>${esc(attr(e, "place"))}, ${esc(dname(attr(e, "district")))} · ${t("source")}: <a href="${esc(link)}" target="_blank" rel="noopener">${esc(src.title || attr(e, "doc"))}${pg ? `, ${t("page")} ${pg}` : ""}</a></p>
+      <p>${esc(where(e))} · ${t("source")}: <a href="${esc(link)}" target="_blank" rel="noopener">${esc(src.title || attr(e, "doc"))}${pg ? `, ${t("page")} ${pg}` : ""}</a></p>
       <p class="mono small">${esc(e.toJson()?.row_text ?? "")}</p>`
   } else if (kind === "test") {
     what = `<p class="val"><span class="num">${amount(attr(e, "mgl"), c)}</span> ${esc(tc(c))} · ${t(attr(e, "method") === "lab" ? "m_lab" : "m_kit")} · ${new Date(Number(attr(e, "tested")) * 1000).toLocaleDateString(LOCALE[lang])}</p>
-      <p>${esc(attr(e, "place"))}, ${esc(dname(attr(e, "district")))}</p>`
+      <p>${esc(where(e))}</p>`
   } else if (kind === "site") {
     const tt = await publicClient.select({ key: true, creator: true, expiresAt: true, attributes: true })
       .where(eq("app", str(APP)), eq("kind", str("test")), eq("site", str(attr(e, "site")))).limit(200).fetch()
@@ -216,7 +219,7 @@ function siteCard(id: string, s: any) {
     <div class="rec-top"><b>${esc(attr(s, "place"))}</b><span class="badge st-${v.state}">${t(STATE_LABEL[v.state])}</span></div>
     <div class="small muted">${esc(srcType(attr(s, "srctype")))}${attr(s, "demo") ? ` · <span class="badge demo">${t("demo_data")}</span>` : ""} · ${t("listed", { d: daysLeft(s.expiresAt) })}</div>
     <div class="val">${v.mgl !== undefined ? `<span class="num">${amount(v.mgl, v.contaminant)}</span> ${esc(tc(v.contaminant!))} ` : ""}<span class="small">${esc(t(`r_${v.code}` as keyof Labels, { n: v.testers }))}${lab ? ` · ${esc(attr(lab, "name"))}` : ""}</span></div>
-    ${shareRow(s.key, `${attr(s, "place")}, ${dname(attr(s, "district"))}: ${t(STATE_LABEL[v.state])}${v.mgl !== undefined ? ` · ${amount(v.mgl, v.contaminant)} ${tc(v.contaminant!)}` : ""} · ${t(`r_${v.code}` as keyof Labels, { n: v.testers })}`)}
+    ${shareRow(s.key, `${where(s)}: ${t(STATE_LABEL[v.state])}${v.mgl !== undefined ? ` · ${amount(v.mgl, v.contaminant)} ${tc(v.contaminant!)}` : ""} · ${t(`r_${v.code}` as keyof Labels, { n: v.testers })}`)}
     <details><summary>${t("tests", { n: mine.length })}</summary><ul class="tests">${rows || `<li class="muted">${t("no_live")}</li>`}</ul></details>
   </article>`
 }
