@@ -353,7 +353,8 @@ async function loadCounts() {
   renderCounts()
 }
 function renderCounts() {
-  $("counts").textContent = counts ? t("counts", { n: counts.n, over: counts.over, d: dname(counts.d), all: counts.all, allOver: counts.allOver }) : ""
+  const f = (n: number) => n.toLocaleString(LOCALE[lang])
+  $("counts").textContent = counts ? t("counts", { n: f(counts.n), over: f(counts.over), d: dname(counts.d), all: f(counts.all), allOver: f(counts.allOver) }) : ""
 }
 function renderReads() {
   $("reads").textContent = t(readStats.keyed ? "reads_keyed" : "reads", { q: readStats.queries, c: readStats.cost })

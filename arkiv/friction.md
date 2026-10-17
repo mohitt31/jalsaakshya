@@ -162,13 +162,33 @@ the SDK say how to pass one, and how to do it from a browser.
 **Steps to reproduce:** from one IP, run enough `arkiv_query` calls (our curator probes plus a few dozen page loads
 did it), then `curl --json '{"jsonrpc":"2.0","id":1,"method":"arkiv_query","params":["app = str(\'jalsaakshya/v1\')",{"limit":"0x1"}]}' https://rpc.tiramisu.db-chain.testnet.arkiv.network`.
 
+**What we measured next (17 October, from the response headers):**
+- Every `arkiv_query` carries `arkiv-cost: 100`, whether it returns 1 row or 200. So the anonymous budget is about 100 queries per network per window.
+- `arkiv_getEntityCount` with a filter (`params: [{ query }]`) carries no `arkiv-cost` and kept answering while queries were refused.
+- With a key, the response adds `arkiv-quota-used-percent` (2% after about 20 queries, so roughly 1,000 queries a month).
+- The key is accepted as an `X-API-KEY` header from the browser. CORS allows it.
+
+**What this showed about our own app:**
+- Our first live feed re-ran the district query on every chain-wide `EntityCreated` event, at most every 8 s. That is up to ~900 queries an hour. Leaving the page open for a few minutes used up a network's budget, which is what happened to us.
+- A page load cost 5 queries.
+
 **What we did:**
-- The deployed build carries an access key restricted in the Hub to our site's origin. It is passed in the URL path, as the Hub's "Connect" tab shows. If the keyed endpoint fails, a viem `fallback` transport tries the anonymous endpoint (`web/src/arkiv.ts`).
-- The key is never committed. `scripts/deploy.sh` reads it from a file outside the repo.
-- Reads retry briefly. An `ANON_COST_LIMITED` answer is shown to the reader in their language, saying what happened and that it resets within the hour, instead of an empty page.
+- **One query per registry and per district.** The curator's `source` and `lab` registry is one `or(...)` query. A district's `site` and `test` entities are one query. A page load is now 3 queries (300 units).
+- **Free counts gate the expensive reads.** The live feed now runs a free filtered count for the open district, at most every 15 s, and queries only when the count changed. The district summary ("47 official records for Nadia, 27 above the limit · 1,173 across West Bengal") comes from four free counts.
+- **No retry loops.** The transport has `retryCount: 0`, as Arkiv's own skills advise for 429.
+- **The key is a fallback, not the default.** Reads start anonymous, on the reader's own budget. Only after an `ANON_COST_LIMITED` answer does the page repeat the request with the site's access key in an `X-API-KEY` header (not the URL path). The key is restricted in the Hub to our origin, injected at build time and never committed.
+- **The cost is visible.** The footer shows what the visit spent ("3 queries, 300 units") and says when the key took over.
+
+**A tension worth resolving in the docs:**
+- The Hub's Origins tab is written for keys that "ship in a web app".
+- Arkiv's own agent skills (`arkiv-security-trust`, `arkiv-troubleshooting`) say to keep access keys out of browser bundles and URL paths.
+
+A backend-free app, which this challenge rewards, sits between the two. We followed the Hub (key in the bundle, origin-restricted), followed the skills where we could (header rather than path, used only after the free budget is gone), and say so here.
 
 **What would fix it:**
-- Put an `accessKey` option on the SDK's clients.
+- Expose the budget to SDK users: `arkiv-cost` and the remaining budget on query results.
+- Put an `accessKey` option (header form) on the SDK's clients.
+- Accept a filter in the SDK's `getEntityCount()`. The node already does, and counts are the cheap way to watch for changes.
 - Document the anonymous budget (cost units, window, scope) and the three key forms on the JSON-RPC page.
 - Say explicitly that an origin-restricted key is the intended way for a static site to read.
 - Surface `ANON_COST_LIMITED` as a typed SDK error.
@@ -189,7 +209,7 @@ did it), then `curl --json '{"jsonrpc":"2.0","id":1,"method":"arkiv_query","para
 | Permissionless Lifetime Extension | the demo lab wallet extended a `site` created by demo tester A | Allowed, as the creation flag promises; the site's owner is unchanged. |
 | `readonly` creation flag | all `obs`, `source`, `site`, `test` entities | No patch path exists for them; corrections must be new entities. |
 | Cost | 1,173 rows + 13 sources in 49 transactions | About 0.18 test GLM total; 26 entities cost ~0.0038 GLM. |
-| `getEntityCount()` | called with no filter | Returns the chain-wide count (8,181 then 8,197). It takes no filter, so it cannot count our namespace; we count with queries instead. |
+| `getEntityCount()` | SDK call, and raw `arkiv_getEntityCount` with `[{ query }]` | The SDK sends empty params and returns the chain-wide count (8,181, later 10,190). The raw method with a query object returns filtered counts (1,173 curator `obs` entities; 92 with `exceeds = true`), and it is not charged against the query budget. We use it for the district summary and to gate the live feed. |
 
 ## The one thing to improve first
 

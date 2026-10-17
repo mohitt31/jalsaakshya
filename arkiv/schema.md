@@ -125,19 +125,15 @@ publicClient.select({ key: true, creator: true, expiresAt: true, payload: true, 
               startsWith("place", "Raghu")]))
   .createdBy(CURATOR).limit(30).fetch()          // then page.next() for cursor pagination
 
-// 2. The documents behind the records
-publicClient.select({ key: true, payload: true, attributes: true })
-  .where(eq("app", str("jalsaakshya/v1")), eq("kind", str("source"))).createdBy(CURATOR).limit(200).fetch()
+// 2+3. The documents behind the records and the lab registry, in ONE query (each arkiv_query costs 100 units)
+publicClient.select({ key: true, expiresAt: true, payload: true, attributes: true })
+  .where(eq("app", str("jalsaakshya/v1")), or(eq("kind", str("source")), eq("kind", str("lab"))))
+  .createdBy(CURATOR).limit(200).fetch()
 
-// 3. Lab registry (trusted only from the curator)
-publicClient.select({ key: true, expiresAt: true, attributes: true })
-  .where(eq("app", str("jalsaakshya/v1")), eq("kind", str("lab"))).createdBy(CURATOR).limit(200).fetch()
-
-// 4. Sources and their live tests in a district (any creator; status computed client-side)
+// 4. Sources and their live tests in a district, in ONE query (any creator; status computed client-side)
 publicClient.select({ key: true, creator: true, createdAt: true, expiresAt: true, attributes: true })
-  .where(eq("app", str("jalsaakshya/v1")), eq("kind", str("site")), eq("district", str("Nadia"))).limit(200).fetch()
-publicClient.select({ key: true, creator: true, expiresAt: true, attributes: true })
-  .where(eq("app", str("jalsaakshya/v1")), eq("kind", str("test")), eq("district", str("Nadia"))).limit(200).fetch()
+  .where(eq("app", str("jalsaakshya/v1")), or(eq("kind", str("site")), eq("kind", str("test"))),
+         eq("district", str("Nadia"))).limit(200).fetch()
 
 // 5. Adding a test: one atomic batch
 wallet.executeBatch({ creates: [test], extensions: [{ entityKey: siteKey, expires: ExpirationTime.fromSeconds(365 * 86400) }] })
@@ -149,8 +145,20 @@ createPublicClient({ chain: tiramisu, transport: webSocket() })
 ```
 
 The subscription delivers every entity created on Tiramisu, not only ours. An event is therefore only a
-trigger: the app runs query 4 for the open district at most once every 8 seconds, instead of fetching each
-new entity by key (our first version did that and hit the public RPC's rate limit, see friction.md).
+trigger. At most every 15 seconds the app runs a free filtered count (query 8) for the open district, and it
+runs query 4 (100 units) only when that count changed (see friction.md #7 and #8).
+
+```ts
+// 8. Free filtered counts (raw JSON-RPC; SDK 0.8.1's getEntityCount() takes no filter)
+publicClient.request({ method: "arkiv_getEntityCount", params: [{ query:
+  render(and([eq("app", str("jalsaakshya/v1")), eq("kind", str("obs")), eq("district", str("Nadia")),
+              eq("exceeds", bool(true))])) + " AND $creator = addr(0x048A…3760)" }] })
+// -> the district summary: "47 official records for Nadia, 27 above the limit · 1,173 across West Bengal"
+```
+
+**Read budget.** A page load is three 100-unit queries: registry, records and district. The district summary
+and live-feed checks are free counts. Reads are anonymous first. After an `ANON_COST_LIMITED` answer, the page
+repeats the request with the site's origin-restricted access key in an `X-API-KEY` header.
 
 ```ts
 // 7. A shared link: read one entity by key and show what Arkiv says about it
