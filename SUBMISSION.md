@@ -40,6 +40,24 @@ JalSaakshya puts both problems in one phone page, in Hindi, Bengali and English.
 
    A source is never shown as safe on an expired test.
 
+## Challenges I ran into
+
+- **Batches failed with "Execution error without revert data".**
+  - The real cause was an HTTP 413 from `eth_estimateGas`, one level down in the error's `cause`.
+  - The limit turned out to be about 20 KB per batch, not a number of operations. 35 survey rows passed and 40 did not.
+  - We published the 1,173 rows in 49 batches of up to 30 (friction #1).
+- **An attribute named `sampleYear` passed the SDK's check, then the node rejected it.** The node's message lists uppercase letters as allowed. Every attribute is now lowercase `snake_case` (friction #2).
+- **Our page went empty halfway through the challenge.**
+  - Unauthenticated `arkiv_query` calls now draw on a per-network budget (`ANON_COST_LIMITED`), and every query costs 100 units (the `arkiv-cost` response header).
+  - Our live feed re-queried on every chain-wide event, so it used up a network's budget in minutes.
+  - We rebuilt the reads:
+    - a page load is 3 queries;
+    - the live feed and the district summary use free filtered counts;
+    - an origin-restricted access key is only a header fallback;
+    - the footer shows what a visit spent (friction #7, #8).
+- **Trust without a backend.** Any wallet can copy our attributes. So "official" is decided by `createdBy(curator)`, and "lab result" by a curator-published lab registry. A spoof probe on chain confirms that a copied record is excluded.
+- **Data honesty.** We dropped 1,386 extracted rows whose unit is not printed on the cited PDF page, rather than guess the unit.
+
 ## Why India?
 
 **Who uses it:** Jal Jeevan Mission FTK testers (Pani Samiti / VWSC members, ASHAs), PHED block staff and NGO arsenic-mitigation workers in West Bengal. Gram panchayat members and local journalists use the records side.
