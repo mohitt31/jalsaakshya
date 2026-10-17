@@ -58,3 +58,5 @@ h3{font:600 17px Georgia,serif;margin:18px 0 4px}
 .checks{list-style:none;padding:0;margin:10px 0}.checks li{padding:4px 0;border-top:1px solid var(--line);overflow-wrap:anywhere}
 .checks li.good b{color:var(--good)}.checks li.bad b{color:var(--bad)}.checks li.warn b{color:var(--warn)}
 .verify pre{white-space:pre-wrap;overflow-wrap:anywhere}
+.hero .sub{white-space:nowrap}
+@media (max-width:520px){.hero h1{font-size:30px}.hero .sub{display:block;margin:4px 0 0;font-size:16px}}
