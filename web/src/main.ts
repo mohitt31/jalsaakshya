@@ -40,7 +40,12 @@ function daysLeft(expiresAt: bigint) {
   const d = Number(expiresAt - head) * BLOCK_SECONDS / 86400
   return d < 1 ? t("lt_day") : t("days", { n: Math.round(d) })
 }
-const errText = (e: any) => String(e?.shortMessage || e?.message || e).slice(0, 300)
+const errText = (e: any) => {
+  let raw = "", c = e
+  for (let i = 0; c && i < 6; i++, c = c.cause) raw += ` ${c.details ?? ""} ${c.message ?? ""} ${c.body ? JSON.stringify(c.body) : ""}`
+  if (raw.includes("ANON_COST_LIMITED")) return t("budget")
+  return String(e?.shortMessage || e?.message || e).slice(0, 300)
+}
 
 // ---- official survey records ----------------------------------------------------------------
 function filters() {

@@ -1,7 +1,7 @@
 // Shared Arkiv plumbing for JalSaakshya. Everything here runs in the browser; there is no backend.
 import { createPublicClient, createWalletClient } from "@arkiv-network/sdk"
 import { tiramisu } from "@arkiv-network/sdk/chains"
-import { http, webSocket, custom, type Hex, type Address } from "viem"
+import { http, webSocket, custom, fallback, type Hex, type Address } from "viem"
 import { privateKeyToAccount, generatePrivateKey } from "viem/accounts"
 import { CURATOR } from "./config"
 
@@ -13,7 +13,16 @@ export const EXPLORER = "https://tiramisu.explorer.arkiv.network"
 
 // The public RPC rate-limits per IP (HTTP 429). Shared networks (a campus, a mobile carrier's NAT) can hit
 // that limit through other users' traffic, so reads retry with backoff instead of leaving the page empty.
-const RPC = () => http(undefined, { retryCount: 6, retryDelay: 1200 })
+//
+// Since 17 October the public RPC also caps unauthenticated queries with a per-network budget
+// (ANON_COST_LIMITED). The deployed site can carry an Arkiv access key restricted to its own origin
+// (VITE_ARKIV_KEY at build time, never committed). It rides in the URL path, as the Hub documents.
+// If the keyed endpoint fails, the anonymous endpoint is tried next.
+const KEY = String((import.meta as any).env?.VITE_ARKIV_KEY ?? "").trim()
+const HTTP_URL = tiramisu.rpcUrls.default.http[0].replace(/\/$/, "")
+const opts = { retryCount: 4, retryDelay: 1200 }
+const RPC = () => KEY ? fallback([http(`${HTTP_URL}/${KEY}`, opts), http(undefined, opts)]) : http(undefined, opts)
+export const usesAccessKey = !!KEY
 export const publicClient = createPublicClient({ chain: tiramisu, transport: RPC() })
 
 let wsClient: ReturnType<typeof createPublicClient> | null = null
