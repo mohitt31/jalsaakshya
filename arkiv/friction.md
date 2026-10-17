@@ -139,6 +139,40 @@ new 429s.
 same predicates for queries), or attributes in `EntityCreatedEvent`. The rate limit (600 requests per 10 s)
 could also be documented next to the public RPC URL.
 
+## 8. The anonymous query budget arrived mid-challenge; the SDK has no way to pass an access key, and the docs don't mention either
+
+**Surface:** public JSON-RPC (`arkiv_query`), `@arkiv-network/sdk` 0.8.1 `createPublicClient`, docs (JSON-RPC page), Hub access keys.
+
+**Expected:** a backend-free browser app (what the challenge asks for: "someone outside the team can read and query
+the data from Arkiv without the team's backend") keeps reading during judging. If reads need a key, the docs and
+the SDK say how to pass one, and how to do it from a browser.
+
+**Actual:**
+- **On 17 October, ~01:00 IST,** responses carried `ratelimit: limit=600, remaining=…, reset=10`.
+- **On 17 October, ~21:30 IST,** `eth_blockNumber` still answered 200 (`limit=600, remaining=599, reset=60`). Every `arkiv_query` answered **HTTP 429** with:
+  ```
+  ratelimit: limit=10000, remaining=0, reset=2769
+  {"error":"ANON_COST_LIMITED","message":"unauthenticated query budget exhausted; get an API key at https://hub.arkiv.network for a monthly qu…
+  ```
+- The budget is per network, not per app. Our own testing from one laptop used it up, and everyone behind the same network would have hit it too (a college campus or a mobile carrier's NAT).
+- Because `eth_blockNumber` still worked, our page loaded, read the head block, and then got nothing. The SDK surfaced the 429 only as viem's generic `HTTP request failed. Status: 429`. The useful `ANON_COST_LIMITED` text was in the response body.
+- `createPublicClient` has no access-key option, and the SDK source contains no mention of keys or authorization headers.
+- `docs.arkiv.network/json-rpc/querying-data/` mentions neither a budget nor keys. The three accepted forms (key in the URL path, an `X-API-KEY` header, a Bearer token) and the per-key **Origins** and **IP allowlist** settings appear only in the Hub, after connecting a wallet.
+
+**Steps to reproduce:** from one IP, run enough `arkiv_query` calls (our curator probes plus a few dozen page loads
+did it), then `curl --json '{"jsonrpc":"2.0","id":1,"method":"arkiv_query","params":["app = str(\'jalsaakshya/v1\')",{"limit":"0x1"}]}' https://rpc.tiramisu.db-chain.testnet.arkiv.network`.
+
+**What we did:**
+- The deployed build carries an access key restricted in the Hub to our site's origin. It is passed in the URL path, as the Hub's "Connect" tab shows. If the keyed endpoint fails, a viem `fallback` transport tries the anonymous endpoint (`web/src/arkiv.ts`).
+- The key is never committed. `scripts/deploy.sh` reads it from a file outside the repo.
+- Reads retry briefly. An `ANON_COST_LIMITED` answer is shown to the reader in their language, saying what happened and that it resets within the hour, instead of an empty page.
+
+**What would fix it:**
+- Put an `accessKey` option on the SDK's clients.
+- Document the anonymous budget (cost units, window, scope) and the three key forms on the JSON-RPC page.
+- Say explicitly that an origin-restricted key is the intended way for a static site to read.
+- Surface `ANON_COST_LIMITED` as a typed SDK error.
+
 ---
 
 ## Paths that worked as documented
@@ -159,5 +193,6 @@ could also be documented next to the public RPC URL.
 
 ## The one thing to improve first
 
-Make write failures say what actually failed. Items 1 and 2 cost us the most time, and both had the real reason
-one level down (`cause`) or hidden behind a contradictory message.
+Make failures say what actually failed. Items 1, 2 and 8 cost us the most time, and in all three the real reason
+was one level down (`cause`, a response body) or hidden behind a contradictory message. For a backend-free app,
+item 8 matters most: a budget the SDK cannot see turns into an empty page for every reader on the same network.

@@ -365,9 +365,10 @@ async function main() {
   $("signer").addEventListener("change", showSigner)
   $("f-site").addEventListener("change", () => { $("new-site").hidden = !!$<HTMLSelectElement>("f-site").value })
   applyLang()
+  $("status").textContent = t("loading")
   try { head = await publicClient.getBlockNumber() }
   catch (err) { $("status").textContent = `${t("query_failed")} ${errText(err)}`; return }
-  await loadRegistry().catch(() => {})
+  await loadRegistry().catch((err) => { $("status").textContent = errText(err) })
   const ek = q.get("e")
   if (ek && /^0x[0-9a-fA-F]{64}$/.test(ek)) {
     const d = await showVerify(ek as `0x${string}`)

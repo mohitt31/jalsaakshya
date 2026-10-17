@@ -20,7 +20,7 @@ export const EXPLORER = "https://tiramisu.explorer.arkiv.network"
 // If the keyed endpoint fails, the anonymous endpoint is tried next.
 const KEY = String((import.meta as any).env?.VITE_ARKIV_KEY ?? "").trim()
 const HTTP_URL = tiramisu.rpcUrls.default.http[0].replace(/\/$/, "")
-const opts = { retryCount: 4, retryDelay: 1200 }
+const opts = { retryCount: 2, retryDelay: 700 }
 const RPC = () => KEY ? fallback([http(`${HTTP_URL}/${KEY}`, opts), http(undefined, opts)]) : http(undefined, opts)
 export const usesAccessKey = !!KEY
 export const publicClient = createPublicClient({ chain: tiramisu, transport: RPC() })
