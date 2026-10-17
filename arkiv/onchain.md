@@ -26,6 +26,13 @@ Two atomic batches from the curator console:
 Example entity (Nabadwip): `0x116cdd01b1925fa759e1b6eabb3a162f0a67b1c233e7cb76ec04417137f93777`, check it at
 https://mohitt31.github.io/jalsaakshya/?e=0x116cdd01b1925fa759e1b6eabb3a162f0a67b1c233e7cb76ec04417137f93777
 
+## Offline queue test (18 Oct 2026)
+
+With the browser set to offline, the in-app test wallet `0x83EF…146d` entered a synthetic 3 µg/L arsenic kit reading
+for a new source *Offline queue test (synthetic)* in Hooghly. It waited in browser storage, marked "not on Arkiv yet".
+When the browser came back online it was signed and sent as one atomic batch (`site` + `test`):
+- tx `0x1747bc6db89e93ca22b849c018ef425cc3fce6f15a2b70c4c710f25c938e35c5`.
+
 ## Demo-video test (17 Oct 2026)
 
 The in-app test wallet `0x83EF…146d` was funded with 0.1 test GLM by the curator. It then added a 6 µg/L arsenic kit reading to *Demo source B (synthetic)*, with the note "Synthetic reading recorded for the demo video": one atomic batch of a `test` create plus a Lifetime Extension of the source.
