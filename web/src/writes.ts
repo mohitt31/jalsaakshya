@@ -10,6 +10,9 @@ export type TestInput = {
   tested?: number
 }
 
+// Arkiv lifetimes must be whole 2-second blocks
+const evenSeconds = (s: number) => s - (s % 2)
+
 function testCreate(t: TestInput) {
   const attributes: Record<string, any> = {
     app: str(APP), kind: str("test"), site: str(t.site), district: str(t.district), place: str(t.place),
@@ -22,7 +25,8 @@ function testCreate(t: TestInput) {
       ...(t.demo ? { synthetic: "demo data for judging; not a real measurement" } : {}) }),
     contentType: "application/json", attributes,
     // a lab result is current until the next mandated annual test; a kit screening fades in 90 days
-    expires: ExpirationTime.fromSeconds(t.method === "lab" ? LIFETIME.testLab : LIFETIME.testKit),
+    // counted from the day of the test, so a test sent later (offline queue) does not live longer
+    expires: ExpirationTime.fromSeconds(evenSeconds(Math.max(3600, (t.method === "lab" ? LIFETIME.testLab : LIFETIME.testKit) - (t.tested ? Math.max(0, Math.floor(Date.now() / 1000) - t.tested) : 0)))),
     flags: { readonly: true },
   }
 }

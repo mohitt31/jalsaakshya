@@ -17,6 +17,7 @@ let lang: Lang = "en"
 let head = 0n
 const sources = new Map<string, any>()
 const labs = new Map<string, any>()          // lowercased wallet -> registry entity
+let blockstats: any[] = []                    // official WB PHED block figures (curator-published)
 let sites = new Map<string, any>()            // site id -> canonical site entity (earliest created)
 let tests: any[] = []
 let page: any = null
@@ -67,12 +68,15 @@ async function loadRegistry() {
   if (!CURATOR) return
   // One query for both curator-published registries: every arkiv_query costs the same 100 units.
   const reg = await publicClient.select({ key: true, expiresAt: true, payload: true, attributes: true })
-    .where(eq("app", str(APP)), or(eq("kind", str("source")), eq("kind", str("lab")))).createdBy(CURATOR).limit(200).fetch()
+    .where(eq("app", str(APP)), or(eq("kind", str("source")), eq("kind", str("lab")), eq("kind", str("blockstat")))).createdBy(CURATOR).limit(200).fetch()
+  blockstats = []
   for (const e of reg.entities as any[]) {
-    if (attr(e, "kind") === "source") sources.set(attr(e, "doc"), { key: e.key, ...e.toJson(), records: attr(e, "records") })
+    const k = attr(e, "kind")
+    if (k === "source") sources.set(attr(e, "doc"), { key: e.key, ...e.toJson(), records: attr(e, "records") })
+    else if (k === "blockstat") blockstats.push(e)
     else labs.set(String(attr(e, "wallet")).toLowerCase(), e)
   }
-  renderRegistry()
+  renderRegistry(); renderPhed()
 }
 
 function renderRegistry() {
@@ -83,6 +87,30 @@ function renderRegistry() {
     `<li><b>${esc(attr(e, "name"))}</b>${attr(e, "demo") ? ` <span class="badge demo">${t("demo")}</span>` : ""} · ${t("lab_line", { d: esc(dname(attr(e, "district"))),
       w: `<a class="mono" href="${addrLink(attr(e, "wallet"))}" target="_blank" rel="noopener">${short(attr(e, "wallet"))}</a>`, r: daysLeft(e.expiresAt) })}</li>`).join("")
     : `<li class="muted">${t("no_labs")}</li>`
+}
+
+// Official WB PHED figures: arsenic tests of public drinking-water sources per block, and how many were
+// beyond 0.01 mg/L. The report prints no per-source result or date, which is the gap the tests below fill.
+const blockName = (s: string) => String(s ?? "").replace(/-(i{1,3})$/i, (_, r: string) => `-${r.toUpperCase()}`)   // "Karimpur-Ii" -> "Karimpur-II"
+const pct = (a: number, b: number) => b ? `${Math.round(100 * a / b)}%` : "–"
+function renderPhed() {
+  const box = $("phed")
+  const rows = blockstats.filter((e) => attr(e, "district") === district())
+    .sort((a, b) => Number(attr(b, "beyond")) / Number(attr(b, "tested")) - Number(attr(a, "beyond")) / Number(attr(a, "tested")))
+  box.hidden = !rows.length
+  if (!rows.length) { box.innerHTML = ""; return }
+  const f = (n: number) => Number(n).toLocaleString(LOCALE[lang])
+  const T = rows.reduce((m, e) => m + Number(attr(e, "tested")), 0), B = rows.reduce((m, e) => m + Number(attr(e, "beyond")), 0)
+  const p = rows[0].toJson() || {}
+  const asof = new Date(Number(attr(rows[0], "asof")) * 1000).toLocaleDateString(LOCALE[lang], { timeZone: "UTC" })
+  box.innerHTML = `<h3>${t("phed_title")}</h3>
+    <p class="small muted">${t("phed_note", { d: asof })} <a href="${esc(p.form || "https://maps.wbphed.gov.in/wqmis/")}" target="_blank" rel="noopener">${t("phed_src")}</a></p>
+    <p class="phed-total"><span class="num">${f(B)}</span> ${t("phed_of", { t: f(T), p: pct(B, T), n: rows.length })}</p>
+    <table class="phed-t small"><thead><tr><th>${t("ph_block")}</th><th>${t("ph_tests")}</th><th>${t("ph_beyond")}</th><th></th></tr></thead><tbody>
+    ${rows.map((e) => `<tr><td>${esc(blockName(attr(e, "block")))}</td><td>${f(attr(e, "tested"))}</td><td><b>${f(attr(e, "beyond"))}</b> · ${pct(Number(attr(e, "beyond")), Number(attr(e, "tested")))}</td><td><a href="${esc(verifyUrl(e.key))}">${t("verify_link")}</a></td></tr>`).join("")}
+    </tbody></table>
+    ${shareRow(rows[0].key, t("phed_share", { d: dname(district()), b: f(B), t: f(T), p: pct(B, T) }))}
+    <p class="small muted">${t("phed_gap")}</p>`
 }
 
 function obsCard(e: any) {
@@ -142,7 +170,7 @@ function shareRow(key: string, text: string) {
 }
 
 const where = (e: any) => { const p = String(attr(e, "place") ?? ""), d = dname(attr(e, "district")); return p && p !== attr(e, "district") ? `${p}, ${d}` : d }
-const KIND_LABEL: Record<string, keyof Labels> = { obs: "v_kind_obs", site: "v_kind_site", test: "v_kind_test", lab: "v_kind_lab", source: "v_kind_source" }
+const KIND_LABEL: Record<string, keyof Labels> = { obs: "v_kind_obs", site: "v_kind_site", test: "v_kind_test", lab: "v_kind_lab", source: "v_kind_source", blockstat: "v_kind_blockstat" }
 
 /** Read one entity by key and show what Arkiv says about it. Returns its district, if it has one. */
 async function showVerify(key: `0x${string}`): Promise<string | undefined> {
@@ -159,7 +187,7 @@ async function showVerify(key: `0x${string}`): Promise<string | undefined> {
   const kind = String(attr(e, "kind")), creator = String(e.creator || "")
   const lab = labs.get(creator.toLowerCase())
   let who: string, cls: string
-  if (["obs", "source", "lab"].includes(kind)) {
+  if (["obs", "source", "lab", "blockstat"].includes(kind)) {
     const ok = !!CURATOR && creator.toLowerCase() === CURATOR.toLowerCase()
     who = t(ok ? "v_official" : "v_not_official"); cls = ok ? "good" : "bad"
   } else if (kind === "test" && attr(e, "method") === "lab" && lab) { who = t("v_lab", { n: attr(lab, "name") }); cls = "good" }
@@ -182,6 +210,11 @@ async function showVerify(key: `0x${string}`): Promise<string | undefined> {
     const v = verdict((tt.entities as any[]).map(toTest), new Set(labs.keys()))
     what = `<p><b>${esc(attr(e, "place"))}</b>, ${esc(dname(attr(e, "district")))} · ${esc(srcType(attr(e, "srctype")))}</p>
       <p>${t("v_status")}: <span class="badge st-${v.state}">${t(STATE_LABEL[v.state])}</span> ${v.mgl !== undefined ? `${amount(v.mgl, v.contaminant)} ${esc(tc(v.contaminant!))} · ` : ""}${esc(t(`r_${v.code}` as keyof Labels, { n: v.testers }))}</p>`
+  } else if (kind === "blockstat") {
+    const p = e.toJson() || {}, n = Number(attr(e, "tested")), b = Number(attr(e, "beyond"))
+    what = `<p class="val"><span class="num">${b.toLocaleString(LOCALE[lang])}</span> ${t("ph_one", { t: n.toLocaleString(LOCALE[lang]), p: pct(b, n) })}</p>
+      <p>${esc(blockName(attr(e, "block")))}, ${esc(dname(attr(e, "district")))} · ${t("source")}: <a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.report)}</a> · ${esc(p.printed_date)}</p>
+      <p class="mono small">${esc(p.row_text)}</p><p class="small muted">${esc(p.remark)}</p>`
   } else if (kind === "lab") {
     what = `<p><b>${esc(attr(e, "name"))}</b> · ${esc(dname(attr(e, "district")))} · ${short(String(attr(e, "wallet")))}</p>`
   }
@@ -254,6 +287,34 @@ function renderSites() {
   $("f-site").innerHTML = `<option value="">${t("new_site")}</option>` + [...sites.entries()].map(([id, s]) => `<option value="${esc(id)}">${esc(attr(s, "place"))}</option>`).join("")
   const counts = cards.reduce((m, c) => (m[c.v.state] = (m[c.v.state] || 0) + 1, m), {} as Record<string, number>)
   $("site-summary").textContent = cards.length ? t("summary", { n: cards.length, u: counts.unsafe || 0, c: counts.confirm || 0, o: counts.overdue || 0, s: counts.safe || 0 }) : ""
+  // For PHED block staff: one WhatsApp message with every source that needs a visit, each with its check link.
+  const todo = cards.filter((c) => c.v.state === "confirm" || c.v.state === "overdue" || c.v.state === "unsafe")
+  const lines = todo.map((c) => `• ${attr(c.s, "place")}: ${t(STATE_LABEL[c.v.state])}${c.v.mgl !== undefined ? ` (${amount(c.v.mgl, c.v.contaminant)} ${tc(c.v.contaminant!)})` : ""}\n  ${verifyUrl(c.s.key)}`)
+  $("visit").innerHTML = !cards.length ? "" : todo.length
+    ? `<a href="https://wa.me/?text=${encodeURIComponent(`${t("visit_head", { d: dname(district()) })}\n${lines.join("\n")}`)}" target="_blank" rel="noopener">${t("visit_share")} (${todo.length})</a>`
+    : `<span class="muted">${t("visit_none")}</span>`
+}
+
+// ---- offline: a test entered without network waits on this phone, then is signed and sent ------------
+const QUEUE = "jalsaakshya.queue.v1"
+type Queued = { id: string; input: Parameters<typeof testBatch>[0]; at: number }
+function queue(): Queued[] { try { return JSON.parse(localStorage.getItem(QUEUE) || "[]") } catch { return [] } }
+function saveQueue(q: Queued[]) { try { localStorage.setItem(QUEUE, JSON.stringify(q)) } catch { /* ignore */ } renderQueue() }
+function renderQueue() { const n = queue().length; $("queue").textContent = n ? t("queue_n", { n }) : "" }
+let flushing = false
+async function flushQueue() {
+  if (flushing || !navigator.onLine || !queue().length) return
+  flushing = true
+  try {
+    await loadSites()   // the source may have been listed meanwhile: extend it instead of listing it twice
+    for (const item of queue()) {
+      const { txHash } = await burnerWallet().executeBatch(testBatch(item.input, sites.get(item.input.site)?.key) as any)
+      saveQueue(queue().filter((x) => x.id !== item.id))
+      $("form-status").innerHTML = `${t("queue_sent")} ${esc(item.input.place)} · <a href="${txLink(txHash)}" target="_blank" rel="noopener">tx</a>`
+    }
+    loadSites(); showSigner()
+  } catch (err) { $("form-status").textContent = errText(err) }
+  finally { flushing = false }
 }
 
 async function signer() { return $<HTMLSelectElement>("signer").value === "injected" ? injectedWallet() : burnerWallet() }
@@ -295,11 +356,17 @@ async function submitTest(ev: Event) {
   if (!place) { $("form-status").textContent = t("need_place"); return }
   const id = chosen || siteId(district(), place)
   const existing = sites.get(id)
+  const input = { site: id, district: district(), place, contaminant, mgl: value, method, srctype: String(fd.get("srctype") || ""),
+    note, kit: String(fd.get("kit") || "").slice(0, 60), entered: { value: raw, unit: fd.get("unit") === "ug" ? "µg/L" : "mg/L" }, tested: Math.floor(Date.now() / 1000) }
+  if (!navigator.onLine) {
+    if ($<HTMLSelectElement>("signer").value === "injected") { $("form-status").textContent = t("queue_injected"); return }
+    saveQueue([...queue(), { id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, input, at: Date.now() }])
+    $("form-status").textContent = t("queued"); f.reset(); updateHint(); return
+  }
   $("form-status").textContent = t("signing")
   try {
     const w = await signer()
-    const batch = testBatch({ site: id, district: district(), place, contaminant, mgl: value, method, srctype: String(fd.get("srctype") || ""),
-      note, kit: String(fd.get("kit") || "").slice(0, 60), entered: { value: raw, unit: fd.get("unit") === "ug" ? "µg/L" : "mg/L" } }, existing?.key)
+    const batch = testBatch(input, existing?.key)
     const { txHash } = await w.executeBatch(batch as any)
     $("form-status").innerHTML = `${t("saved")} <a href="${txLink(txHash)}" target="_blank" rel="noopener">tx</a>`
     f.reset(); updateHint(); showSigner(); loadSites()
@@ -389,9 +456,9 @@ async function main() {
   $("district").innerHTML = DISTRICTS.map((d) => `<option value="${d}">${d}</option>`).join("")
   $<HTMLSelectElement>("district").value = q.get("district") || "Purulia"
   document.querySelectorAll<HTMLButtonElement>("[data-lang]").forEach((b) => b.addEventListener("click", () => {
-    lang = b.dataset.lang as Lang; applyLang(); renderSites(); rerenderRecords(); renderRegistry(); renderCounts(); renderReads(); showSigner(); updateHint()
+    lang = b.dataset.lang as Lang; applyLang(); renderSites(); rerenderRecords(); renderRegistry(); renderPhed(); renderCounts(); renderReads(); renderQueue(); showSigner(); updateHint()
   }))
-  $("district").addEventListener("change", () => { search(); loadSites(); loadCounts(); history.replaceState(null, "", `?district=${encodeURIComponent(district())}`) })
+  $("district").addEventListener("change", () => { search(); loadSites(); loadCounts(); renderPhed(); history.replaceState(null, "", `?district=${encodeURIComponent(district())}`) })
   ;["contaminant", "above", "since"].forEach((id) => $(id).addEventListener("change", () => search()))
   $("place").addEventListener("change", () => search())
   $("more").addEventListener("click", () => search(true))
@@ -400,6 +467,8 @@ async function main() {
   $("signer").addEventListener("change", showSigner)
   $("f-site").addEventListener("change", () => { $("new-site").hidden = !!$<HTMLSelectElement>("f-site").value })
   applyLang()
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`).catch(() => { /* optional */ })
+  if (!navigator.onLine) { renderQueue(); window.addEventListener("online", () => location.reload(), { once: true }) }
   $("status").textContent = t("loading")
   try { head = await publicClient.getBlockNumber() }
   catch (err) { $("status").textContent = `${t("query_failed")} ${errText(err)}`; return }
@@ -407,10 +476,11 @@ async function main() {
   const ek = q.get("e")
   if (ek && /^0x[0-9a-fA-F]{64}$/.test(ek)) {
     const d = await showVerify(ek as `0x${string}`)
-    if (d && !q.get("district")) $<HTMLSelectElement>("district").value = d
+    if (d && !q.get("district")) { $<HTMLSelectElement>("district").value = d; renderPhed() }
     $("verify").scrollIntoView()
   }
   onReadStats(renderReads)
   search(); loadSites(); loadCounts(); showSigner(); live()
+  renderQueue(); window.addEventListener("online", () => flushQueue()); setTimeout(flushQueue, 4000)
 }
 main()

@@ -6,6 +6,10 @@
 <title>JalSaakshya</title>
 <meta name="description" content="Official groundwater arsenic and fluoride survey records for West Bengal villages, cited to the page and read straight from Arkiv.">
 <link rel="stylesheet" href="/src/style.css">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0f6b5f">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 </head>
 <body>
 <header class="hero">
@@ -40,7 +44,9 @@
   <section>
     <h2 data-t="sites_title"></h2>
     <p class="muted small" data-t="sites_note"></p>
+    <div id="phed" class="card phed" hidden></div>
     <p id="site-summary" class="small"></p>
+    <p id="visit" class="small share"></p>
     <p id="live" class="live small"></p>
     <div id="sites" class="grid"></div>
     <details class="card add">
@@ -61,6 +67,7 @@
         <p id="signer-info" class="small muted"></p>
         <button class="primary" data-t="submit"></button>
         <p id="form-status" class="small"></p>
+        <p id="queue" class="small warn"></p>
       </form>
     </details>
     <h3 data-t="labs_title"></h3>

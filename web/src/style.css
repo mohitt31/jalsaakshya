@@ -62,3 +62,9 @@ h3{font:600 17px Georgia,serif;margin:18px 0 4px}
 .hero .sub{white-space:nowrap}
 @media (max-width:520px){.hero h1{font-size:30px}.hero .sub{display:block;margin:4px 0 0;font-size:16px}}
 .counts{color:var(--accent);margin:2px 0 0}
+.phed h3{margin:0 0 6px}
+.phed-total{margin:8px 0}.phed-total .num{font-size:24px;font-weight:700;color:var(--bad)}
+.phed-t{width:100%;border-collapse:collapse;margin:6px 0 10px}
+.phed-t th,.phed-t td{text-align:left;padding:4px 6px;border-bottom:1px solid var(--line)}
+.phed-t th{color:var(--muted);font-weight:500}
+@media (max-width:520px){.phed-t th:nth-child(4),.phed-t td:nth-child(4){display:none}}

@@ -2,10 +2,17 @@
 
 **Live app:** https://mohitt31.github.io/jalsaakshya/ (English, हिन्दी, বাংলা; works on a phone) · **Demo video:** https://youtu.be/Ft-rx4UmQiE (2:51; copy in [media/](media/jalsaakshya-demo.mp4))
 
+<p>
+<img src="media/screens/1-records.jpg" width="200" alt="Official records with the cited report page">
+<img src="media/screens/2-sources.jpg" width="200" alt="Drinking-water sources sorted by urgency">
+<img src="media/screens/3-verify.jpg" width="200" alt="Checked on Arkiv panel opened from a shared link">
+<img src="media/screens/4-hindi.jpg" width="200" alt="The same sources in Hindi">
+</p>
+
 JalSaakshya ("water evidence") has two parts:
 
 1. **Official survey records.** It shows groundwater arsenic and fluoride readings for West Bengal villages. Each reading cites the page of the government report it came from.
-2. **Drinking-water sources.** It shows the current test status of each source, based on tests added by field-kit testers and labs.
+2. **Drinking-water sources.** It shows the current test status of each source, based on tests added by field-kit testers and labs. In Nadia it sits under WB PHED's own official arsenic figures for each block: 124,297 tests, 76,665 (61.7%) beyond 10 µg/L.
 
 Everything is stored on [Arkiv](https://arkiv.network), the Web3 database, and the page reads it from the browser. There is no backend.
 
@@ -51,6 +58,9 @@ Under Jal Jeevan Mission, five women in every village are trained to test drinki
   - how long it stays current.
 
   A forwarded number becomes one anyone can check.
+- **Official WB PHED figures (real, Nadia).** WB PHED's public Nadia Water Quality Dashboard gives arsenic tests per block, but not each source's latest result or its date ([what is public](data/phed/README.md)). The curator published the 18 block figures as read-only `blockstat` entities citing the report and its hash. They expire a year after the day they were read.
+- **Visit list for block staff.** One WhatsApp message lists every source in the district that is unsafe, needs lab confirmation or is overdue, each with its check link.
+- **Works offline.** The site installs as an app and opens without network. A test entered offline waits on the phone, is clearly marked "not on Arkiv yet", and is signed and sent when the network returns. Its lifetime counts from when it was taken.
 - **Live.** New tests appear over a WebSocket subscription without reloading the page.
 - **Languages.** The whole interface is in English, Hindi and Bengali, including statuses, reasons and district names.
 
@@ -76,6 +86,7 @@ The rows come from [NeerTathya](https://github.com/mohitt31/jaldrishti) (same au
 
 ```bash
 python3 scripts/build_records.py      # -> web/public/data/records.json (the curator's publish input)
+python3 scripts/build_phed.py         # -> web/public/data/phed.json (WB PHED block figures, see data/phed/)
 ```
 
 ## Run it
@@ -113,11 +124,13 @@ The curator console is `/curator.html`. It:
 | [`web/src/writes.ts`](web/src/writes.ts) | Entity builders: test, site, lab, atomic batch |
 | [`web/src/curator.ts`](web/src/curator.ts) | Curator console and friction probes |
 | [`scripts/build_records.py`](scripts/build_records.py) | Builds the publish input from the NeerTathya snapshot |
+| [`data/phed/`](data/phed/README.md), [`scripts/build_phed.py`](scripts/build_phed.py) | What WB PHED publishes, the extracted block table, and its publish input |
 
 ## Limits
 
 - This is research evidence, not household safety advice. A survey value describes one place and time. Test your own water at an accredited lab.
 - The dataset is what NeerTathya's library held, not every report published for West Bengal. It is mostly fluoride (1,139 rows); arsenic has 34 rows, mainly in Nadia.
+- WB PHED's figures are block totals, not per-source results; per-source results with dates are not public. The report prints no date range, so they are labelled as of the download date.
 - The labs and sources in Nadia marked *demo* are synthetic. They are there so judges can see every status, and they are labelled on chain (`demo = true`) and in the app. No real lab has been registered yet.
 - Tiramisu is a testnet.
 

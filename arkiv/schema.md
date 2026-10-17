@@ -69,6 +69,30 @@ Not readonly, so the curator can delete a listing. Expiration: 365 days, renewed
 a lapsed listing drops the lab from the registry. The app treats a `test` as a lab result only when its
 `$creator` is a `wallet` in this registry, and only registry entities whose `$creator` is the curator count.
 
+### `blockstat`: an official WB PHED block figure (curator only)
+
+One row of WB PHED's public *Water Quality Test Report, Nadia District* (Nadia Water Quality Dashboard, see
+[`data/phed/README.md`](../data/phed/README.md)): arsenic tests of public drinking-water sources in one block,
+and how many were beyond 0.01 mg/L.
+
+| Attribute | Type | Example | Notes |
+|---|---|---|---|
+| `app`, `kind` | str | `jalsaakshya/v1`, `blockstat` | |
+| `sid` | str | `wbphed/nadia/chapra/arsenic/2026-10-17` | stable id; the console skips ids already on chain |
+| `district`, `block` | str | `Nadia`, `Chapra` | block in title case from the printed name (`Karimpur-Ii`; the app shows `Karimpur-II`) |
+| `contaminant` | str | `arsenic` | |
+| `tested`, `beyond` | i32 | `10827`, `8863` | tests, and tests beyond the limit, as printed |
+| `limit` | dec | `0.01` | mg/L, from the report's remarks |
+| `asof` | u64 | `1792195200` | the day the report was downloaded (it prints no date range) |
+| `origin` | str | `wbphed` | |
+
+Payload (JSON): `report`, `url`, `form`, `pdf_sha256`, `printed_date`, `printed_date_range`, `scope`, `remark`,
+`row_text` (the table row as printed) and the same row's coliform figures.
+Flags: `readonly`. Expiration: 365 days from `asof`, so the figure stops counting a year after it was read
+and the curator has to re-read the report. Published in 2 atomic batches of 9 (about 10 KB each).
+This is a district-level official figure, not a status of any one source: it is shown above the sources list,
+and never feeds `model.ts`.
+
 ### `site`: a drinking-water source (anyone)
 
 | Attribute | Type | Example | Notes |
@@ -105,6 +129,10 @@ Expiration follows the rule the reading lives under:
 - **kit result: 90 days.** A field-kit reading is screening; UDWQMP 5.1.1 says kit positives must be referred
   to a lab. A reading nobody follows up fades instead of standing in for the annual test.
 
+A test entered without network waits in the phone's browser storage and is signed and sent when the
+network returns. Its `tested` is the time it was entered, and its lifetime is counted from that moment
+(365 or 90 days minus the time it waited), so a delayed send does not make a test live longer.
+
 Status of a source, computed in the browser from its live tests (`web/src/model.ts`, unit-tested):
 1. newest registered-lab result per contaminant decides: above the limit → **unsafe**, else **within limit**;
    a kit warning taken after the newest lab result re-opens it → **needs lab confirmation**;
@@ -125,9 +153,10 @@ publicClient.select({ key: true, creator: true, expiresAt: true, payload: true, 
               startsWith("place", "Raghu")]))
   .createdBy(CURATOR).limit(30).fetch()          // then page.next() for cursor pagination
 
-// 2+3. The documents behind the records and the lab registry, in ONE query (each arkiv_query costs 100 units)
+// 2+3. The documents behind the records, the lab registry and the WB PHED block figures, in ONE query
+//      (each arkiv_query costs 100 units)
 publicClient.select({ key: true, expiresAt: true, payload: true, attributes: true })
-  .where(eq("app", str("jalsaakshya/v1")), or(eq("kind", str("source")), eq("kind", str("lab"))))
+  .where(eq("app", str("jalsaakshya/v1")), or(eq("kind", str("source")), eq("kind", str("lab")), eq("kind", str("blockstat"))))
   .createdBy(CURATOR).limit(200).fetch()
 
 // 4. Sources and their live tests in a district, in ONE query (any creator; status computed client-side)

@@ -1,0 +1,15 @@
+{
+  "report": "WATER QUALITY TEST REPORT, NADIA DISTRICT (Nadia Water Quality Dashboard, WBPHED)",
+  "url": "https://maps.wbphed.gov.in/wqmis/download/pdf-comprehensive-report.php?type=district&district=336&laboratory=&block=&panchayat=&from_date=&to_date=&typeoffre=",
+  "form": "https://maps.wbphed.gov.in/wqmis/comprehensive-report.php",
+  "downloaded": "2026-10-17",
+  "printed_date": "17/10/2026",
+  "printed_date_range": "",
+  "pdf_bytes": 78868,
+  "pdf_sha256": "6f3e443b9cef0cc617712c0873a10515aaaf15d636105696166fb03d804e4ede",
+  "scope": "Public Drinking Water Sources (tested type of drinking water sources, i.e., Handpump Tubewell, Street Stand Posts, Others)",
+  "remark": "Sources having test results more than 0.01mg/l Total Arsenic and/ or more than \"0\" CFU Total Coliform in 100ml of drinking water sample may be treated as unsafe",
+  "columns": ["sl", "block", "arsenic_total", "arsenic_safe", "arsenic_unsafe", "bact_total", "bact_safe", "bact_unsafe", "sanitary_surveys", "risk_low", "risk_medium", "risk_high", "risk_very_high"],
+  "rows": [[1,"CHAKDAH",4487,1308,3179,6261,4431,1830,6370,4935,737,478,220],[2,"CHAPRA",10827,1964,8863,8333,6776,1557,11979,7895,3019,896,195],[3,"HANSKHALI",9764,3475,6289,8630,7793,837,8719,7419,983,299,53],[4,"HARINGHATA",5473,2651,2822,4670,2698,1972,4660,3094,955,446,180],[5,"KALIGANJ",3859,1483,2376,7367,6471,896,10415,7647,2016,594,158],[6,"KALYANI",3808,2891,917,3546,2091,1455,3531,2251,713,375,193],[7,"KARIMPUR-I",5342,593,4749,4566,3800,766,5599,3943,1276,407,14],[8,"KARIMPUR-II",4894,488,4406,4183,3620,563,5291,3884,1291,135,8],[9,"KRISHNAGANJ",5708,2815,2893,5687,3770,1917,6125,5063,800,275,39],[10,"KRISHNANAGAR-I",10399,3986,6413,10022,6511,3511,10578,9037,1189,319,67],[11,"KRISHNANAGAR-II",4374,803,3571,3858,3169,689,5010,3485,913,511,103],[12,"NABADWIP",5386,3826,1560,5455,2774,2681,5973,4791,827,288,75],[13,"NAKASHIPARA",4949,1982,2967,8415,7402,1013,12422,9097,2226,971,128],[14,"RANAGHAT-I",9350,3032,6318,8869,6929,1940,9029,7835,651,462,116],[15,"RANAGHAT-II",15944,8390,7554,14603,13378,1225,14465,11909,1757,711,90],[16,"SHANTIPUR",6801,4126,2675,6333,3801,2532,6981,6162,492,258,72],[17,"TEHATTA-I",9411,2858,6553,8906,4755,4151,9742,8107,1215,380,90],[18,"TEHATTA-II",3521,961,2560,2987,2583,404,3999,3496,449,65,12]],
+  "total": [124297,47632,76665,122691,92752,29939,140888,110050,21509,7870,1813]
+}

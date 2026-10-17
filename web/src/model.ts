@@ -17,8 +17,10 @@ const DAY = 86400
 //    it for a year (permissionless Lifetime Extension), and an untested site drops off after a year.
 //  - lab registry: a lab's listing is renewed yearly by the curator.
 //  - obs / source: official survey rows and reports, see schema.md.
+//  - blockstat: an official WB PHED block figure, current for a year from the day it was read from
+//    the report (the report prints no date range); the curator re-reads it yearly.
 export const LIFETIME = {
-  source: 730 * DAY, obs: 365 * DAY, lab: 365 * DAY, site: 365 * DAY,
+  source: 730 * DAY, obs: 365 * DAY, lab: 365 * DAY, site: 365 * DAY, blockstat: 365 * DAY,
   testLab: 365 * DAY, testKit: 90 * DAY,
 }
 

@@ -1,0 +1,14 @@
+{
+  "name": "JalSaakshya · জল সাক্ষ্য · जल साक्ष्य",
+  "short_name": "JalSaakshya",
+  "description": "Official arsenic and fluoride records and drinking-water source tests for West Bengal, read from Arkiv.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f4ee",
+  "theme_color": "#0f6b5f",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

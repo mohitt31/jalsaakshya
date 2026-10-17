@@ -6,7 +6,7 @@ Explorer: https://tiramisu.explorer.arkiv.network
 
 | Address | Role |
 |---|---|
-| `0x048A053E77e7771b212d04D906E7b70139fC3760` | Curator: all `source`, `obs` and `lab` entities; funded the demo wallets |
+| `0x048A053E77e7771b212d04D906E7b70139fC3760` | Curator: all `source`, `obs`, `blockstat` and `lab` entities; funded the demo wallets |
 | `0x690F95b7217AaF59017e2EfEA446e9af4e04a066` | Demo lab (synthetic), registered by the curator: `test` entities with `method = lab` |
 | `0xAac73CBEa8dc9D65B6B45A7550F675c579D043c5` | Demo field tester A (synthetic): `site` and kit `test` entities |
 | `0x4B2799ff80Fe9cd3eF0f8d1d870d9927F52d767f` | Demo field tester B (synthetic): `site` and kit `test` entities |
@@ -14,6 +14,17 @@ Explorer: https://tiramisu.explorer.arkiv.network
 
 Any other wallet that adds a test through the app also creates `site`/`test` entities; the app labels
 those with their creator.
+
+## Official WB PHED block figures (18 Oct 2026)
+
+18 `blockstat` entities (one per Nadia block) from WB PHED's public comprehensive report, downloaded 17 Oct 2026
+(PDF SHA-256 `6f3e443b…4e4ede`, see [`data/phed/`](../data/phed/README.md)). 124,297 arsenic tests, 76,665 beyond 0.01 mg/L.
+Two atomic batches from the curator console:
+- tx `0xa9b0c596533768e1f077777128ae4aedca87ccd201251e27dfe83e17f4ccae27`: Chakdah … Krishnaganj (9)
+- tx `0xc986a812f1e4e18238d64cf48ca9fe900304333d962be0226a0ecb2a209c71e9`: Krishnanagar-I … Tehatta-II (9)
+
+Example entity (Nabadwip): `0x116cdd01b1925fa759e1b6eabb3a162f0a67b1c233e7cb76ec04417137f93777`, check it at
+https://mohitt31.github.io/jalsaakshya/?e=0x116cdd01b1925fa759e1b6eabb3a162f0a67b1c233e7cb76ec04417137f93777
 
 ## Demo-video test (17 Oct 2026)
 

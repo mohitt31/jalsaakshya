@@ -1,5 +1,5 @@
 // Curator console: publishes the survey dataset to Arkiv with a wallet that lives only in this browser.
-import { bool, dec, i32, str } from "@arkiv-network/sdk/attr"
+import { bool, dec, i32, str, u64 } from "@arkiv-network/sdk/attr"
 import { eq } from "@arkiv-network/sdk/query"
 import { ExpirationTime, jsonToPayload } from "@arkiv-network/sdk/utils"
 import { APP, LIFETIME, publicClient, burnerWallet, balanceOf, txLink, addrLink } from "./arkiv"
@@ -94,6 +94,42 @@ async function publish() {
   } finally {
     ;($("go") as HTMLButtonElement).disabled = false
   }
+}
+
+// ---- official WB PHED block figures (web/public/data/phed.json, built by scripts/build_phed.py) ----
+function blockstatCreate(r: any) {
+  const asof = Math.floor(Date.parse(r.asof + "T00:00:00Z") / 1000)
+  const left = asof + LIFETIME.blockstat - Math.floor(Date.now() / 1000)
+  return {
+    payload: jsonToPayload(r.payload), contentType: "application/json",
+    attributes: { app: str(APP), kind: str("blockstat"), sid: str(r.id), district: str(r.district), block: str(r.block),
+      contaminant: str(r.contaminant), tested: i32(r.tested), beyond: i32(r.beyond), limit: dec(String(r.limit_mgl)),
+      asof: u64(asof), origin: str("wbphed") },
+    // current for a year from the day the figure was read from the report, never longer
+    expires: ExpirationTime.fromSeconds(left - (left % 2)), flags: { readonly: true },   // whole 2 s blocks
+  }
+}
+
+async function publishPhed() {
+  ;($("phed-go") as HTMLButtonElement).disabled = true
+  try {
+    const data = await (await fetch(import.meta.env.BASE_URL + "data/phed.json")).json()
+    const page = await publicClient.select({ attributes: { sid: true } })
+      .where(eq("app", str(APP)), eq("kind", str("blockstat"))).createdBy(me).limit(200).fetch()
+    const done = new Set((page.entities as any[]).map((e) => e.attributes.sid.value))
+    const todo = data.rows.filter((r: any) => !done.has(r.id))
+    log(`WB PHED block figures: ${done.size} already on Arkiv, ${todo.length} to publish`)
+    // about 1.1 KB each: 9 per batch keeps a transaction near 10 KB, well under the ~20 KB that failed (friction #1)
+    for (let i = 0; i < todo.length; i += 9) {
+      const chunk = todo.slice(i, i + 9)
+      const res = await wallet.executeBatch({ creates: chunk.map(blockstatCreate) } as any)
+      manifest.txs.push({ kind: "blockstat", txHash: res.txHash, created: res.createdEntities, ids: chunk.map((r: any) => r.id) })
+      log(`WB PHED: ${chunk.length} block figures in one batch · <a href="${txLink(res.txHash)}" target="_blank" rel="noopener">tx</a>`)
+      await refresh()
+    }
+    log("WB PHED: done.")
+  } catch (err: any) { log(`<b>Error:</b> ${String(err?.shortMessage || err?.message || err).slice(0, 400)}`) }
+  finally { ;($("phed-go") as HTMLButtonElement).disabled = false }
 }
 
 // ---- lab registry -----------------------------------------------------------------------------
@@ -204,6 +240,7 @@ async function probes() {
 }
 
 $("go").addEventListener("click", publish)
+$("phed-go").addEventListener("click", publishPhed)
 $("lab-go").addEventListener("click", registerLab)
 $("fund").addEventListener("click", () => fundDemo().catch((e) => log(String(e?.shortMessage || e?.message || e))))
 $("seed").addEventListener("click", () => seedDemo().catch((e) => log(String(e?.shortMessage || e?.message || e))))
