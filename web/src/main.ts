@@ -365,7 +365,7 @@ async function pkShow() {
   if (!$<HTMLSelectElement>("pk-block").options.length)
     $("pk-block").innerHTML = opt("", "—") + idx.blocks.map((b: any) => opt(b.slug, `${b.name} (${b.n.toLocaleString(LOCALE[lang])})`)).join("")
 }
-function pkClear() { picked = null; $("pk-chosen").textContent = ""; const p = $<HTMLInputElement>("place-input"); if (p) p.readOnly = false }
+function pkClear() { picked = null; $("pk-chosen").textContent = ""; const p = $<HTMLInputElement>("place-input"); if (p?.readOnly) { p.readOnly = false; p.value = "" } }
 async function pkOnBlock() {
   pkClear(); $("pk-gp").innerHTML = ""; $("pk-village").innerHTML = ""; $("pk-source").innerHTML = ""
   const slug = $<HTMLSelectElement>("pk-block").value; if (!slug) return

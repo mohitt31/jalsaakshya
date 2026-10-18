@@ -30,7 +30,8 @@ def main(path):
     for r in rows:
         if not r or not r[col["Source ID"]]: continue
         if clean(r[col["District"]]).upper() != "NADIA": continue
-        b, gp, v, hab = (clean(r[col[k]]).title() for k in ["Block", "Panchayat", "Village", "Habitation"])
+        roman = lambda s: re.sub(r"\b(Ii|Iii|Iv|Vi|Vii)\b", lambda m: m.group(1).upper(), s)   # "Dhoradaha-Ii" -> "Dhoradaha-II"
+        b, gp, v, hab = (roman(clean(r[col[k]]).title()) for k in ["Block", "Panchayat", "Village", "Habitation"])
         # the list spells some blocks two ways ("Ranaghat - I" / "Ranaghat-I", "Krishnagar" / "Krishnanagar",
         # "Santipur" / "Shantipur"); use the spelling of PHED's comprehensive report
         b = re.sub(r"\s*-\s*", "-", b)
