@@ -3,6 +3,7 @@
 **Live app:** https://mohitt31.github.io/jalsaakshya/ (English, हिन्दी, বাংলা; works on a phone) · **Demo video:** https://youtu.be/Ft-rx4UmQiE (2:51; copy in [media/](media/jalsaakshya-demo.mp4))
 
 <p>
+<img src="media/screens/0-phed.jpg" width="200" alt="Official WB PHED arsenic tests for every Nadia block">
 <img src="media/screens/1-records.jpg" width="200" alt="Official records with the cited report page">
 <img src="media/screens/2-sources.jpg" width="200" alt="Drinking-water sources sorted by urgency">
 <img src="media/screens/3-verify.jpg" width="200" alt="Checked on Arkiv panel opened from a shared link">
