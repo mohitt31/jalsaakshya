@@ -8,7 +8,7 @@ Tracks entered: **Best Indian Use Case** (primary), **Security**, **Censorship R
 - **Schema:** [arkiv/schema.md](https://github.com/mohitt31/jalsaakshya/blob/main/arkiv/schema.md)
 - **Friction:** [arkiv/friction.md](https://github.com/mohitt31/jalsaakshya/blob/main/arkiv/friction.md)
 - **On-chain evidence:** [arkiv/onchain.md](https://github.com/mohitt31/jalsaakshya/blob/main/arkiv/onchain.md)
-- **Demo video (2:51):** https://youtu.be/Ft-rx4UmQiE. A copy is in the repo at [media/jalsaakshya-demo.mp4](https://github.com/mohitt31/jalsaakshya/blob/main/media/jalsaakshya-demo.mp4).
+- **Demo video:** https://youtu.be/Ft-rx4UmQiE (2:51, first cut). The latest cut (2:58, adds the WB PHED data, sealing, read-aloud and offline entry) is in the repo at [media/jalsaakshya-demo.mp4](https://github.com/mohitt31/jalsaakshya/blob/main/media/jalsaakshya-demo.mp4).
 
 ## Tagline
 

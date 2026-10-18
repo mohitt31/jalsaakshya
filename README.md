@@ -1,6 +1,6 @@
 # JalSaakshya · জল সাক্ষ্য · जल साक्ष्य
 
-**Live app:** https://mohitt31.github.io/jalsaakshya/ (English, हिन्दी, বাংলা; works on a phone) · **Demo video:** https://youtu.be/Ft-rx4UmQiE (2:51; copy in [media/](media/jalsaakshya-demo.mp4))
+**Live app:** https://mohitt31.github.io/jalsaakshya/ (English, हिन्दी, বাংলা; works on a phone) · **Demo video:** https://youtu.be/Ft-rx4UmQiE (2:51, first cut) · latest cut in [media/](media/jalsaakshya-demo.mp4) (2:58: adds the WB PHED data, sealing, read-aloud and offline entry)
 
 <p>
 <img src="media/screens/0-phed.jpg" width="200" alt="Official WB PHED arsenic tests for every Nadia block">
