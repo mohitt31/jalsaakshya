@@ -26,6 +26,31 @@ Two atomic batches from the curator console:
 Example entity (Nabadwip): `0x116cdd01b1925fa759e1b6eabb3a162f0a67b1c233e7cb76ec04417137f93777`, check it at
 https://mohitt31.github.io/jalsaakshya/?e=0x116cdd01b1925fa759e1b6eabb3a162f0a67b1c233e7cb76ec04417137f93777
 
+## Sealing official records and demo tests (18 Oct 2026)
+
+From the curator console (*Seal official records and demo tests*): every entity a wallet created and still owned (`createdBy(w).ownedBy(w)`) was handed to `0x000000000000000000000000000000000000dEaD` in batches of 100 ownership changes.
+
+- **Curator `0x048A…3760`: 1,204 entities** (1,173 `obs`, 13 `source`, 18 `blockstat`) in 13 transactions:
+  - `0x8ad8df239395a3fdd3777bb293660175bcf6d1ec5b0f4cca16c450a405153b69`
+  - `0x2bcc9d6d1726443dd3f2d8ba9f223fedcf0dfd5419a194dc95be840a8308d940`
+  - `0x76279ebe81265d21b06b02dd690d6c36d9254913d9b5137eb96bbff6b5054acf`
+  - `0x4f10d8a644b3d1fad557269deb3695712f96a6d1d1904d4b052ce01c6fa24b2a`
+  - `0xa8194a366d4cbd1ba154471659935f627a3f6fde635c239492a62efbfeea049d`
+  - `0x587643fe0bed47037f7dce4c9a815ddef192b49113361ece135819c561784e79`
+  - `0x5b0d37962cff8c1b32b917d7928e756a87481a4328834dcbc2cdc3a686f7dc5c`
+  - `0x719f287ed6e81f15746d6d34a1408337a7444f3c8d2ebcde71680b94f35d11d0`
+  - `0x085ed6a16a9510dd2bc5418910d784080f488de9a8a73d33a3bfde75b8bca6b4`
+  - `0x3cc2796f71336b144e5fdab8c4b1d431f22b5d50ddf4b9746baa55185c8a56e0`
+  - `0x4737d4f051f22275a88d2d488510607568d86b8bad732485c409a8b7ae4f9382`
+  - `0x9e483f263adb134bbcb3fd38c909a88b7da2db2ecbb941aecb4f16b748c31e06`
+  - `0x1277d7ee6fb1fc1191f837480d51b78a8e3e11d1297c4bc5675798fbb62bc264`
+- **Demo tester A `0xAac7…43c5`:** 2 test(s), tx `0xb17f3a04fd79eb111714edd8a2c0163355a85ae815e73b7b72164b25efaac44e`
+- **Demo tester B `0x4B27…767f`:** 2 test(s), tx `0x50c2dec2f2ef6856667b59cb080057e96cb0d53731d4864c544e66153cf4591e`
+- **Demo lab `0x690F…a066`:** 1 test(s), tx `0x961c01851ad0c8c3e12b11bb64599303c49e7d4eb2cd1247e9e641957de50d1b`
+- **In-app test wallet `0x83EF…146d`:** 2 test(s), tx `0xadb8555962fc9028da466032abaa3f25d28def87691c2e954fc6ca1dc75976ca`
+
+The lab registry is not sealed, so the curator can still delist a lab. After sealing, nobody can delete or extend these entities; they leave Arkiv when their lifetimes end.
+
 ## First sealed test (18 Oct 2026)
 
 The in-app test wallet `0x83EF…146d` added a synthetic 2 µg/L arsenic kit reading to *Offline queue test (synthetic)*
