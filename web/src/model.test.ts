@@ -35,6 +35,32 @@ test("a kit warning after the last lab result re-opens the question", () => {
   assert.equal(v.state, "confirm"); assert.match(v.reason, /after the last lab result/); assert.equal(v.code, "kit_after_lab")
 })
 
+test("a newer lab result for another contaminant does not clear a kit warning", () => {
+  // arsenic lab (safe) at 1, arsenic kit warning at 5, fluoride lab (safe) at 9: arsenic is still open
+  const v = verdict([
+    t({ method: "lab", creator: "0xLAB", mgl: 0.003, tested: 1 }),
+    t({ mgl: 0.02, tested: 5 }),
+    t({ method: "lab", creator: "0xLAB", contaminant: "fluoride", mgl: 0.8, tested: 9 }),
+  ], labs)
+  assert.equal(v.state, "confirm"); assert.equal(v.contaminant, "arsenic"); assert.equal(v.code, "kit_after_lab")
+})
+
+test("a kit warning for a contaminant the lab never tested stays open", () => {
+  const v = verdict([
+    t({ contaminant: "fluoride", mgl: 2.0, tested: 5 }),
+    t({ method: "lab", creator: "0xLAB", mgl: 0.003, tested: 9 }),
+  ], labs)
+  assert.equal(v.state, "confirm"); assert.equal(v.contaminant, "fluoride")
+})
+
+test("a lab result for the same contaminant after the kit warning closes it", () => {
+  const v = verdict([
+    t({ mgl: 0.02, tested: 5 }),
+    t({ method: "lab", creator: "0xLAB", mgl: 0.003, tested: 9 }),
+  ], labs)
+  assert.equal(v.state, "safe"); assert.equal(v.basis, "lab")
+})
+
 test("a lab result from an unregistered wallet is treated as a kit-level claim", () => {
   const v = verdict([t({ method: "lab", creator: "0xNOTLAB", mgl: 0.004 })], labs)
   assert.equal(v.basis, "kit"); assert.equal(v.state, "safe")

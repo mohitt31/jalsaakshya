@@ -12,7 +12,7 @@ Tracks entered: **Best Indian Use Case** (primary), **Security**, **Censorship R
 
 ## Tagline
 
-Village water tests nobody can fake or delete
+Signed village water tests that nobody can delete
 
 (Devfolio limits the tagline to 50 characters. Longer: official arsenic and fluoride readings for West Bengal villages, cited to the report page, plus the current test status of each drinking-water source, kept honest by Arkiv.)
 

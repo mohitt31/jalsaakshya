@@ -62,9 +62,10 @@ export function verdict(tests: Test[], labs: Set<string>): Verdict {
     for (const t of lab) if (!newest.has(t.contaminant)) newest.set(t.contaminant, t)
     const worst = [...newest.values()].sort((a, b) => b.mgl / LIMITS[b.contaminant] - a.mgl / LIMITS[a.contaminant])[0]
     const over = worst.mgl > LIMITS[worst.contaminant]
-    // a kit warning taken after the newest lab result re-opens the question
-    const newestLab = Math.max(...lab.map((t) => t.tested))
-    const laterWarning = live.find((t) => t.tested > newestLab && !labs.has(t.creator.toLowerCase()) && needsLab(t))
+    // a kit warning re-opens the question unless a registered lab has tested THAT contaminant since:
+    // a newer fluoride lab result says nothing about an arsenic warning, and a contaminant the lab never
+    // tested stays open
+    const laterWarning = live.find((t) => !labs.has(t.creator.toLowerCase()) && needsLab(t) && t.tested > (newest.get(t.contaminant)?.tested ?? -Infinity))
     if (!over && laterWarning) {
       return { state: "confirm", basis: "kit", contaminant: laterWarning.contaminant, mgl: laterWarning.mgl,
         testers: 1, latest: laterWarning, code: "kit_after_lab", reason: "a kit warning came after the last lab result: needs a new lab test" }
@@ -86,5 +87,5 @@ export function verdict(tests: Test[], labs: Set<string>): Verdict {
   }
   return { state: "safe", basis: "kit", contaminant: worst.contaminant, mgl: worst.mgl, testers, latest: worst,
     code: testers > 1 ? "kit_safe_many" : "kit_safe_one",
-    reason: testers > 1 ? `kit screening within the limit, ${testers} independent testers` : "kit screening within the limit, one tester" }
+    reason: testers > 1 ? `kit screening within the limit, from ${testers} different tester wallets` : "kit screening within the limit, one tester" }
 }
