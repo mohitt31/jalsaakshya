@@ -237,7 +237,7 @@ Make write failures say what actually failed. In 0.8.1, an oversized batch surfa
   - The spoof probe (step 5 above) shows a copied record is excluded.
   - Who is misled today without this: a village told "your well was tested safe" by a forwarded screenshot, with no way to check who tested it or when.
 - **Censorship Resistance:** there is no backend.
-  - Anyone can read and query the whole dataset from Arkiv with the documented contract in `schema.md` (step 2 above), without our site.
+  - Anyone can read and query the whole dataset from Arkiv with the documented contract in `schema.md` (step 2 above), without our site. `npm run verify` checks every on-chain claim the same way.
   - A district office that would rather the "unsafe" list disappeared cannot remove it. Neither can we.
 
 ## Privacy (also entered)
