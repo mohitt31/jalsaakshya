@@ -403,9 +403,12 @@ async function pkOnId() {
   const idx = await pkLoadIndex(); const slug = idx?.prefix?.[id.split("-")[0]]
   if (!slug) { $("pk-chosen").textContent = t("pk_unknown", { id }); return }
   const b = await pkBlock(slug)
+  const hits: PickSrc[] = []
   for (const g of b.gps) for (const v of g.villages) for (const x of v.s) if (x[0] === id)
-    return pkChoose({ id, village: v.v, hab: x[1], cat: b.cats[x[2]], working: !!x[3], surveyed: x[4] || "", block: b.block, gp: g.gp })
-  $("pk-chosen").textContent = t("pk_unknown", { id })
+    hits.push({ id, village: v.v, hab: x[1], cat: b.cats[x[2]], working: !!x[3], surveyed: x[4] || "", block: b.block, gp: g.gp })
+  if (hits.length === 1) return pkChoose(hits[0])
+  pkClear()
+  $("pk-chosen").textContent = hits.length ? t("pk_dup", { id, n: hits.length }) : t("pk_unknown", { id })
 }
 
 async function signer() { return $<HTMLSelectElement>("signer").value === "injected" ? injectedWallet() : burnerWallet() }
@@ -447,7 +450,8 @@ async function submitTest(ev: Event) {
   const place = chosen ? attr(sites.get(chosen), "place") : String(fd.get("place") || "").trim().slice(0, 100)
   if (!place) { $("form-status").textContent = t("need_place"); return }
   const official = !chosen && picked ? picked.id : undefined
-  const id = chosen || (official ? `${siteId(district(), "")}phed-${official}` : siteId(district(), place))
+  // PHED reuses some IDs for different places (169 IDs, data/phed/README.md), so the key adds village and habitation
+  const id = chosen || (official && picked ? siteId(district(), `phed ${official} ${picked.village} ${picked.hab}`) : siteId(district(), place))
   const existing = sites.get(id)
   const input = { site: id, district: district(), place, contaminant, mgl: value, method, srctype: String(fd.get("srctype") || ""),
     note, kit: String(fd.get("kit") || "").slice(0, 60), entered: { value: raw, unit: fd.get("unit") === "ug" ? "µg/L" : "mg/L" }, tested: Math.floor(Date.now() / 1000), official_id: official }

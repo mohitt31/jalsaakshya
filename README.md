@@ -91,6 +91,8 @@ The rows come from [NeerTathya](https://github.com/mohitt31/jaldrishti) (same au
 ```bash
 python3 scripts/build_records.py      # -> web/public/data/records.json (the curator's publish input)
 python3 scripts/build_phed.py         # -> web/public/data/phed.json (WB PHED block figures, see data/phed/)
+python3 scripts/build_phed_sources.py <PHED source-list xlsx>   # -> web/public/data/phed-sources/ (picker data)
+python3 scripts/check_data.py         # integrity checks: totals match the printed report, 62,207 sources, no household names
 ```
 
 ## Run it

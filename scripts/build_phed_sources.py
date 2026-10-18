@@ -41,6 +41,7 @@ def main(path):
         working = 1 if clean(r[col["Working Status"]]).upper().startswith("WORKING") else 0
         surveyed = r[col["Surveyed on"]]
         surveyed = surveyed.strftime("%Y-%m-%d") if hasattr(surveyed, "strftime") else clean(surveyed)
+        gp = gp or "(GP not given)"
         blk = blocks.setdefault(b, collections.OrderedDict())
         blk.setdefault(gp, collections.OrderedDict()).setdefault(v, []).append([sid, hab, cats.index(cat), working, surveyed])
         prefix[sid.split("-")[0]] = slug(b); n += 1

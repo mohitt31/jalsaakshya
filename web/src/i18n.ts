@@ -114,6 +114,7 @@ const en = {
   pk_chosen: "PHED source {id}: {v}, {h} · {c} · {g} GP, {b} block · surveyed {s}",
   pk_unknown: "No PHED source {id} in this list.",
   pk_badge: "WB PHED source {id}",
+  pk_dup: "PHED's list uses ID {id} for {n} different places: pick it by block, GP and village above.",
 }
 export type Labels = typeof en
 
@@ -215,6 +216,7 @@ const hi: Partial<Labels> = {
   pk_chosen: "PHED स्रोत {id}: {v}, {h} · {c} · {g} ग्राम पंचायत, {b} ब्लॉक · सर्वे {s}",
   pk_unknown: "इस सूची में PHED स्रोत {id} नहीं है।",
   pk_badge: "WB PHED स्रोत {id}",
+  pk_dup: "PHED की सूची में ID {id} {n} अलग जगहों के लिए है: ऊपर ब्लॉक, ग्राम पंचायत और गाँव से चुनें।",
 }
 
 const bn: Partial<Labels> = {
@@ -315,6 +317,7 @@ const bn: Partial<Labels> = {
   pk_chosen: "PHED উৎস {id}: {v}, {h} · {c} · {g} গ্রাম পঞ্চায়েত, {b} ব্লক · সমীক্ষা {s}",
   pk_unknown: "এই তালিকায় PHED উৎস {id} নেই।",
   pk_badge: "WB PHED উৎস {id}",
+  pk_dup: "PHED-এর তালিকায় ID {id} {n}টি আলাদা জায়গার জন্য: উপরে ব্লক, গ্রাম পঞ্চায়েত ও গ্রাম দিয়ে বেছে নিন।",
 }
 
 export const LABELS: Record<Lang, Partial<Labels>> & { en: Labels } = { en, hi, bn }

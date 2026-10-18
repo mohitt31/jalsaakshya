@@ -54,6 +54,11 @@ sources** in 18 blocks, 209 gram panchayats and 1,472 villages: source ID, habit
 - block spellings unified to the comprehensive report's ("Ranaghat - I" → Ranaghat-I, Krishnagar → Krishnanagar,
   Santipur → Shantipur).
 
+Data quality, as published by PHED: 169 source IDs appear more than once for different places (367 rows), 101 rows have
+a malformed ID (e.g. `-000`), and 301 rows give no gram panchayat (shown as "(GP not given)"). We keep every row as
+printed. The app keys a picked source by PHED ID + village + habitation, and an ID typed in the search box that matches
+several places asks the tester to pick by block, GP and village instead.
+
 The list stays off Arkiv on purpose: it is a public reference list. In the app's *Add a test result* form, a tester in
 Nadia picks Block → Gram panchayat → Village → Source, or types the PHED source ID. Only a source somebody actually tests
 becomes an Arkiv `site` entity, with `official_id` (the PHED ID) and `origin = "wbphed-list"`. The raw Excel is not
