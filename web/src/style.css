@@ -70,3 +70,4 @@ h3{font:600 17px Georgia,serif;margin:18px 0 4px}
 @media (max-width:520px){.phed-t th:nth-child(4),.phed-t td:nth-child(4){display:none}}
 .say{border:0;background:none;cursor:pointer;font-size:18px;padding:0 4px;vertical-align:middle;line-height:1}
 .pick{border:1px dashed var(--line);border-radius:8px;padding:8px 10px;margin:6px 0}
+.rec-top>span{display:inline-flex;align-items:center;gap:2px;flex:none}
