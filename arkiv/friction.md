@@ -2,7 +2,7 @@
 
 Environment for everything below, unless a line says otherwise:
 - `@arkiv-network/sdk` **0.8.1**, `viem` **2.57.7**, bundled with Vite 5 and run in a Chromium-based browser (the Claude desktop app's browser pane), Tiramisu testnet (chain ID `7738577`), public RPC with no access key.
-- Dates: 15 to 17 October 2026 (IST). Wallets: see [onchain.md](onchain.md).
+- Dates: 15 to 18 October 2026 (IST). Wallets: see [onchain.md](onchain.md).
 - Every item was reproduced from our own code. The probes live in `web/src/curator.ts` (`probes()`), and
   the "Run probes" button on `/curator.html` re-runs them. Items marked **worked** are paths we tested that
   behaved as documented, written up with the same detail.
@@ -78,6 +78,10 @@ charset it prints is the one it enforces. We use lowercase `snake_case` names ev
 **What we did:** no `ne`/`exists` in the app. "Only above the limit" uses `gt("mgl", dec(limit))`; optional
 attributes are filtered client-side.
 
+**What would fix it:** either support `!=` and `EXISTS` on the node, or stop exporting `ne()`/`exists()` (or mark them
+"not supported on Tiramisu" in their JSDoc). The rejection message ("Requested resource not available") should name
+the unsupported operator.
+
 ## 4. A cursor at an unpinned head is rejected after a few seconds
 
 **Surface:** `QueryResult.next()`.
@@ -88,9 +92,16 @@ attributes are filtered client-side.
 `Query rejected (cursor, -32005): Request exceeds defined limit.` (first run). In the second run the same call
 got no response within 25 s.
 
+**Steps to reproduce:** `let p = await publicClient.select({ key: true }).where(eq("app", str(APP)), eq("kind", str("obs"))).limit(5).fetch()`,
+wait 6 s, then `await p.next()` (probe "cursor at unpinned head" in `curator.ts`).
+
 **What we did:** the official-records query is pinned with `.atBlock(head)`, read once on page load; "Load more"
 then works. This is documented in the SDK source comment ("A cursor is bound to the query, block and …") but the
 pagination example in the SDK README calls `result.next()` without `atBlock`.
+
+**What would fix it:** pin the block automatically when `fetch()` returns a cursor (the SDK knows the head it queried),
+or add `.atBlock()` to the README's pagination example and name the cause in the error ("cursor expired: pin the query
+with atBlock").
 
 ## 5. Faucet needs a browser wallet sign-in, so a script or in-browser key can't be funded directly
 
@@ -103,6 +114,9 @@ generated inside the page (no injected provider), so we installed MetaMask, sign
 the faucet's "Use a different address" option to send 10 GLM to the curator address. That option worked well;
 it is just not reachable until you have a browser wallet.
 
+**Steps to reproduce:** generate a key in a page (`privateKeyToAccount(generatePrivateKey())`), open
+hub.arkiv.network/faucet in a browser without a wallet extension: the faucet cannot be used until you sign in with one.
+
 **What would fix it:** allow the human check without SIWE for a pasted address, or mention in the Tiramisu
 docs that a browser wallet is needed to use the faucet.
 
@@ -110,7 +124,11 @@ docs that a browser wallet is needed to use the faucet.
 
 **Surface:** the README shipped inside `@arkiv-network/sdk@0.8.1` (`node_modules/@arkiv-network/sdk/README.md`).
 
-**Actual:** the install section says `"@arkiv-network/sdk": "^0.6.0"`. Fix: update the snippet to `^0.8.1`.
+**Expected:** the README inside the 0.8.1 package installs 0.8.x.
+
+**Actual:** the install section says `"@arkiv-network/sdk": "^0.6.0"`; following it installs an older SDK whose
+event and attribute APIs differ from the docs. **Steps to reproduce:** `npm i @arkiv-network/sdk@0.8.1`, open
+`node_modules/@arkiv-network/sdk/README.md`. **Fix:** update the snippet to `^0.8.1`.
 
 ## 7. `watchEntityEvents` has no filter, so "is this ours?" costs one RPC call per chain event
 
@@ -131,9 +149,10 @@ queries fail too: the records list and the sources list stayed empty.
 .watchEntityEvents({ onEntityCreated: (e) => publicClient.getEntity(e.entityKey) })` and leave the page open
 while the chain is busy.
 
-**What we did:** the event is now only a trigger. The app runs one query for the open district at most every
-8 seconds and diffs the result (`refreshLive` in `web/src/main.ts`). After the change, the same page logged no
-new 429s.
+**What we did:** the event is now only a trigger. First we ran one district query at most every 8 s; that stopped
+the 429s but spent the query budget (item 8). Now an event schedules a **free** filtered `arkiv_getEntityCount` for
+the open district at most every 15 s, and the 100-unit district query runs only when that count changed
+(`refreshLive` in `web/src/main.ts`). The page logs no 429s and a quiet page spends no query budget.
 
 **What would fix it:** an attribute or creator filter on `watchEntityEvents` (the node already evaluates the
 same predicates for queries), or attributes in `EntityCreatedEvent`. The rate limit (600 requests per 10 s)
@@ -195,23 +214,26 @@ A backend-free app, which this challenge rewards, sits between the two. We follo
 
 ---
 
-## 9. `readonly` does not stop the owner from deleting, and the docs don't say so next to the flag
+## 9. `readonly` does not stop the owner from deleting, and the SDK doesn't say so next to the flag
 
 - **Surface:** creation flags (`readonly`), `deleteEntity`, `changeOwnership`. `@arkiv-network/sdk` 0.8.1, Tiramisu, 18 Oct 2026.
 - **Expected:** our first docs said a `readonly` test result "cannot be edited or deleted, including by us". We read `readonly` as "immutable".
-- **Actual:** `readonly` blocks updates only. The entity's owner can still delete it before it expires. For us that matters: a lab (or our curator wallet) under pressure could delete an inconvenient "unsafe" result or an official record, and readers would only see it vanish.
+- **Actual:** `readonly` blocks updates only. Arkiv's own `arkiv-security-trust` skill says so ("Readonly prevents payload/attribute edits, while ownership transfer, deletion and expiry extension remain possible"), but the SDK's `readonly` flag has no JSDoc and the SDK README says nothing about deletion. We have not deleted one of our own records to test it; the skill is our source. For us it matters: a lab (or our curator wallet) under pressure could delete an inconvenient "unsafe" result or an official record, and readers would only see it vanish.
+- **Steps to reproduce:** `createEntity({ ..., flags: { readonly: true } })` from wallet W, then `deleteEntity({ entityKey })` from W (allowed for the owner per the skill above); the same `deleteEntity` after `changeOwnership` to `0x…dEaD` has no key that can sign it.
 - **What we changed:** ownership is what allows deletion, so we transfer it away.
   - A new test is sealed in the same atomic batch that creates it: `publicClient.predictEntityKeys({ owner, count })` gives the keys and salts, the creates carry those salts, and `ownershipChanges: [{ entityKey: testKey, newOwner: 0x…dEaD }]` hands the test to an address nobody holds a key for. First sealed test: tx `0x25696c897bf953f83e68d5ca866156d8830b9efcd373f70da03c9eeb2c1cd9ee` (create + site extension + ownership change on a `readonly` entity, one transaction).
   - The curator console seals the official records and the demo tests with batches of 100 ownership changes, picking up only what each wallet still owns (`createdBy(w).ownedBy(w)`), so it can resume.
   - The verify panel shows `$owner`: "Sealed: … nobody can delete it" or "only this wallet could delete it".
 - **Trade-off we accept:** after sealing, nobody can extend those entities either; they leave Arkiv on their lifetime, and the curator re-publishes official records when they are renewed.
-- **What would fix it:** one line next to `readonly` in the docs and the SDK's JSDoc: "blocks updates; the owner can still delete. To make an entity undeletable, transfer ownership." `predictEntityKeys` being on the public client (not the wallet client) also tripped other teams; a wallet-client alias would help.
+- **What would fix it:** one line next to `readonly` in the docs and the SDK's JSDoc (the skill already has it): "blocks updates; the owner can still delete. To make an entity undeletable, transfer ownership." `predictEntityKeys` being on the public client (not the wallet client) also tripped other teams; a wallet-client alias would help.
 
 ## 10. Lifetimes must be whole 2-second blocks (clear error, worth a doc line)
 
 - **Surface:** `ExpirationTime.fromSeconds`, SDK 0.8.1.
 - **What happened:** we compute some lifetimes from a real date: an official WB PHED figure expires 365 days after the day it was read, and an offline test 90/365 days after it was taken. The first publish failed before signing: "Invalid expiry: a lifetime must be a multiple of the 2s block time, got 31462627 … Try 31462626 or 31462628, or ExpirationTime.fromBlocks(n)."
-- **Verdict:** the message is excellent (it even suggests the two valid values). We now round down to whole blocks. A note on the `fromSeconds` JSDoc would save the round trip.
+- **Expected:** `ExpirationTime.fromSeconds(31462627)` sets a lifetime of about 364 days.
+- **Steps to reproduce:** `ExpirationTime.fromSeconds(31462627)` in any create; odd numbers fail, even numbers pass.
+- **Verdict:** the message is excellent (it even suggests the two valid values). We now round down to whole blocks (`evenSeconds` in `web/src/writes.ts`). **What would fix it:** a note on the `fromSeconds` JSDoc, or rounding inside `fromSeconds`, would save the round trip.
 
 ## Paths that worked as documented
 
