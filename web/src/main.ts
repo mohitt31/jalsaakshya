@@ -345,9 +345,8 @@ type PickSrc = { id: string; village: string; hab: string; cat: string; working:
 let pkIndex: any = null
 const pkBlocks = new Map<string, any>()
 let picked: PickSrc | null = null
-const CAT_TYPE: Record<string, string> = { "STAND POST": "piped supply", "PUMP HOUSE": "piped supply", "SAJAL DHARA": "piped supply", "COMMUNITY TANK": "piped supply",
-  "ORDINARY TYPE HANDPUMP TUBEWELL": "hand pump", "INDIA MARK-II TYPE HANDPUMP TUBEWELL": "hand pump", "D.W.P TYPE HANDPUMP TUBEWELL": "hand pump", "TARAPUMP": "hand pump",
-  "DUGWELL": "dug well", "COMMUNITY WATER PURIFICATION PLANT": "community plant" }
+const CAT_TYPE: Record<string, string> = { "STAND POST": "piped supply", "PUMP HOUSE": "piped supply", "SAJAL DHARA": "piped supply", "COMMUNITY TANK": "piped supply", "DUGWELL": "dug well",
+  "ORDINARY TYPE HANDPUMP TUBEWELL": "hand pump", "INDIA MARK-II TYPE HANDPUMP TUBEWELL": "hand pump", "D.W.P TYPE HANDPUMP TUBEWELL": "hand pump", "TARAPUMP": "hand pump", "COMMUNITY WATER PURIFICATION PLANT": "community plant" }
 const opt = (v: string, label: string) => `<option value="${esc(v)}">${esc(label)}</option>`
 async function pkLoadIndex() {
   if (pkIndex !== null) return pkIndex
@@ -398,16 +397,13 @@ async function pkOnSource() {
   pkChoose({ id: x[0], village: v.v, hab: x[1], cat: b.cats[x[2]], working: !!x[3], surveyed: x[4] || "", block: b.block, gp: g.gp })
 }
 async function pkOnId() {
-  const id = $<HTMLInputElement>("pk-id").value.trim()
-  if (!/^\d{3,5}-\d{1,4}$/.test(id)) return
+  const id = $<HTMLInputElement>("pk-id").value.trim(); if (!/^\d{3,5}-\d{1,4}$/.test(id)) return
   const idx = await pkLoadIndex(); const slug = idx?.prefix?.[id.split("-")[0]]
   if (!slug) { $("pk-chosen").textContent = t("pk_unknown", { id }); return }
-  const b = await pkBlock(slug)
-  const hits: PickSrc[] = []
+  const b = await pkBlock(slug), hits: PickSrc[] = []
   for (const g of b.gps) for (const v of g.villages) for (const x of v.s) if (x[0] === id)
     hits.push({ id, village: v.v, hab: x[1], cat: b.cats[x[2]], working: !!x[3], surveyed: x[4] || "", block: b.block, gp: g.gp })
-  if (hits.length === 1) return pkChoose(hits[0])
-  pkClear()
+  if (hits.length === 1) return pkChoose(hits[0]); pkClear()
   $("pk-chosen").textContent = hits.length ? t("pk_dup", { id, n: hits.length }) : t("pk_unknown", { id })
 }
 
@@ -450,8 +446,7 @@ async function submitTest(ev: Event) {
   const place = chosen ? attr(sites.get(chosen), "place") : String(fd.get("place") || "").trim().slice(0, 100)
   if (!place) { $("form-status").textContent = t("need_place"); return }
   const official = !chosen && picked ? picked.id : undefined
-  // PHED reuses some IDs for different places (169 IDs, data/phed/README.md), so the key adds village and habitation
-  const id = chosen || (official && picked ? siteId(district(), `phed ${official} ${picked.village} ${picked.hab}`) : siteId(district(), place))
+  const id = chosen || (official && picked ? siteId(district(), `phed ${official} ${picked.village} ${picked.hab}`) : siteId(district(), place))   // PHED reuses 169 IDs: key adds village + habitation
   const existing = sites.get(id)
   const input = { site: id, district: district(), place, contaminant, mgl: value, method, srctype: String(fd.get("srctype") || ""),
     note, kit: String(fd.get("kit") || "").slice(0, 60), entered: { value: raw, unit: fd.get("unit") === "ug" ? "µg/L" : "mg/L" }, tested: Math.floor(Date.now() / 1000), official_id: official }
