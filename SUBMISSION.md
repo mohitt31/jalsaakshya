@@ -156,13 +156,16 @@ Any judge who adds a test from the app creates `site`/`test` entities from their
 
 ## How can judges reproduce our Arkiv usage?
 
+**One command, chain only.** `git clone https://github.com/mohitt31/jalsaakshya && cd jalsaakshya/web && npm ci && npm run verify` reads Tiramisu directly, with no app, no backend and no key of ours ([verify.mjs](web/verify.mjs)). It checks: 1,173 survey rows from the curator; 18 WB PHED block figures summing to 1,24,297 tests and 76,665 beyond the limit; all 1,204 official records sealed (0 still owned by the curator); every live test sealed; every source `readonly` + `permissionlessExtension`; and the query in step 2. Last run 19 Oct 2026: 7 of 7 PASS.
+
 1. **Records and `$creator`.** Open https://mohitt31.github.io/jalsaakshya/?district=Purulia and pick *Fluoride* with *Only above the drinking-water limit* ticked.
    - Every card is above 1.5 mg/L. This is the `gt("mgl", dec("1.5"))` range.
    - Open a card's *Show the table row*. It shows the Arkiv entity key and "created by curator 0x048A…3760 ✓".
    - The report link opens the PDF at the cited page.
 2. **The same query without our app.** In any Node project, run:
    ```ts
-   import { createPublicClient, http } from "@arkiv-network/sdk"
+   import { createPublicClient } from "@arkiv-network/sdk"
+   import { http } from "viem"
    import { tiramisu } from "@arkiv-network/sdk/chains"
    import { str, dec } from "@arkiv-network/sdk/attr"
    import { eq, gt } from "@arkiv-network/sdk/query"

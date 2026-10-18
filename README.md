@@ -95,6 +95,14 @@ python3 scripts/build_phed_sources.py <PHED source-list xlsx>   # -> web/public/
 python3 scripts/check_data.py         # integrity checks: totals match the printed report, 62,207 sources, no household names
 ```
 
+## Check our claims from the chain alone
+
+```bash
+git clone https://github.com/mohitt31/jalsaakshya && cd jalsaakshya/web && npm ci && npm run verify
+```
+
+[`web/verify.mjs`](web/verify.mjs) reads Tiramisu directly, with no app, no backend and no key of ours, and prints PASS or FAIL for: 1,173 survey rows from the curator; 18 WB PHED block figures summing to 1,24,297 tests and 76,665 beyond the limit; all 1,204 official records sealed (0 still owned by the curator); every live test sealed; every source `readonly` + `permissionlessExtension`; and a filtered range query. Most checks are free filtered counts; three are 100-unit queries.
+
 ## Run it
 
 ```bash
@@ -129,6 +137,7 @@ The curator console is `/curator.html`. It:
 | [`web/src/model.ts`](web/src/model.ts) | Status rules and lifetimes (tested in `model.test.ts`) |
 | [`web/src/writes.ts`](web/src/writes.ts) | Entity builders: test, site, lab, atomic batch |
 | [`web/src/curator.ts`](web/src/curator.ts) | Curator console and friction probes |
+| [`web/verify.mjs`](web/verify.mjs) | `npm run verify`: checks the claims above from Tiramisu alone |
 | [`scripts/build_records.py`](scripts/build_records.py) | Builds the publish input from the NeerTathya snapshot |
 | [`data/phed/`](data/phed/README.md), [`scripts/build_phed.py`](scripts/build_phed.py) | What WB PHED publishes, the extracted block table, and its publish input |
 
