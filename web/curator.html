@@ -26,6 +26,10 @@
 <div class="card"><h3>Synthetic demo data</h3>
 <p class="small muted">Clearly labelled demo sources in Nadia so judges can see every status. Not real measurements.</p>
 <button id="fund" class="secondary">Fund demo wallets (0.1 GLM each)</button> <button id="seed" class="secondary">Seed demo sources</button></div>
+<div class="card"><h3>Tester kits</h3>
+<p class="small muted">Makes fresh tester wallets, funds each with 0.05 test GLM, and gives a link to send on WhatsApp. Opening it on a phone makes that wallet the page's test wallet: no faucet, no captcha, no crypto app. The key is in the link's #fragment, which never reaches a server; treat the link as personal.</p>
+<p><label>How many <input id="kit-n" type="number" value="1" min="1" max="10"></label> <label>District <input id="kit-district" value="Nadia"></label></p>
+<button id="kit-go" class="secondary">Make tester kits</button></div>
 <div class="card"><h3>Friction probes</h3><button id="probe" class="secondary">Run probes</button></div>
 <ol id="log" class="log"></ol>
 </main><script type="module" src="/src/curator.ts"></script></body></html>

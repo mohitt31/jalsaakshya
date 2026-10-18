@@ -1,4 +1,4 @@
-// JalSaakshya: groundwater evidence for West Bengal, read straight from Arkiv. No backend.
+import "./kit" // JalSaakshya: groundwater evidence for West Bengal, read straight from Arkiv. No backend. (kit.ts reads tester kit links first)
 import { bool, dec, i32, str } from "@arkiv-network/sdk/attr"
 import { and, eq, gt, gte, or, render, startsWith, type Expression } from "@arkiv-network/sdk/query"
 import {

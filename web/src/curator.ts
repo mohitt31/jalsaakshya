@@ -3,7 +3,7 @@ import { bool, dec, i32, str, u64 } from "@arkiv-network/sdk/attr"
 import { eq, or } from "@arkiv-network/sdk/query"
 import { ExpirationTime, jsonToPayload } from "@arkiv-network/sdk/utils"
 import { APP, LIFETIME, publicClient, burnerWallet, balanceOf, txLink, addrLink } from "./arkiv"
-import { parseEther } from "viem"
+import { parseEther } from "viem"; import { generatePrivateKey, privateKeyToAccount } from "viem/accounts"
 import { ne, exists } from "@arkiv-network/sdk/query"
 import { labCreate, testBatch, SEAL } from "./writes"
 import { siteId } from "./model"
@@ -275,3 +275,26 @@ $("probe").addEventListener("click", () => probes())
 $("demo-lab").textContent = demoWallets.lab.account!.address
 $("refresh").addEventListener("click", refresh)
 refresh().catch((e) => log(String(e)))
+
+// ---- tester kits: funded test wallets a block office sends to field testers as links --------------
+// The link carries the wallet's key in the URL fragment (#kit=…), which never reaches a server. The tester
+// opens it on her phone and can publish at once: no faucet, no captcha, no crypto app. 0.05 test GLM pays for
+// dozens of tests. Kits made here are kept in this browser so the office can resend them.
+async function makeKits() {
+  const n = Math.max(1, Math.min(10, parseInt(($("kit-n") as HTMLInputElement).value) || 1))
+  const district = ($("kit-district") as HTMLInputElement).value.trim() || "Nadia"
+  let kept: any[] = []
+  try { kept = JSON.parse(localStorage.getItem("jalsaakshya.kits.v1") || "[]") } catch { /* ignore */ }
+  for (let i = 0; i < n; i++) {
+    const pk = generatePrivateKey()
+    const a = privateKeyToAccount(pk).address
+    const hash = await (wallet_ as any).sendTransaction({ to: a, value: parseEther("0.05") })
+    await publicClient.waitForTransactionReceipt({ hash })
+    const url = `${location.origin}${location.pathname.replace(/curator\.html$/, "")}?district=${encodeURIComponent(district)}#kit=${pk}`
+    kept.push({ address: a, district, at: Date.now(), url })
+    try { localStorage.setItem("jalsaakshya.kits.v1", JSON.stringify(kept)) } catch { /* ignore */ }
+    const wa = `https://wa.me/?text=${encodeURIComponent(`JalSaakshya tester kit (${district}). Open on your phone to add water test results; keep this link private: ${url}`)}`
+    log(`Tester kit ${a} funded with 0.05 GLM · <a href="${txLink(hash)}" target="_blank" rel="noopener">tx</a> · <a href="${wa}" target="_blank" rel="noopener">send on WhatsApp</a> · <a href="${url}" target="_blank" rel="noopener">open</a>`)
+  }
+}
+$("kit-go").addEventListener("click", () => makeKits().catch((e) => log(String(e?.shortMessage || e?.message || e))))
