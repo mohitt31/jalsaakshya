@@ -49,7 +49,22 @@ From the curator console (*Seal official records and demo tests*): every entity 
 - **Demo lab `0x690F…a066`:** 1 test(s), tx `0x961c01851ad0c8c3e12b11bb64599303c49e7d4eb2cd1247e9e641957de50d1b`
 - **In-app test wallet `0x83EF…146d`:** 2 test(s), tx `0xadb8555962fc9028da466032abaa3f25d28def87691c2e954fc6ca1dc75976ca`
 
-The lab registry is not sealed, so the curator can still delist a lab. After sealing, nobody can delete or extend these entities; they leave Arkiv when their lifetimes end.
+The lab registry is not sealed, so the curator can still delist a lab. After sealing, nobody can delete these entities; they leave Arkiv when their lifetimes end (sources can still be renewed by anyone, through `permissionlessExtension`).
+
+## Sealed sources (19 Oct 2026)
+
+A source's creator could delete it, and its sealed tests would drop out of the list with it. So a new
+source is now sealed in the batch that creates it, and keeps `permissionlessExtension`:
+- probe (district `Probe`, `demo = true`, 1–3 h lifetimes): source + test created and both sealed in one batch,
+  tx `0x421282c5cb7cfcd173e674ec3cb97f2baeda100efd965ab2f0ac7f9f3327e904`;
+- the sealed probe source renewed by another wallet (demo tester A), tx `0x292a022e1b18618710a1bdb29f7234b62433423d2bed95d2614d71765ac692db`;
+- the creator's `deleteEntity` on it refused: "owned by 0x…dEaD, not 0x83EF…146d";
+- the five earlier sources sealed by the curator console: demo tester A (3), tx `0x817f73eefb069e150f26119cfcef86e2c3f0b1a07113cdb78083f2972009e21f`;
+  demo tester B (1), tx `0x67ba2e454a436437b13e54a954a9e04dc309ddc755e99523e951c81b21d4ebf6`; in-app test wallet (1),
+  tx `0x15cb237001a0da589b08637a9f25f4cdff93cf641d73ef16830b30a139f22da4`.
+
+`readonly` alone does not stop deletion (friction #9): probe create tx `0x0eaa40fad0bfafc91078ed69162306ab7c438ec0b8f06e7809ab95bc50c50e91`,
+deleted by its own wallet in tx `0xf02255b35c1aa5cd1dbd4e0a42944dacd17afa5e804e6b5f8e5f970e01705566`.
 
 ## First sealed test (18 Oct 2026)
 

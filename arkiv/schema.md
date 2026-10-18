@@ -110,6 +110,13 @@ Flags: `readonly`, `permissionlessExtension`. Expiration: 365 days. Every new te
 keep testing it and drops off a year after its last test. If two wallets create the same `site` slug, the
 earliest-created entity is canonical.
 
+**Sealed, and still renewable by anyone.** The batch that creates a source also hands it to `0x…dEaD`, like its
+first test, so its creator cannot delist it (and take its sealed "unsafe" tests out of the list with it).
+`permissionlessExtension` is what keeps it alive after that: any tester's new reading renews it, although
+nobody owns it. Tested on Tiramisu: tx `0x421282c5…e904` created and sealed a probe source and test in one
+batch; tx `0x292a022e…92db` renewed the sealed source from another wallet; the creator's `deleteEntity` was
+refused ("owned by 0x…dEaD, not 0x83EF…"). Sources created before 19 Oct were sealed by the curator console.
+
 ### `test`: one test result for a source (anyone)
 
 | Attribute | Type | Example | Notes |
@@ -133,7 +140,8 @@ Expiration follows the rule the reading lives under:
 
 **Sealed.** `readonly` blocks edits but not deletion by the owner, so the batch that creates a test also
 transfers its ownership to `0x000000000000000000000000000000000000dEaD` (key and salt from `predictEntityKeys`,
-then `ownershipChanges`). `$creator` stays the tester; nobody can delete the test before it expires.
+then `ownershipChanges`). `$creator` stays the tester; nobody can delete the test before it expires. A new
+source is sealed in the same batch (see `site` above).
 
 A test entered without network waits in the phone's browser storage and is signed and sent when the
 network returns. Its `tested` is the time it was entered, and its lifetime is counted from that moment

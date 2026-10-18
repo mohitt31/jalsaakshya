@@ -63,7 +63,7 @@ Under Jal Jeevan Mission, five women in every village are trained to test drinki
 - **Pick your real source (Nadia).** The add-test form lists all 62,207 drinking-water sources in WB PHED's public source list: Block → Gram panchayat → Village → Source, or type the PHED source ID. The test is then filed against that official ID. Household names in the list are dropped ([details](data/phed/README.md)).
 - **Visit list for block staff.** One WhatsApp message lists every source in the district that is unsafe, needs lab confirmation or is overdue, each with its check link.
 - **Works offline.** The site installs as an app and opens without network. A test entered offline waits on the phone, is clearly marked "not on Arkiv yet", and is signed and sent when the network returns. Its lifetime counts from when it was taken.
-- **Sealed.** `readonly` stops edits, but an owner can still delete. So the same transaction that creates a test hands its ownership to `0x…dEaD`, an address nobody holds a key for, and the curator sealed all 1,204 official records the same way. Nobody, the lab, the tester or us, can withdraw an "unsafe" result or an official record; it leaves Arkiv only when its lifetime ends. The *Checked on Arkiv* panel shows the owner.
+- **Sealed.** `readonly` stops edits, but an owner can still delete (we tested it). So the same transaction that creates a test, and a new source, hands its ownership to `0x…dEaD`, an address nobody holds a key for, and the curator sealed all 1,204 official records the same way. Nobody, the lab, the tester or us, can withdraw an "unsafe" result, delist its source or remove an official record; it leaves Arkiv only when its lifetime ends. A source keeps `permissionlessExtension`, so anyone's new test still renews it. The *Checked on Arkiv* panel shows the owner.
 - **Read aloud.** A 🔊 button reads a source's status and reason, and the "needs a lab" warning, in Hindi, Bengali or English (the phone's own text-to-speech).
 - **Live.** New tests appear over a WebSocket subscription without reloading the page.
 - **Languages.** The whole interface is in English, Hindi and Bengali, including statuses, reasons and district names.
@@ -101,7 +101,7 @@ python3 scripts/check_data.py         # integrity checks: totals match the print
 git clone https://github.com/mohitt31/jalsaakshya && cd jalsaakshya/web && npm ci && npm run verify
 ```
 
-[`web/verify.mjs`](web/verify.mjs) reads Tiramisu directly, with no app, no backend and no key of ours, and prints PASS or FAIL for: 1,173 survey rows from the curator; 18 WB PHED block figures summing to 1,24,297 tests and 76,665 beyond the limit; all 1,204 official records sealed (0 still owned by the curator); every live test sealed; every source `readonly` + `permissionlessExtension`; and a filtered range query. Most checks are free filtered counts; three are 100-unit queries.
+[`web/verify.mjs`](web/verify.mjs) reads Tiramisu directly, with no app, no backend and no key of ours, and prints PASS or FAIL for: 1,173 survey rows from the curator; 18 WB PHED block figures summing to 1,24,297 tests and 76,665 beyond the limit; all 1,204 official records sealed (0 still owned by the curator); every live test sealed; every source `readonly` + `permissionlessExtension` and sealed; and a filtered range query. Most checks are free filtered counts; three are 100-unit queries.
 
 ## Run it
 
