@@ -101,6 +101,8 @@ and never feeds `model.ts`.
 | `site` | str | `nadia/demo-source-a-synthetic` | stable slug of district and place; joins to `test.site` |
 | `district`, `place` | str | `Nadia`, `Demo source A (synthetic)` | |
 | `srctype` | str | `tube well` | tube well, dug well, hand pump, piped supply, community plant |
+| `official_id` | str | `5260-089` | present when the tester picked the source from WB PHED's public list |
+| `origin` | str | `wbphed-list` | present with `official_id` |
 | `demo` | bool | `true` | present only on demo data |
 
 Flags: `readonly`, `permissionlessExtension`. Expiration: 365 days. Every new test renews it for another

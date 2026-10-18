@@ -345,8 +345,9 @@ type PickSrc = { id: string; village: string; hab: string; cat: string; working:
 let pkIndex: any = null
 const pkBlocks = new Map<string, any>()
 let picked: PickSrc | null = null
-const CAT_TYPE: Record<string, string> = { "STAND POST": "piped supply", "PUMP HOUSE": "piped supply", "ORDINARY TYPE HANDPUMP TUBEWELL": "hand pump",
-  "INDIA MARK-II TYPE HANDPUMP TUBEWELL": "hand pump", "COMMUNITY WATER PURIFICATION PLANT": "community plant" }
+const CAT_TYPE: Record<string, string> = { "STAND POST": "piped supply", "PUMP HOUSE": "piped supply", "SAJAL DHARA": "piped supply", "COMMUNITY TANK": "piped supply",
+  "ORDINARY TYPE HANDPUMP TUBEWELL": "hand pump", "INDIA MARK-II TYPE HANDPUMP TUBEWELL": "hand pump", "D.W.P TYPE HANDPUMP TUBEWELL": "hand pump", "TARAPUMP": "hand pump",
+  "DUGWELL": "dug well", "COMMUNITY WATER PURIFICATION PLANT": "community plant" }
 const opt = (v: string, label: string) => `<option value="${esc(v)}">${esc(label)}</option>`
 async function pkLoadIndex() {
   if (pkIndex !== null) return pkIndex

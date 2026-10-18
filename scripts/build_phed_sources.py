@@ -31,7 +31,11 @@ def main(path):
         if not r or not r[col["Source ID"]]: continue
         if clean(r[col["District"]]).upper() != "NADIA": continue
         b, gp, v, hab = (clean(r[col[k]]).title() for k in ["Block", "Panchayat", "Village", "Habitation"])
+        # the list spells some blocks two ways ("Ranaghat - I" / "Ranaghat-I", "Krishnagar" / "Krishnanagar",
+        # "Santipur" / "Shantipur"); use the spelling of PHED's comprehensive report
+        b = re.sub(r"\s*-\s*", "-", b)
         b = re.sub(r"-(i+)$", lambda m: "-" + m.group(1).upper(), b, flags=re.I)
+        b = {"Krishnagar-I": "Krishnanagar-I", "Krishnagar-II": "Krishnanagar-II", "Santipur": "Shantipur"}.get(b, b)
         sid = clean(r[col["Source ID"]]); cat = clean(r[col["Source Category"]]).upper()
         if cat not in cats: cats.append(cat)
         working = 1 if clean(r[col["Working Status"]]).upper().startswith("WORKING") else 0

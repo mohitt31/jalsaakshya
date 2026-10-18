@@ -41,6 +41,24 @@ The curator console's **Publish PHED block figures** button writes one read-only
 (schema: [`arkiv/schema.md`](../../arkiv/schema.md), transactions: [`arkiv/onchain.md`](../../arkiv/onchain.md)).
 The PDF itself is not committed; its URL and hash are kept with every entity.
 
+## The public source list: used for the add-test picker
+
+The guest Excel download `download/source-list-download.php?district=336` (downloaded 18 Oct 2026, 3,889,517 bytes,
+SHA-256 `1363ecd3e597ad41fe346f2ad5b2c12c86e25c767c5702da11d6d92cf717b410`) lists **62,207 Nadia drinking-water
+sources** in 18 blocks, 209 gram panchayats and 1,472 villages: source ID, habitation, category, working status and
+"Surveyed on". 89% of the survey dates are 2020 or earlier; the list carries no test result.
+
+`scripts/build_phed_sources.py <xlsx>` splits it into `web/public/data/phed-sources/<block>.json` (plus `index.json`):
+- kept: block, gram panchayat, village, habitation, source ID, category, working status, survey date;
+- dropped: *Nearest Location* (it names private households), scheme, platform status;
+- block spellings unified to the comprehensive report's ("Ranaghat - I" → Ranaghat-I, Krishnagar → Krishnanagar,
+  Santipur → Shantipur).
+
+The list stays off Arkiv on purpose: it is a public reference list. In the app's *Add a test result* form, a tester in
+Nadia picks Block → Gram panchayat → Village → Source, or types the PHED source ID. Only a source somebody actually tests
+becomes an Arkiv `site` entity, with `official_id` (the PHED ID) and `origin = "wbphed-list"`. The raw Excel is not
+committed because of the household-names column.
+
 ## What this shows
 
 The state already tests at scale: 124,297 arsenic tests in one district. What a field tester or a block officer
