@@ -243,7 +243,7 @@ Make write failures say what actually failed. In 0.8.1, an oversized batch surfa
 
 **What is on the explorer, and what is not:**
 - **No names, phone numbers or addresses.** Testers are wallets made in their own browser. The note field refuses phone numbers and emails. A source is a place ("Anulia, Halder Para · PHED 5260-089"), never a person.
-- **We remove personal data that the government list carries.** WB PHED's public source list names private households in its *Nearest Location* column ("NHO <name>", near the house of). We drop that column before using the list, keep the raw file out of the repo, and key sources by PHED ID, village and habitation instead ([data/phed/README.md](data/phed/README.md)).
+- **We remove personal data that the government list carries.** WB PHED's public source list names private households in its *Nearest Location* column ("NHO" + a householder's name, meaning near the house of). We drop that column before using the list, keep the raw file out of the repo, and key sources by PHED ID, village and habitation instead ([data/phed/README.md](data/phed/README.md)).
 - **Few attributes, all about water:** site, district, place, contaminant, value, method, test date and, for PHED sources, the official ID ([schema.md](arkiv/schema.md)).
 - **Nothing lingers past its use:** a kit reading leaves every query after 90 days and a lab result after 365 days.
 
