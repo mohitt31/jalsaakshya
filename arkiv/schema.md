@@ -93,6 +93,28 @@ and the curator has to re-read the report. Published in 2 atomic batches of 9 (a
 This is a district-level official figure, not a status of any one source: it is shown above the sources list,
 and never feeds `model.ts`.
 
+### `jjmsample`: one official JJM WQMIS lab sample (curator only)
+
+One sample from the Jal Jeevan Mission WQMIS *Contaminant-wise* report (ejalshakti.gov.in/WQMIS, Ministry of Jal Shakti):
+a lab result the report flags for a contaminant, with its sample ID, village and test date
+([`data/jjm/README.md`](../data/jjm/README.md)).
+
+| Attribute | Type | Example | Notes |
+|---|---|---|---|
+| `app`, `kind` | str | `jalsaakshya/v1`, `jjmsample` | |
+| `sid` | str | `jjm/U732171L871S30536436` | the report's SampleId; the console skips ids already on chain |
+| `district`, `block`, `gp`, `village` | str | `Nadia`, `Ranaghat-i`, `Barasat`, `Birnagar (p)` | as printed |
+| `contaminant` | str | `arsenic` | |
+| `mgl`, `limit` | dec | `0.86`, `0.01` | value and permissible limit, mg/L, as printed |
+| `tested` | u64 | `1749772800` | the report's test date |
+| `asof` | u64 | | the day the report was read |
+| `origin` | str | `jjm-wqmis` | |
+
+Payload (JSON): `report`, `url`, `filters`, `sample_id`, `block`, `gram_panchayat`, `village`, `source_type`, `test_date`,
+`total_arsenic_mgl`, `permissible_limit_mgl`, `extract_sha256`. The report's free-text location is not copied: it can name a household.
+Flags: `readonly`, then sealed (owner `0x…dEaD`). Expiration: 365 days from `asof`. Shown on `jjm.html`; it does not feed `model.ts`,
+because a WQMIS sample ID is not linked to a WB PHED source ID.
+
 ### `site`: a drinking-water source (anyone)
 
 | Attribute | Type | Example | Notes |

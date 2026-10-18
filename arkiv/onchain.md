@@ -15,6 +15,37 @@ Explorer: https://tiramisu.explorer.arkiv.network
 Any other wallet that adds a test through the app also creates `site`/`test` entities; the app labels
 those with their creator.
 
+## Official JJM WQMIS lab samples (19 Oct 2026)
+
+220 `jjmsample` entities: every Nadia sample that the Jal Jeevan Mission WQMIS contaminant-wise report (Ministry of Jal Shakti) flags for arsenic in FY 2025-26, read 19 Oct 2026 ([`data/jjm/`](../data/jjm/README.md), extract SHA-256 `a876dd23…cdfef86`). 139 villages, 12 blocks, 0.01 to 0.86 mg/L. They were published in 22 atomic batches of 10 from the curator console, then sealed (owner `0x…dEaD`) in 3 batches:
+- create tx `0x2b0aa342a20db349b345fddf6bf6c1b6cd3a9baf4b8aeb2bdc7442013c18a3eb`
+- create tx `0x9c81c105ac71506cd5db03c3d886135d85604a7cddd74a87b63dc7bc46bc100f`
+- create tx `0x7ebb76c6f774b2816d8b5b038282062e72b6a2c142b1bd97d4e3cfaae929df91`
+- create tx `0xe6cc3d2d8c4d85e37a1df6335f9acd7a54dbfcbd81a92cc41370f0734559d388`
+- create tx `0x1a0664913b5ec6a967c781edfbfaf656c1b0b81eb320a75f7a29bcd60c14ea97`
+- create tx `0x34c0dbac45234c47975ab9b6f8a96ae428dde8931a4be5cdf67adaa8f9790b24`
+- create tx `0x5e445f9fbffe058e048d9409d2c404e857cc2732064340d5f0b78c1672191f9a`
+- create tx `0xa58eb8ebfc2d6b1e448c9aad139d5cacb4b0b95a18256616f91bfa379579c8ee`
+- create tx `0xf601fd275a2a62f63ac66556cffb570228a2c684c3347d277f80639c358c2922`
+- create tx `0x0dfc046c5154cbe97848ed2e9bc660d342fd2f89ac942340abd7920259c75936`
+- create tx `0x5094e0ece6719842bde95ee260ab9d4da83f10b69c4fc12b89ab1fa9af758cb0`
+- create tx `0xe3d25f33156dddeb8de053259ca4372e7ea194459c42a0bb7e3a222f03f8fb7e`
+- create tx `0xcb1f36ce1367f3004f7ae6e4bb7da237d3866ca9c781f18f1fd963e280a09e4c`
+- create tx `0x843f74001c66638abb01e013c0db1af5e357f047e9bfd4354ef3a5ff864c20bf`
+- create tx `0x7aaf5ec0563a3392792bc625c44d48e6914bb938ebaf33f7fbaa5e1a73fd21a6`
+- create tx `0xcc066721a7c9ef0c020438432b2ed19f031b1f10c9b2ffb0c919ccc6d43f75ef`
+- create tx `0x0f9ee7ffb3f3a01499ec03f3a4db9515147db19272c1ceee195ca5aef6b5e697`
+- create tx `0x6752cff2f5b76eeac4d64ed4c6839adb37470653f70b93c4ecff2afe0072ded4`
+- create tx `0xf1de4fa9e4239122a9bce32f66c8e45c23e4f419130fd7dcebe1987c777b5b0a`
+- create tx `0xcfc96622922fb80f8f5d71c3a12b2870733d56584205e7839d5b1bb0546940b8`
+- create tx `0xb6f237a189b4dc1b05964658d960dfcc4b7fac7ed9aff79bffd49b96133bf923`
+- create tx `0xefae76b380802c3a740b06f5c3385881063dd5e54505c5a80d75cc2a0437b4e4`
+- seal tx `0x529916513e6bbd59c1e96d3181cda4f02ad2af01126730e08060d51b793bb8d5`
+- seal tx `0x9befeed14788ec64e8f9479e7a8a8a6b25480134abcdc74bd433e95e732e6577`
+- seal tx `0x4430aed52f48cfcb875f24d055b69301049e8c5b25bc6db8685c8840a348b7f8`
+
+Read them back at https://mohitt31.github.io/jalsaakshya/jjm.html; the [proof page](https://mohitt31.github.io/jalsaakshya/proof.html) counts 220 created by the curator and 220 sealed.
+
 ## Official WB PHED block figures (18 Oct 2026)
 
 18 `blockstat` entities (one per Nadia block) from WB PHED's public comprehensive report, downloaded 17 Oct 2026

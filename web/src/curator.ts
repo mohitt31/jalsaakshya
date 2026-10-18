@@ -151,7 +151,7 @@ async function sealOwned(w: any, label: string, kinds: string[]) {
 async function sealAll() {
   ;($("seal-go") as HTMLButtonElement).disabled = true
   try {
-    await sealOwned(wallet, "curator records", ["obs", "source", "blockstat"])
+    await sealOwned(wallet, "curator records", ["obs", "source", "blockstat", "jjmsample"])
     for (const [name, w] of Object.entries(demoWallets)) await sealOwned(w, `demo ${name} tests and sources`, ["test", "site"])
     log("Seal: done.")
   } catch (err: any) { log(`<b>Error:</b> ${String(err?.shortMessage || err?.message || err).slice(0, 400)}`) }
@@ -267,6 +267,7 @@ async function probes() {
 
 $("go").addEventListener("click", publish)
 $("phed-go").addEventListener("click", publishPhed)
+$("jjm-go").addEventListener("click", publishJjm)
 $("seal-go").addEventListener("click", () => sealAll())
 $("lab-go").addEventListener("click", registerLab)
 $("fund").addEventListener("click", () => fundDemo().catch((e) => log(String(e?.shortMessage || e?.message || e))))
@@ -298,3 +299,40 @@ async function makeKits() {
   }
 }
 $("kit-go").addEventListener("click", () => makeKits().catch((e) => log(String(e?.shortMessage || e?.message || e))))
+
+// ---- official JJM WQMIS lab samples (web/public/data/jjm.json, built by scripts/build_jjm.py) ----
+function jjmCreate(r: any) {
+  const asof = Math.floor(Date.parse(r.asof + "T00:00:00Z") / 1000)
+  const left = asof + LIFETIME.blockstat - Math.floor(Date.now() / 1000)
+  return {
+    payload: jsonToPayload(r.payload), contentType: "application/json",
+    attributes: { app: str(APP), kind: str("jjmsample"), sid: str(r.id), district: str(r.district), block: str(r.block),
+      gp: str(r.gp), village: str(r.village), contaminant: str(r.contaminant), mgl: dec(r.mgl), limit: dec(r.limit_mgl),
+      tested: u64(Math.floor(Date.parse(r.tested + "T00:00:00Z") / 1000)), asof: u64(asof), origin: str("jjm-wqmis") },
+    // like a PHED figure: current for a year from the day it was read from the report
+    expires: ExpirationTime.fromSeconds(left - (left % 2)), flags: { readonly: true },
+  }
+}
+
+async function publishJjm() {
+  ;($("jjm-go") as HTMLButtonElement).disabled = true
+  try {
+    const data = await (await fetch(import.meta.env.BASE_URL + "data/jjm.json")).json()
+    const done = new Set<string>()
+    let page = await publicClient.select({ attributes: { sid: true } })
+      .where(eq("app", str(APP)), eq("kind", str("jjmsample"))).createdBy(me).limit(200).fetch()
+    for (;;) { for (const e of page.entities as any[]) done.add(e.attributes.sid.value); if (!page.hasNextPage()) break; page = await page.next() }
+    const todo = data.rows.filter((r: any) => !done.has(r.id))
+    log(`JJM WQMIS samples: ${done.size} already on Arkiv, ${todo.length} to publish`)
+    for (let i = 0; i < todo.length; i += 10) {
+      const chunk = todo.slice(i, i + 10)
+      const res = await wallet.executeBatch({ creates: chunk.map(jjmCreate) } as any)
+      manifest.txs.push({ kind: "jjmsample", txHash: res.txHash, created: res.createdEntities, ids: chunk.map((r: any) => r.id) })
+      log(`JJM: ${chunk.length} lab samples in one batch · <a href="${txLink(res.txHash)}" target="_blank" rel="noopener">tx</a>`)
+      await refresh()
+    }
+    await sealOwned(wallet, "JJM samples", ["jjmsample"])
+    log("JJM: done.")
+  } catch (err: any) { log(`<b>Error:</b> ${String(err?.shortMessage || err?.message || err).slice(0, 400)}`) }
+  finally { ;($("jjm-go") as HTMLButtonElement).disabled = false }
+}

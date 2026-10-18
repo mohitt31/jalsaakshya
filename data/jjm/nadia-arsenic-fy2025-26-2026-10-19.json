@@ -1,0 +1,2008 @@
+{
+ "report": "Jal Jeevan Mission WQMIS (Ministry of Jal Shakti): Contaminant-wise report, village sample details",
+ "url": "https://ejalshakti.gov.in/WQMIS/Report/Contaminantwise",
+ "filters": {
+  "financial_year": "2025-2026",
+  "state": "West Bengal (32)",
+  "district": "Nadia (536)",
+  "block": "all",
+  "parameter": "Total arsenic",
+  "other_filters": "report defaults"
+ },
+ "fetched": "2026-10-19 (IST), from the report's own sample-detail endpoint, all 3 pages",
+ "asof": "2026-10-19",
+ "note": "Every sample the report lists as above the permissible limit for total arsenic (0.01 mg/L). The location text is dropped: it can name a household. The report's per-village sample totals add up to 217; the sample-detail lists hold 220 distinct SampleIds. We publish the 220 as listed.",
+ "columns": [
+  "sample_id",
+  "block",
+  "gram_panchayat",
+  "village",
+  "source_type",
+  "test_date",
+  "total_arsenic_mgl"
+ ],
+ "samples": 220,
+ "rows_sha256": "a876dd23eb1b315c417c7fee713b1041a5a1c677230569ba9c98bdaa4cdfef86",
+ "rows": [
+  [
+   "U700148L870S30536123",
+   "Karimpur-1",
+   "Karimpur-i",
+   "Karimpur (ct)",
+   "Deep Tubewell",
+   "2025-06-24",
+   "0.061"
+  ],
+  [
+   "U724428L870S30536098",
+   "Karimpur-1",
+   "Karimpur-i",
+   "Karimpur (ct)",
+   "Deep Tubewell",
+   "2025-06-16",
+   "0.031"
+  ],
+  [
+   "U731389L870S30536092",
+   "Karimpur-1",
+   "Karimpur-i",
+   "Karimpur (ct)",
+   "Deep Tubewell",
+   "2025-06-18",
+   "0.014"
+  ],
+  [
+   "U732171L871S30536436",
+   "Ranaghat-i",
+   "Barasat",
+   "Birnagar (p)",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.86"
+  ],
+  [
+   "U717242L870S30536131",
+   "Karimpur-ii",
+   "Narayanpur-i",
+   "Fazil Nagar",
+   "Deep Tubewell",
+   "2025-06-18",
+   "0.068"
+  ],
+  [
+   "U721418L870S30536137",
+   "Karimpur-ii",
+   "Narayanpur-i",
+   "Fazil Nagar",
+   "Deep Tubewell",
+   "2025-06-18",
+   "0.123"
+  ],
+  [
+   "U697071L864S30536504",
+   "Ranaghat-ii",
+   "Majher Gram",
+   "Anantapur",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.019"
+  ],
+  [
+   "U703987L864S30536503",
+   "Ranaghat-ii",
+   "Majher Gram",
+   "Anantapur",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.029"
+  ],
+  [
+   "U730822L864S30536501",
+   "Ranaghat-ii",
+   "Majher Gram",
+   "Anantapur",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.021"
+  ],
+  [
+   "U728138L864S30536499",
+   "Ranaghat-ii",
+   "Anishmali",
+   "Aismali",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.019"
+  ],
+  [
+   "U729312L864S30536498",
+   "Ranaghat-ii",
+   "Anishmali",
+   "Aismali",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.018"
+  ],
+  [
+   "U717342L864S30536500",
+   "Ranaghat-ii",
+   "Anishmali",
+   "Sarisadanga",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.016"
+  ],
+  [
+   "U722228L864S30536497",
+   "Ranaghat-ii",
+   "Kamalpur",
+   "Kamalpur",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.021"
+  ],
+  [
+   "U725820L864S30536492",
+   "Ranaghat-ii",
+   "Kamalpur",
+   "Kamalpur",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.015"
+  ],
+  [
+   "U708581L864S30536481",
+   "Ranaghat-ii",
+   "Jugalkishore",
+   "Bira Baria",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.024"
+  ],
+  [
+   "U702764L871S30529874",
+   "Ranaghat-i",
+   "Payradanga",
+   "Niamatpur",
+   "Deep Tubewell",
+   "2025-06-30",
+   "0.047"
+  ],
+  [
+   "U705126L864S30536506",
+   "Ranaghat-i",
+   "Payradanga",
+   "Ukhil Nara",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.017"
+  ],
+  [
+   "U696993L871S30536447",
+   "Ranaghat-i",
+   "Payradanga",
+   "Par Niamatpur",
+   "Deep Tubewell",
+   "2025-06-30",
+   "0.042"
+  ],
+  [
+   "U716201L871S30536452",
+   "Ranaghat-i",
+   "Payradanga",
+   "Par Niamatpur",
+   "Deep Tubewell",
+   "2025-06-30",
+   "0.033"
+  ],
+  [
+   "U720797L871S30536455",
+   "Ranaghat-i",
+   "Anulia",
+   "Anulia",
+   "Deep Tubewell",
+   "2025-06-30",
+   "0.042"
+  ],
+  [
+   "U730953L871S30536448",
+   "Ranaghat-i",
+   "Naw Para Masunda",
+   "Budya Nandapur",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.052"
+  ],
+  [
+   "U700175L871S30536446",
+   "Ranaghat-i",
+   "Tarapur",
+   "Gazipur",
+   "Deep Tubewell",
+   "2025-06-30",
+   "0.036"
+  ],
+  [
+   "U705671L871S30529806",
+   "Ranaghat-i",
+   "Tarapur",
+   "Tarapur",
+   "Deep Tubewell",
+   "2025-06-30",
+   "0.03"
+  ],
+  [
+   "U700306L871S30529850",
+   "Ranaghat-i",
+   "Habibpur",
+   "Kalaighata",
+   "Deep Tubewell",
+   "2025-06-30",
+   "0.065"
+  ],
+  [
+   "U719014L871S30529844",
+   "Ranaghat-i",
+   "Habibpur",
+   "Kalaighata",
+   "Deep Tubewell",
+   "2025-06-30",
+   "0.056"
+  ],
+  [
+   "U728094L871S30529837",
+   "Ranaghat-i",
+   "Habibpur",
+   "Habibpur",
+   "Deep Tubewell",
+   "2025-06-30",
+   "0.057"
+  ],
+  [
+   "U705307L871S30536453",
+   "Ranaghat-i",
+   "Kalinarayanpur Paharpur",
+   "Kamgachhi",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.061"
+  ],
+  [
+   "U700394L871S30536440",
+   "Ranaghat-i",
+   "Kalinarayanpur Paharpur",
+   "Baharpur",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.095"
+  ],
+  [
+   "U720172L871S30536437",
+   "Ranaghat-i",
+   "Kalinarayanpur Paharpur",
+   "Baharpur",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.076"
+  ],
+  [
+   "U709232L871S30536435",
+   "Ranaghat-i",
+   "Ramnagar-ii",
+   "Durgapur",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.045"
+  ],
+  [
+   "U721156L871S30536444",
+   "Ranaghat-i",
+   "Khisma",
+   "Byaspur",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.074"
+  ],
+  [
+   "U730952L871S30536443",
+   "Ranaghat-i",
+   "Barasat",
+   "Gangni",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.097"
+  ],
+  [
+   "U712387L865S30536431",
+   "Santipur",
+   "NABLA",
+   "Goalpur",
+   "Deep Tubewell",
+   "2025-06-05",
+   "0.062"
+  ],
+  [
+   "U722538L865S30536430",
+   "Santipur",
+   "NABLA",
+   "Goalpur",
+   "Deep Tubewell",
+   "2025-06-05",
+   "0.037"
+  ],
+  [
+   "U705128L865S30529904",
+   "Santipur",
+   "NABLA",
+   "Nidhkur",
+   "Deep Tubewell",
+   "2025-06-30",
+   "0.021"
+  ],
+  [
+   "U699434L865S30536432",
+   "Santipur",
+   "NABLA",
+   "Nabla",
+   "Deep Tubewell",
+   "2025-06-05",
+   "0.041"
+  ],
+  [
+   "U707555L864S30536476",
+   "Santipur",
+   "NABLA",
+   "Nabla",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.01"
+  ],
+  [
+   "U701743L865S30529890",
+   "Santipur",
+   "Belgoria-ii",
+   "Ghoralia",
+   "Deep Tubewell",
+   "2025-06-30",
+   "0.013"
+  ],
+  [
+   "U703182L865S30536417",
+   "Santipur",
+   "Babla",
+   "Gobindapur",
+   "Deep Tubewell",
+   "2025-06-11",
+   "0.058"
+  ],
+  [
+   "U708509L865S30536427",
+   "Santipur",
+   "Babla",
+   "Arbalda",
+   "Deep Tubewell",
+   "2025-06-11",
+   "0.036"
+  ],
+  [
+   "U703878L865S30536419",
+   "Santipur",
+   "Arbandi-ii",
+   "Barajiakur",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.019"
+  ],
+  [
+   "U699531L865S30536418",
+   "Santipur",
+   "Arbandi-ii",
+   "Panchpota",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.023"
+  ],
+  [
+   "U714216L865S30536428",
+   "Santipur",
+   "Arbandi-i",
+   "Arbandi",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.031"
+  ],
+  [
+   "U699453L865S30536413",
+   "Santipur",
+   "Gayeshpur",
+   "Saguna",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.018"
+  ],
+  [
+   "U720555L865S30536412",
+   "Santipur",
+   "Gayeshpur",
+   "Saguna",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.012"
+  ],
+  [
+   "U696344L865S30536405",
+   "Santipur",
+   "Gayeshpur",
+   "Gayespur",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.016"
+  ],
+  [
+   "U696866L873S30536375",
+   "Hanskhali",
+   "Gajna",
+   "Pipulbaria",
+   "Deep Tubewell",
+   "2025-06-09",
+   "0.055"
+  ],
+  [
+   "U711441L873S30536377",
+   "Hanskhali",
+   "Gajna",
+   "Pipulbaria",
+   "Deep Tubewell",
+   "2025-06-09",
+   "0.048"
+  ],
+  [
+   "U727437L873S30536379",
+   "Hanskhali",
+   "Gajna",
+   "Bajitpur",
+   "Deep Tubewell",
+   "2025-06-09",
+   "0.037"
+  ],
+  [
+   "U732408L873S30536380",
+   "Hanskhali",
+   "Gajna",
+   "Naoda Kamalpur",
+   "Deep Tubewell",
+   "2025-06-09",
+   "0.032"
+  ],
+  [
+   "U704683L873S30536397",
+   "Hanskhali",
+   "Gajna",
+   "Garapota",
+   "Deep Tubewell",
+   "2025-06-09",
+   "0.046"
+  ],
+  [
+   "U729846L873S30536401",
+   "Hanskhali",
+   "Ramnagar Bara Chupria-i",
+   "Ramnagar",
+   "Deep Tubewell",
+   "2025-06-12",
+   "0.039"
+  ],
+  [
+   "U696746L873S30536400",
+   "Hanskhali",
+   "Ramnagar Bara Chupria-i",
+   "Chupria",
+   "Deep Tubewell",
+   "2025-06-12",
+   "0.037"
+  ],
+  [
+   "U710634L873S30536398",
+   "Hanskhali",
+   "Ramnagar Bara Chupria-i",
+   "Chupria",
+   "Deep Tubewell",
+   "2025-06-12",
+   "0.038"
+  ],
+  [
+   "U724046L873S30536402",
+   "Hanskhali",
+   "Ramnagar Bara Chupria-i",
+   "Nebutala",
+   "Deep Tubewell",
+   "2025-06-12",
+   "0.037"
+  ],
+  [
+   "U708158L873S30536394",
+   "Hanskhali",
+   "Bagula-ii",
+   "Madna",
+   "Deep Tubewell",
+   "2025-06-30",
+   "0.069"
+  ],
+  [
+   "U724680L873S30529905",
+   "Hanskhali",
+   "Bagula-i",
+   "Bhayna",
+   "Deep Tubewell",
+   "2025-06-30",
+   "0.046"
+  ],
+  [
+   "U726585L873S30536396",
+   "Hanskhali",
+   "Bagula-i",
+   "Bhayna",
+   "Deep Tubewell",
+   "2025-06-30",
+   "0.063"
+  ],
+  [
+   "U729289L873S30536384",
+   "Hanskhali",
+   "Mayurhat-ii",
+   "Ber Gram",
+   "Deep Tubewell",
+   "2025-06-05",
+   "0.042"
+  ],
+  [
+   "U696758L873S30536381",
+   "Hanskhali",
+   "Mayurhat-i",
+   "Payradanda",
+   "Deep Tubewell",
+   "2025-06-30",
+   "0.039"
+  ],
+  [
+   "U718406L873S30536383",
+   "Hanskhali",
+   "Mayurhat-i",
+   "Payradanda",
+   "Deep Tubewell",
+   "2025-06-30",
+   "0.036"
+  ],
+  [
+   "U725795L873S30536371",
+   "Hanskhali",
+   "Betna Gobindapur",
+   "Betna",
+   "Deep Tubewell",
+   "2025-06-05",
+   "0.041"
+  ],
+  [
+   "U728023L873S30536368",
+   "Hanskhali",
+   "Betna Gobindapur",
+   "Betna",
+   "Deep Tubewell",
+   "2025-06-05",
+   "0.048"
+  ],
+  [
+   "U698729L873S30536387",
+   "Hanskhali",
+   "Betna Gobindapur",
+   "Kalipara",
+   "Deep Tubewell",
+   "2025-06-05",
+   "0.038"
+  ],
+  [
+   "U699558L873S30536386",
+   "Hanskhali",
+   "Betna Gobindapur",
+   "Kalipara",
+   "Deep Tubewell",
+   "2025-06-05",
+   "0.034"
+  ],
+  [
+   "U721781L873S30536392",
+   "Hanskhali",
+   "Mamjoan",
+   "Hatisala",
+   "Deep Tubewell",
+   "2025-06-23",
+   "0.036"
+  ],
+  [
+   "U707203L873S30536391",
+   "Hanskhali",
+   "Mamjoan",
+   "Dalaigram",
+   "Deep Tubewell",
+   "2025-06-12",
+   "0.031"
+  ],
+  [
+   "U705276L873S30536395",
+   "Hanskhali",
+   "Mamjoan",
+   "Patkabari",
+   "Deep Tubewell",
+   "2025-06-30",
+   "0.065"
+  ],
+  [
+   "U724466L873S30536404",
+   "Hanskhali",
+   "Batkulla-I",
+   "Patuli",
+   "Deep Tubewell",
+   "2025-06-12",
+   "0.071"
+  ],
+  [
+   "U727070L873S30536403",
+   "Hanskhali",
+   "Batkulla-I",
+   "Patuli",
+   "Deep Tubewell",
+   "2025-06-12",
+   "0.078"
+  ],
+  [
+   "U699759L873S30536389",
+   "Hanskhali",
+   "Dakshin Para-i",
+   "Dakshinpara",
+   "Deep Tubewell",
+   "2025-06-23",
+   "0.072"
+  ],
+  [
+   "U716705L873S30536390",
+   "Hanskhali",
+   "Dakshin Para-i",
+   "Dakshinpara",
+   "Deep Tubewell",
+   "2025-06-23",
+   "0.072"
+  ],
+  [
+   "U728890L873S30536388",
+   "Hanskhali",
+   "Dakshin Para-i",
+   "Dakshinpara",
+   "Deep Tubewell",
+   "2025-06-05",
+   "0.059"
+  ],
+  [
+   "U703986L875S30536359",
+   "Krishnaganj",
+   "Maitiary Banpur",
+   "Gede",
+   "Deep Tubewell",
+   "2025-06-24",
+   "0.011"
+  ],
+  [
+   "U722592L875S30536358",
+   "Krishnaganj",
+   "Maitiary Banpur",
+   "Gede",
+   "Deep Tubewell",
+   "2025-06-24",
+   "0.012"
+  ],
+  [
+   "U697213L875S30536340",
+   "Krishnaganj",
+   "Gobindapur",
+   "Bishnupur",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.023"
+  ],
+  [
+   "U701976L875S30536342",
+   "Krishnaganj",
+   "Gobindapur",
+   "Bishnupur",
+   "Deep Tubewell",
+   "2025-06-24",
+   "0.029"
+  ],
+  [
+   "U727062L875S30536334",
+   "Krishnaganj",
+   "Gobindapur",
+   "Digambarpur",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.022"
+  ],
+  [
+   "U727972L875S30536335",
+   "Krishnaganj",
+   "Gobindapur",
+   "Digambarpur",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.016"
+  ],
+  [
+   "U721486L875S30536338",
+   "Krishnaganj",
+   "Joyghata",
+   "Jayghata",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.011"
+  ],
+  [
+   "U731762L875S30536336",
+   "Krishnaganj",
+   "Joyghata",
+   "Jayghata",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.017"
+  ],
+  [
+   "U718841L875S30536353",
+   "Krishnaganj",
+   "Taldah Majdia",
+   "Majhdia",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.019"
+  ],
+  [
+   "U728571L875S30536363",
+   "Krishnaganj",
+   "Taldah Majdia",
+   "Majhdia",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.01"
+  ],
+  [
+   "U696895L875S30536347",
+   "Krishnaganj",
+   "Joyghata",
+   "Bhagabanpur",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.026"
+  ],
+  [
+   "U703986L875S30536343",
+   "Krishnaganj",
+   "Joyghata",
+   "Bhagabanpur",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.025"
+  ],
+  [
+   "U699250L875S30536364",
+   "Krishnaganj",
+   "Shibnibas",
+   "Khatura",
+   "Deep Tubewell",
+   "2025-06-24",
+   "0.01"
+  ],
+  [
+   "U725291L875S30536350",
+   "Krishnaganj",
+   "Shibnibas",
+   "Khatura",
+   "Deep Tubewell",
+   "2025-06-24",
+   "0.012"
+  ],
+  [
+   "U715091L875S30536365",
+   "Krishnaganj",
+   "Shibnibas",
+   "Shibnibas",
+   "Deep Tubewell",
+   "2025-06-24",
+   "0.011"
+  ],
+  [
+   "U729696L875S30536348",
+   "Krishnaganj",
+   "Krishnaganj",
+   "Chau Gachha",
+   "Deep Tubewell",
+   "2025-06-24",
+   "0.023"
+  ],
+  [
+   "U732297L875S30536352",
+   "Krishnaganj",
+   "Krishnaganj",
+   "Songhata",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.011"
+  ],
+  [
+   "U700392L875S30536333",
+   "Krishnagar-i",
+   "Assannagar",
+   "Asannagar",
+   "Deep Tubewell",
+   "2025-06-24",
+   "0.02"
+  ],
+  [
+   "U704387L875S30536332",
+   "Krishnagar-i",
+   "Bhimpur",
+   "Bhimpur",
+   "Deep Tubewell",
+   "2025-06-24",
+   "0.039"
+  ],
+  [
+   "U719836L868S30536325",
+   "Krishnagar-ii",
+   "Dhubulia-i",
+   "Belgaon",
+   "Deep Tubewell",
+   "2025-06-25",
+   "0.018"
+  ],
+  [
+   "U729284L868S30536324",
+   "Krishnagar-ii",
+   "Sadhanpara-i",
+   "Rukunpur",
+   "Deep Tubewell",
+   "2025-06-25",
+   "0.021"
+  ],
+  [
+   "U730176L868S30536281",
+   "Chapra",
+   "Brittihuda",
+   "Lakshmigachha",
+   "Deep Tubewell",
+   "2025-06-16",
+   "0.025"
+  ],
+  [
+   "U708762L868S30536282",
+   "Chapra",
+   "Brittihuda",
+   "Brittihuda",
+   "Deep Tubewell",
+   "2025-06-16",
+   "0.028"
+  ],
+  [
+   "U709876L868S30536279",
+   "Chapra",
+   "Brittihuda",
+   "Brittihuda",
+   "Deep Tubewell",
+   "2025-06-16",
+   "0.024"
+  ],
+  [
+   "U721312L868S30536283",
+   "Chapra",
+   "Brittihuda",
+   "Brittihuda",
+   "Deep Tubewell",
+   "2025-06-16",
+   "0.029"
+  ],
+  [
+   "U707153L868S30536315",
+   "Chapra",
+   "Bagberia",
+   "Bhatchhala",
+   "Deep Tubewell",
+   "2025-06-23",
+   "0.029"
+  ],
+  [
+   "U696998L868S30536313",
+   "Chapra",
+   "Bagberia",
+   "Karsura",
+   "Deep Tubewell",
+   "2025-06-23",
+   "0.026"
+  ],
+  [
+   "U706198L868S30536314",
+   "Chapra",
+   "Bagberia",
+   "Karsura",
+   "Deep Tubewell",
+   "2025-06-23",
+   "0.028"
+  ],
+  [
+   "U704428L868S30536311",
+   "Chapra",
+   "Bagberia",
+   "Amjhupi",
+   "Deep Tubewell",
+   "2025-06-23",
+   "0.024"
+  ],
+  [
+   "U705799L868S30536300",
+   "Chapra",
+   "Bagberia",
+   "Amjhupi",
+   "Deep Tubewell",
+   "2025-06-23",
+   "0.027"
+  ],
+  [
+   "U717153L868S30536299",
+   "Chapra",
+   "Maheshpur",
+   "Maluapara",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.029"
+  ],
+  [
+   "U718401L868S30536297",
+   "Chapra",
+   "Maheshpur",
+   "Maluapara",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.028"
+  ],
+  [
+   "U696420L868S30536298",
+   "Chapra",
+   "Maheshpur",
+   "Dakshin Ramgiarpota",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.032"
+  ],
+  [
+   "U706900L868S30536295",
+   "Chapra",
+   "Maheshpur",
+   "Dakshin Ramgiarpota",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.029"
+  ],
+  [
+   "U728088L868S30536294",
+   "Chapra",
+   "Maheshpur",
+   "Mahakala",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.031"
+  ],
+  [
+   "U696803L868S30536277",
+   "Chapra",
+   "Pipra Gachhi",
+   "Badelangi Padmamala",
+   "Deep Tubewell",
+   "2025-06-25",
+   "0.024"
+  ],
+  [
+   "U729043L868S30536291",
+   "Chapra",
+   "Pipra Gachhi",
+   "Badelangi Padmamala",
+   "Deep Tubewell",
+   "2025-06-16",
+   "0.028"
+  ],
+  [
+   "U730323L868S30536274",
+   "Chapra",
+   "Hatkhola",
+   "Rajibpur",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.028"
+  ],
+  [
+   "U728052L868S30536302",
+   "Chapra",
+   "Kalinga",
+   "Lakshmipur",
+   "Deep Tubewell",
+   "2025-06-24",
+   "0.026"
+  ],
+  [
+   "U730060L868S30536304",
+   "Chapra",
+   "Kalinga",
+   "Lakshmipur",
+   "Deep Tubewell",
+   "2025-06-24",
+   "0.028"
+  ],
+  [
+   "U702775L868S30536310",
+   "Chapra",
+   "Kalinga",
+   "Bahirgachhi",
+   "Deep Tubewell",
+   "2025-06-24",
+   "0.026"
+  ],
+  [
+   "U727070L868S30536308",
+   "Chapra",
+   "Kalinga",
+   "Bahirgachhi",
+   "Deep Tubewell",
+   "2025-06-24",
+   "0.027"
+  ],
+  [
+   "U719310L868S30536317",
+   "Chapra",
+   "Kalinga",
+   "Mrigipota",
+   "Deep Tubewell",
+   "2025-06-24",
+   "0.027"
+  ],
+  [
+   "U728936L868S30536316",
+   "Chapra",
+   "Kalinga",
+   "Mrigipota",
+   "Deep Tubewell",
+   "2025-06-24",
+   "0.031"
+  ],
+  [
+   "U700027L868S30536322",
+   "Chapra",
+   "Mahatpur",
+   "Mahatpur",
+   "Deep Tubewell",
+   "2025-06-16",
+   "0.025"
+  ],
+  [
+   "U704550L868S30536319",
+   "Chapra",
+   "Mahatpur",
+   "Mahatpur",
+   "Deep Tubewell",
+   "2025-06-16",
+   "0.024"
+  ],
+  [
+   "U714351L868S30536323",
+   "Chapra",
+   "Mahatpur",
+   "Mahatpur",
+   "Deep Tubewell",
+   "2025-06-16",
+   "0.027"
+  ],
+  [
+   "U728142L868S30536320",
+   "Chapra",
+   "Mahatpur",
+   "Mahatpur",
+   "Deep Tubewell",
+   "2025-06-16",
+   "0.026"
+  ],
+  [
+   "U726647L868S30536286",
+   "Chapra",
+   "Chapra-ii",
+   "Bangaljhi",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.024"
+  ],
+  [
+   "U697541L868S30536290",
+   "Chapra",
+   "Chapra-ii",
+   "Balibanga",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.027"
+  ],
+  [
+   "U724157L868S30536289",
+   "Chapra",
+   "Chapra-ii",
+   "Balibanga",
+   "Deep Tubewell",
+   "2025-06-13",
+   "0.028"
+  ],
+  [
+   "U731134L868S30536284",
+   "Chapra",
+   "Chapra-i",
+   "Chapra",
+   "Deep Tubewell",
+   "2025-06-12",
+   "0.026"
+  ],
+  [
+   "U711635L868S30536275",
+   "Chapra",
+   "Chapra-i",
+   "Najhidaha",
+   "Deep Tubewell",
+   "2025-06-25",
+   "0.026"
+  ],
+  [
+   "U732656L868S30536293",
+   "Chapra",
+   "Chapra-i",
+   "Najhidaha",
+   "Deep Tubewell",
+   "2025-06-16",
+   "0.031"
+  ],
+  [
+   "U699909L868S30536264",
+   "Chapra",
+   "Alfa",
+   "Alfa",
+   "Deep Tubewell",
+   "2025-06-25",
+   "0.028"
+  ],
+  [
+   "U701416L868S30536265",
+   "Chapra",
+   "Hatisala-ii",
+   "Bara Andulia",
+   "Deep Tubewell",
+   "2025-06-25",
+   "0.029"
+  ],
+  [
+   "U701987L868S30536270",
+   "Chapra",
+   "Hatisala-ii",
+   "Bara Andulia",
+   "Deep Tubewell",
+   "2025-06-16",
+   "0.028"
+  ],
+  [
+   "U724732L868S30536271",
+   "Chapra",
+   "Hridaypur",
+   "Betbaria",
+   "Deep Tubewell",
+   "2025-06-25",
+   "0.028"
+  ],
+  [
+   "U729405L868S30536272",
+   "Chapra",
+   "Hridaypur",
+   "Betbaria",
+   "Deep Tubewell",
+   "2025-06-25",
+   "0.029"
+  ],
+  [
+   "U702891L870S30536223",
+   "Tehatta-ii",
+   "Barnia",
+   "Abhaynagar",
+   "Deep Tubewell",
+   "2025-06-25",
+   "0.016"
+  ],
+  [
+   "U716555L870S30536224",
+   "Tehatta-ii",
+   "Barnia",
+   "Abhaynagar",
+   "Deep Tubewell",
+   "2025-06-25",
+   "0.016"
+  ],
+  [
+   "U713664L870S30536225",
+   "Tehatta-ii",
+   "Barnia",
+   "Barnia",
+   "Deep Tubewell",
+   "2025-06-25",
+   "0.02"
+  ],
+  [
+   "U715778L870S30536226",
+   "Tehatta-ii",
+   "Barnia",
+   "Barnia",
+   "Deep Tubewell",
+   "2025-06-25",
+   "0.023"
+  ],
+  [
+   "U708306L870S30536227",
+   "Tehatta-ii",
+   "Palasipara",
+   "Palashipara",
+   "Deep Tubewell",
+   "2025-06-25",
+   "0.014"
+  ],
+  [
+   "U710848L870S30536228",
+   "Tehatta-ii",
+   "Palasipara",
+   "Palashipara",
+   "Deep Tubewell",
+   "2025-06-25",
+   "0.015"
+  ],
+  [
+   "U699237L870S30536214",
+   "Tehatta-ii",
+   "Palsunda-ii",
+   "Baraia",
+   "Deep Tubewell",
+   "2025-06-16",
+   "0.041"
+  ],
+  [
+   "U726640L870S30536212",
+   "Tehatta-ii",
+   "Palsunda-ii",
+   "Baraia",
+   "Deep Tubewell",
+   "2025-06-16",
+   "0.015"
+  ],
+  [
+   "U728279L870S30536216",
+   "Tehatta-ii",
+   "Palsunda-i",
+   "Baruipara",
+   "Deep Tubewell",
+   "2025-06-16",
+   "0.024"
+  ],
+  [
+   "U717157L870S30536215",
+   "Tehatta-ii",
+   "Palsunda-i",
+   "Palsunda",
+   "Deep Tubewell",
+   "2025-06-16",
+   "0.012"
+  ],
+  [
+   "U720577L870S30536219",
+   "Tehatta-ii",
+   "Sahebnagar",
+   "Bara Naldaha",
+   "Deep Tubewell",
+   "2025-06-25",
+   "0.018"
+  ],
+  [
+   "U722918L870S30536217",
+   "Tehatta-ii",
+   "Sahebnagar",
+   "Bara Naldaha",
+   "Deep Tubewell",
+   "2025-06-25",
+   "0.019"
+  ],
+  [
+   "U708377L870S30536222",
+   "Tehatta-ii",
+   "Sahebnagar",
+   "Kulgachhi",
+   "Deep Tubewell",
+   "2025-06-25",
+   "0.02"
+  ],
+  [
+   "U725489L870S30536221",
+   "Tehatta-ii",
+   "Sahebnagar",
+   "Kulgachhi",
+   "Deep Tubewell",
+   "2025-06-25",
+   "0.018"
+  ],
+  [
+   "U697914L870S30536232",
+   "Tehatta-ii",
+   "Gopinathpur",
+   "Krishnanagar",
+   "Deep Tubewell",
+   "2025-06-24",
+   "0.019"
+  ],
+  [
+   "U711976L870S30536234",
+   "Tehatta-ii",
+   "Gopinathpur",
+   "Krishnanagar",
+   "Deep Tubewell",
+   "2025-06-24",
+   "0.023"
+  ],
+  [
+   "U706729L870S30536230",
+   "Tehatta-ii",
+   "Gopinathpur",
+   "Gopinathpur",
+   "Deep Tubewell",
+   "2025-06-24",
+   "0.041"
+  ],
+  [
+   "U722219L870S30536229",
+   "Tehatta-ii",
+   "Gopinathpur",
+   "Gopinathpur",
+   "Deep Tubewell",
+   "2025-06-24",
+   "0.049"
+  ],
+  [
+   "U706424L883S30536208",
+   "Tehatta-i",
+   "Patharghata-i",
+   "Pathar Ghata",
+   "Deep Tubewell",
+   "2025-06-12",
+   "0.038"
+  ],
+  [
+   "U722863L883S30536210",
+   "Tehatta-i",
+   "Patharghata-i",
+   "Pathar Ghata",
+   "Deep Tubewell",
+   "2025-06-12",
+   "0.036"
+  ],
+  [
+   "U698248L883S30536203",
+   "Tehatta-i",
+   "Tehatta",
+   "Tehatta",
+   "Deep Tubewell",
+   "2025-06-12",
+   "0.033"
+  ],
+  [
+   "U705825L883S30536169",
+   "Tehatta-i",
+   "Tehatta",
+   "Tehatta",
+   "Deep Tubewell",
+   "2025-06-10",
+   "0.028"
+  ],
+  [
+   "U723556L883S30536204",
+   "Tehatta-i",
+   "Tehatta",
+   "Tehatta",
+   "Deep Tubewell",
+   "2025-06-12",
+   "0.035"
+  ],
+  [
+   "U728263L883S30536202",
+   "Tehatta-i",
+   "Tehatta",
+   "Tehatta",
+   "Deep Tubewell",
+   "2025-06-12",
+   "0.028"
+  ],
+  [
+   "U730432L883S30536166",
+   "Tehatta-i",
+   "Tehatta",
+   "Tehatta",
+   "Deep Tubewell",
+   "2025-06-10",
+   "0.035"
+  ],
+  [
+   "U730520L883S30536170",
+   "Tehatta-i",
+   "Tehatta",
+   "Tehatta",
+   "Deep Tubewell",
+   "2025-06-10",
+   "0.028"
+  ],
+  [
+   "U724734L883S30536201",
+   "Tehatta-i",
+   "Natna",
+   "Natna",
+   "Deep Tubewell",
+   "2025-06-05",
+   "0.034"
+  ],
+  [
+   "U727067L883S30536205",
+   "Tehatta-i",
+   "Natna",
+   "Natna",
+   "Deep Tubewell",
+   "2025-06-05",
+   "0.049"
+  ],
+  [
+   "U704968L883S30536199",
+   "Tehatta-i",
+   "Betai-ii",
+   "Karaigachhi",
+   "Deep Tubewell",
+   "2025-06-05",
+   "0.031"
+  ],
+  [
+   "U717699L883S30536192",
+   "Tehatta-i",
+   "Betai-ii",
+   "Karaigachhi",
+   "Deep Tubewell",
+   "2025-06-10",
+   "0.059"
+  ],
+  [
+   "U716200L883S30536193",
+   "Tehatta-i",
+   "Batai-I",
+   "Betai",
+   "Deep Tubewell",
+   "2025-06-10",
+   "0.052"
+  ],
+  [
+   "U732303L883S30536191",
+   "Tehatta-i",
+   "Batai-I",
+   "Betai",
+   "Deep Tubewell",
+   "2025-06-11",
+   "0.044"
+  ],
+  [
+   "U708382L883S30536161",
+   "Tehatta-i",
+   "Chanderghat",
+   "Chanderghat",
+   "Deep Tubewell",
+   "2025-06-10",
+   "0.041"
+  ],
+  [
+   "U717331L883S30536163",
+   "Tehatta-i",
+   "Chanderghat",
+   "Chanderghat",
+   "Deep Tubewell",
+   "2025-06-10",
+   "0.047"
+  ],
+  [
+   "U699270L883S30536174",
+   "Tehatta-i",
+   "Shyamnagar",
+   "Fatepur",
+   "Deep Tubewell",
+   "2025-06-10",
+   "0.029"
+  ],
+  [
+   "U722923L883S30536175",
+   "Tehatta-i",
+   "Shyamnagar",
+   "Fatepur",
+   "Deep Tubewell",
+   "2025-06-10",
+   "0.033"
+  ],
+  [
+   "U702764L883S30536173",
+   "Tehatta-i",
+   "Raghunathpur",
+   "Nishchintapur",
+   "Deep Tubewell",
+   "2025-06-10",
+   "0.038"
+  ],
+  [
+   "U704372L883S30536172",
+   "Tehatta-i",
+   "Raghunathpur",
+   "Nishchintapur",
+   "Deep Tubewell",
+   "2025-06-10",
+   "0.026"
+  ],
+  [
+   "U698502L883S30536184",
+   "Tehatta-i",
+   "Kanainagar",
+   "Balarampur",
+   "Deep Tubewell",
+   "2025-06-05",
+   "0.042"
+  ],
+  [
+   "U722592L883S30536186",
+   "Tehatta-i",
+   "Kanainagar",
+   "Balarampur",
+   "Deep Tubewell",
+   "2025-06-05",
+   "0.051"
+  ],
+  [
+   "U704019L883S30536181",
+   "Tehatta-i",
+   "Kanainagar",
+   "BAHADURPUR",
+   "Deep Tubewell",
+   "2025-06-11",
+   "0.032"
+  ],
+  [
+   "U724157L883S30536179",
+   "Tehatta-i",
+   "Kanainagar",
+   "BAHADURPUR",
+   "Deep Tubewell",
+   "2025-06-11",
+   "0.03"
+  ],
+  [
+   "U703389L883S30536177",
+   "Tehatta-i",
+   "Chhitka",
+   "Nazirpur",
+   "Deep Tubewell",
+   "2025-06-05",
+   "0.048"
+  ],
+  [
+   "U721289L883S30536176",
+   "Tehatta-i",
+   "Chhitka",
+   "Nazirpur",
+   "Deep Tubewell",
+   "2025-06-05",
+   "0.043"
+  ],
+  [
+   "U696246L883S30536188",
+   "Tehatta-i",
+   "Chhitka",
+   "Khanjepur",
+   "Deep Tubewell",
+   "2025-06-05",
+   "0.052"
+  ],
+  [
+   "U717711L883S30536187",
+   "Tehatta-i",
+   "Chhitka",
+   "Khanjepur",
+   "Deep Tubewell",
+   "2025-06-05",
+   "0.063"
+  ],
+  [
+   "U700882L870S30536144",
+   "Karimpur-ii",
+   "Nandanpur",
+   "Ratanpur",
+   "Deep Tubewell",
+   "2025-06-24",
+   "0.057"
+  ],
+  [
+   "U721568L870S30536145",
+   "Karimpur-ii",
+   "Nandanpur",
+   "Kishorpur",
+   "Deep Tubewell",
+   "2025-06-24",
+   "0.039"
+  ],
+  [
+   "U718463L870S30536146",
+   "Karimpur-ii",
+   "Nandanpur",
+   "Dakshin Gopalpur",
+   "Deep Tubewell",
+   "2025-06-24",
+   "0.042"
+  ],
+  [
+   "U708083L870S30536141",
+   "Karimpur-ii",
+   "Narayanpur-ii",
+   "Char Brindabanpur",
+   "Deep Tubewell",
+   "2025-06-20",
+   "0.069"
+  ],
+  [
+   "U724444L870S30536142",
+   "Karimpur-ii",
+   "Narayanpur-ii",
+   "Topla",
+   "Deep Tubewell",
+   "2025-06-20",
+   "0.055"
+  ],
+  [
+   "U719507L870S30536140",
+   "Karimpur-ii",
+   "Narayanpur-i",
+   "Narayanpur",
+   "Deep Tubewell",
+   "2025-06-18",
+   "0.07"
+  ],
+  [
+   "U729404L870S30536139",
+   "Karimpur-ii",
+   "Narayanpur-i",
+   "Narayanpur",
+   "Deep Tubewell",
+   "2025-06-18",
+   "0.061"
+  ],
+  [
+   "U701260L870S30536154",
+   "Karimpur-ii",
+   "Dighalkandi",
+   "Chandpur",
+   "Deep Tubewell",
+   "2025-06-18",
+   "0.045"
+  ],
+  [
+   "U721310L870S30536155",
+   "Karimpur-ii",
+   "Dighalkandi",
+   "Chandpur",
+   "Deep Tubewell",
+   "2025-06-18",
+   "0.035"
+  ],
+  [
+   "U698024L870S30536153",
+   "Karimpur-ii",
+   "Dighalkandi",
+   "Khanpur",
+   "Deep Tubewell",
+   "2025-06-19",
+   "0.037"
+  ],
+  [
+   "U722923L870S30536151",
+   "Karimpur-ii",
+   "Murutia",
+   "Singadanga",
+   "Deep Tubewell",
+   "2025-06-19",
+   "0.043"
+  ],
+  [
+   "U696972L870S30536157",
+   "Karimpur-ii",
+   "Murutia",
+   "Baniakandi",
+   "Deep Tubewell",
+   "2025-06-19",
+   "0.032"
+  ],
+  [
+   "U699827L870S30536159",
+   "Karimpur-ii",
+   "Murutia",
+   "Madhpur",
+   "Deep Tubewell",
+   "2025-06-19",
+   "0.152"
+  ],
+  [
+   "U704473L870S30536152",
+   "Karimpur-ii",
+   "Dighalkandi",
+   "Huda Gopirampur",
+   "Deep Tubewell",
+   "2025-06-19",
+   "0.051"
+  ],
+  [
+   "U696486L870S30536148",
+   "Karimpur-ii",
+   "Rahamatpur",
+   "Rahamatpur",
+   "Deep Tubewell",
+   "2025-06-20",
+   "0.053"
+  ],
+  [
+   "U727331L870S30536149",
+   "Karimpur-ii",
+   "Rahamatpur",
+   "Rahamatpur",
+   "Deep Tubewell",
+   "2025-06-20",
+   "0.051"
+  ],
+  [
+   "U725364L870S30536128",
+   "Karimpur-ii",
+   "Natidanga-ii",
+   "Thanapara",
+   "Deep Tubewell",
+   "2025-06-19",
+   "0.037"
+  ],
+  [
+   "U727068L870S30536134",
+   "Karimpur-ii",
+   "Natidanga-ii",
+   "Char Moktappur",
+   "Deep Tubewell",
+   "2025-06-18",
+   "0.125"
+  ],
+  [
+   "U696504L870S30536143",
+   "Karimpur-ii",
+   "Natidanga-i",
+   "Natidanga",
+   "Deep Tubewell",
+   "2025-06-24",
+   "0.041"
+  ],
+  [
+   "U701019L868S30536268",
+   "Karimpur-ii",
+   "Natidanga-i",
+   "Natidanga",
+   "Deep Tubewell",
+   "2025-06-16",
+   "0.026"
+  ],
+  [
+   "U704387L870S30536125",
+   "Karimpur-ii",
+   "Dhoradaha-ii",
+   "Dogachhi",
+   "Deep Tubewell",
+   "2025-06-20",
+   "0.175"
+  ],
+  [
+   "U721205L870S30536124",
+   "Karimpur-ii",
+   "Dhoradaha-ii",
+   "Dogachhi",
+   "Deep Tubewell",
+   "2025-06-20",
+   "0.144"
+  ],
+  [
+   "U708838L870S30536126",
+   "Karimpur-ii",
+   "Dhoradaha-i",
+   "Dhoradaha",
+   "Deep Tubewell",
+   "2025-06-20",
+   "0.037"
+  ],
+  [
+   "U728748L870S30536127",
+   "Karimpur-ii",
+   "Dhoradaha-i",
+   "Dhoradaha",
+   "Deep Tubewell",
+   "2025-06-20",
+   "0.016"
+  ],
+  [
+   "U705128L870S30536103",
+   "Karimpur-1",
+   "Pipul Baria",
+   "Chak Krishnapur",
+   "Deep Tubewell",
+   "2025-06-20",
+   "0.034"
+  ],
+  [
+   "U722690L870S30536118",
+   "Karimpur-1",
+   "Pipul Baria",
+   "Angardaha",
+   "Deep Tubewell",
+   "2025-06-20",
+   "0.037"
+  ],
+  [
+   "U725810L870S30536116",
+   "Karimpur-1",
+   "Pipul Baria",
+   "Angardaha",
+   "Deep Tubewell",
+   "2025-06-20",
+   "0.056"
+  ],
+  [
+   "U711048L870S30536100",
+   "Karimpur-1",
+   "Pipul Baria",
+   "Chak Marua",
+   "Deep Tubewell",
+   "2025-06-20",
+   "0.052"
+  ],
+  [
+   "U700779L870S30536106",
+   "Karimpur-1",
+   "Pipul Baria",
+   "Paiksa",
+   "Deep Tubewell",
+   "2025-06-20",
+   "0.012"
+  ],
+  [
+   "U729043L870S30536105",
+   "Karimpur-1",
+   "Pipul Baria",
+   "Paiksa",
+   "Deep Tubewell",
+   "2025-06-20",
+   "0.027"
+  ],
+  [
+   "U696368L870S30536089",
+   "Karimpur-1",
+   "Shikarpur",
+   "Hazra Khali",
+   "Deep Tubewell",
+   "2025-06-18",
+   "0.055"
+  ],
+  [
+   "U722223L870S30536115",
+   "Karimpur-1",
+   "Shikarpur",
+   "Fulkhali",
+   "Deep Tubewell",
+   "2025-06-18",
+   "0.041"
+  ],
+  [
+   "U707319L870S30536119",
+   "Karimpur-1",
+   "Shikarpur",
+   "Charalkhali",
+   "Deep Tubewell",
+   "2025-06-20",
+   "0.035"
+  ],
+  [
+   "U728123L870S30536122",
+   "Karimpur-1",
+   "Shikarpur",
+   "Charalkhali",
+   "Deep Tubewell",
+   "2025-06-20",
+   "0.029"
+  ],
+  [
+   "U696890L870S30536081",
+   "Karimpur-1",
+   "Hogolberia",
+   "Bilasisa",
+   "Deep Tubewell",
+   "2025-06-20",
+   "0.045"
+  ],
+  [
+   "U709363L870S30536107",
+   "Karimpur-1",
+   "Hogolberia",
+   "Sekh Parameghna",
+   "Deep Tubewell",
+   "2025-06-18",
+   "0.012"
+  ],
+  [
+   "U714716L870S30536108",
+   "Karimpur-1",
+   "Hogolberia",
+   "Sekh Parameghna",
+   "Deep Tubewell",
+   "2025-06-18",
+   "0.059"
+  ],
+  [
+   "U709326L870S30536082",
+   "Karimpur-1",
+   "Madhugari",
+   "Chak Madhubona",
+   "Deep Tubewell",
+   "2025-06-19",
+   "0.021"
+  ],
+  [
+   "U699671L870S30536084",
+   "Karimpur-1",
+   "Madhugari",
+   "Madhugari",
+   "Deep Tubewell",
+   "2025-06-19",
+   "0.016"
+  ],
+  [
+   "U717827L870S30536096",
+   "Karimpur-1",
+   "Jamasherpur",
+   "Bansbaria",
+   "Deep Tubewell",
+   "2025-06-24",
+   "0.047"
+  ],
+  [
+   "U700884L870S30536093",
+   "Karimpur-1",
+   "Karimpur-ii",
+   "Kalabaria",
+   "Deep Tubewell",
+   "2025-06-20",
+   "0.052"
+  ],
+  [
+   "U730909L870S30536094",
+   "Karimpur-1",
+   "Karimpur-ii",
+   "Kalabaria",
+   "Deep Tubewell",
+   "2025-06-20",
+   "0.047"
+  ]
+ ]
+}

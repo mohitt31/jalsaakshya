@@ -13,7 +13,7 @@
 JalSaakshya ("water evidence") has two parts:
 
 1. **Official survey records.** It shows groundwater arsenic and fluoride readings for West Bengal villages. Each reading cites the page of the government report it came from.
-2. **Drinking-water sources.** It shows the current test status of each source, based on tests added by field-kit testers and labs. In Nadia it sits under WB PHED's own official arsenic figures for each block: 124,297 tests, 76,665 (61.7%) beyond 10 µg/L.
+2. **Drinking-water sources.** It shows the current test status of each source, based on tests added by field-kit testers and labs. In Nadia it sits under WB PHED's own official arsenic figures for each block: 124,297 tests, 76,665 (61.7%) beyond 10 µg/L. Beside them are the government's own lab results: [220 Jal Jeevan Mission samples](https://mohitt31.github.io/jalsaakshya/jjm.html) flagged for arsenic in 139 Nadia villages, sealed on Arkiv.
 
 Everything is stored on [Arkiv](https://arkiv.network), the Web3 database, and the page reads it from the browser. There is no backend.
 
@@ -60,11 +60,12 @@ Under Jal Jeevan Mission, five women in every village are trained to test drinki
 
   A forwarded number becomes one anyone can check.
 - **Official WB PHED figures (real, Nadia).** WB PHED's public Nadia Water Quality Dashboard gives arsenic tests per block, but not each source's latest result or its date ([what is public](data/phed/README.md)). The curator published the 18 block figures as read-only `blockstat` entities citing the report and its hash. They expire a year after the day they were read.
+- **Official JJM lab results (real, Nadia).** The Jal Jeevan Mission's WQMIS (Ministry of Jal Shakti) lists each lab sample flagged for arsenic, with sample ID, village, source type, test date and value. The curator copied all 220 Nadia samples for FY 2025-26 onto Arkiv as read-only `jjmsample` entities, one per sample, and sealed them: 139 villages in 12 blocks, up to 0.86 mg/L (86× the limit), all from deep tubewells. The free-text location is dropped because it can name a household ([extract and hash](data/jjm/README.md), [page](https://mohitt31.github.io/jalsaakshya/jjm.html)).
 - **Pick your real source (Nadia).** The add-test form lists all 62,207 drinking-water sources in WB PHED's public source list: Block → Gram panchayat → Village → Source, or type the PHED source ID. The test is then filed against that official ID. Household names in the list are dropped ([details](data/phed/README.md)).
 - **Visit list for block staff.** One WhatsApp message lists every source in the district that is unsafe, needs lab confirmation or is overdue, each with its check link.
 - **Tester kits: no faucet, no crypto app.** The curator console makes a fresh tester wallet, funds it with 0.05 test GLM and gives a WhatsApp link. The tester opens it on her phone and can publish at once. The key travels in the link's #fragment, which never reaches a server, and is cleared from the address bar; an earlier test wallet on the phone is kept. Tested: kit wallet `0xC44c…4270` published a synthetic reading, sealed like every test ([tx](https://tiramisu.explorer.arkiv.network/tx/0x7e5bc62985ecb5b97137a1e3a11836bbe8ca8acb04037bb50af43d6199421c7a)).
 - **Works offline.** The site installs as an app and opens without network. A test entered offline waits on the phone, is clearly marked "not on Arkiv yet", and is signed and sent when the network returns. Its lifetime counts from when it was taken.
-- **Sealed.** `readonly` stops edits, but an owner can still delete (we tested it). So the same transaction that creates a test, and a new source, hands its ownership to `0x…dEaD`, an address nobody holds a key for, and the curator sealed all 1,204 official records the same way. Nobody, the lab, the tester or us, can withdraw an "unsafe" result, delist its source or remove an official record; it leaves Arkiv only when its lifetime ends. A source keeps `permissionlessExtension`, so anyone's new test still renews it. The *Checked on Arkiv* panel shows the owner.
+- **Sealed.** `readonly` stops edits, but an owner can still delete (we tested it). So the same transaction that creates a test, and a new source, hands its ownership to `0x…dEaD`, an address nobody holds a key for, and the curator sealed all 1,424 official records the same way. Nobody, the lab, the tester or us, can withdraw an "unsafe" result, delist its source or remove an official record; it leaves Arkiv only when its lifetime ends. A source keeps `permissionlessExtension`, so anyone's new test still renews it. The *Checked on Arkiv* panel shows the owner.
 - **Read aloud.** A 🔊 button reads a source's status and reason, and the "needs a lab" warning, in Hindi, Bengali or English (the phone's own text-to-speech).
 - **Live.** New tests appear over a WebSocket subscription without reloading the page.
 - **Languages.** The whole interface is in English, Hindi and Bengali, including statuses, reasons and district names.
@@ -95,7 +96,7 @@ Arkiv moves trust from "whoever runs the database" to a few named wallets. It do
 - stop publishing. Its records then leave Arkiv when their lifetimes end, so the app stops showing them instead of showing a stale value.
 
 **The curator wallet cannot:**
-- edit or delete an official record. All 1,204 are owned by `0x…dEaD`, and none is still owned by the curator (`npm run verify`);
+- edit or delete an official record. All 1,424 are owned by `0x…dEaD`, and none is still owned by the curator (`npm run verify`);
 - edit or delete a tester's test, or a source. Testers create those; they are sealed in the transaction that creates them, and the curator never owned them;
 - make a copied record look official, or change who created anything. `$creator` is set by the chain;
 - stop anyone from renewing a source (`permissionlessExtension`).
@@ -112,11 +113,12 @@ What Arkiv adds is that none of these trust decisions can be changed quietly aft
 | Claim | Code | On chain | Expected | Observed |
 |---|---|---|---|---|
 | Only the curator's records show as official | [main.ts#L143](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/main.ts#L143) | spoof probe tx `0xbfe422c5…3c45` | a copy with identical attributes is excluded by `createdBy(curator)` | 0 results with `createdBy`, found without it (17 Oct) |
-| Official records cannot be deleted, even by the curator | [curator.ts#L139](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/curator.ts#L139) | 13 seal txs in [onchain.md](arkiv/onchain.md) | owner `0x…dEaD` | 1,204 of 1,204 sealed, 0 owned by the curator (`npm run verify`, 19 Oct) |
+| Official records cannot be deleted, even by the curator | [curator.ts#L139](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/curator.ts#L139) | 13 seal txs in [onchain.md](arkiv/onchain.md) | owner `0x…dEaD` | 1,424 of 1,424 sealed, 0 owned by the curator (`npm run verify`, 19 Oct) |
 | A test and a new source are sealed in the transaction that creates them | [writes.ts#L62](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/writes.ts#L62) | tx `0x421282c5…e904` | both owned by `0x…dEaD`; the creator's delete fails | both sealed; delete refused: "owned by 0x…dEaD, not 0x83EF…" (19 Oct) |
 | Anyone can keep a sealed source alive | [writes.ts#L42](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/writes.ts#L42) | tx `0x292a022e…92db` | another wallet extends it; owner unchanged | expiry block 753,649 → 755,458, owner still `0x…dEaD` (19 Oct) |
 | `readonly` alone does not stop deletion | friction #9 | txs `0x0eaa40fa…0e91`, `0xf02255b3…5566` | the owner can delete | deleted by its own wallet (19 Oct) |
 | WB PHED figures are as printed | [curator.ts#L100](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/curator.ts#L100) | txs `0xa9b0c596…ae27`, `0xc986a812…71e9` | 18 blocks, 1,24,297 tests, 76,665 beyond 10 µg/L | same totals read back from chain (`npm run verify`, 19 Oct) |
+| 220 government lab results from JJM WQMIS, as listed | [curator.ts#L304](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/curator.ts#L304) | 22 create txs + 3 seal txs in [onchain.md](https://github.com/mohitt31/jalsaakshya/blob/main/arkiv/onchain.md) | 220 samples, 139 villages, 12 blocks, worst 0.86 mg/L; extract SHA-256 in [data/jjm/](https://github.com/mohitt31/jalsaakshya/tree/main/data/jjm) | 220 created by the curator, 220 sealed ([proof page](https://mohitt31.github.io/jalsaakshya/proof.html), 19 Oct) |
 | A kit warning closes only with a later lab result for the same contaminant | [model.ts#L58](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/model.ts#L58) | — | a newer fluoride lab result does not clear an arsenic warning | 12 of 12 unit tests pass (`npm test`) |
 
 All "observed" results above were produced by us. Anyone can re-run the chain checks with `cd web && npm ci && npm run verify`.
@@ -128,6 +130,7 @@ The rows come from [NeerTathya](https://github.com/mohitt31/jaldrishti) (same au
 ```bash
 python3 scripts/build_records.py      # -> web/public/data/records.json (the curator's publish input)
 python3 scripts/build_phed.py         # -> web/public/data/phed.json (WB PHED block figures, see data/phed/)
+python3 scripts/build_jjm.py          # -> web/public/data/jjm.json (JJM WQMIS lab samples, see data/jjm/)
 python3 scripts/build_phed_sources.py <PHED source-list xlsx>   # -> web/public/data/phed-sources/ (picker data)
 python3 scripts/check_data.py         # integrity checks: totals match the printed report, 62,207 sources, no household names
 ```
@@ -140,7 +143,7 @@ In the browser: [proof.html](https://mohitt31.github.io/jalsaakshya/proof.html) 
 git clone https://github.com/mohitt31/jalsaakshya && cd jalsaakshya/web && npm ci && npm run verify
 ```
 
-[`web/verify.mjs`](web/verify.mjs) reads Tiramisu directly, with no app, no backend and no key of ours, and prints PASS or FAIL for: 1,173 survey rows from the curator; 18 WB PHED block figures summing to 1,24,297 tests and 76,665 beyond the limit; all 1,204 official records sealed (0 still owned by the curator); every live test sealed; every source `readonly` + `permissionlessExtension` and sealed; and a filtered range query. Most checks are free filtered counts; three are 100-unit queries.
+[`web/verify.mjs`](web/verify.mjs) reads Tiramisu directly, with no app, no backend and no key of ours, and prints PASS or FAIL for: 1,173 survey rows from the curator; 18 WB PHED block figures summing to 1,24,297 tests and 76,665 beyond the limit; 220 JJM WQMIS lab samples, sealed; all 1,424 official records sealed (0 still owned by the curator); every live test sealed; every source `readonly` + `permissionlessExtension` and sealed; and a filtered range query. Most checks are free filtered counts; three are 100-unit queries.
 
 ## Run it
 
@@ -179,12 +182,13 @@ The curator console is `/curator.html`. It:
 | [`web/verify.mjs`](web/verify.mjs) | `npm run verify`: checks the claims above from Tiramisu alone |
 | [`scripts/build_records.py`](scripts/build_records.py) | Builds the publish input from the NeerTathya snapshot |
 | [`data/phed/`](data/phed/README.md), [`scripts/build_phed.py`](scripts/build_phed.py) | What WB PHED publishes, the extracted block table, and its publish input |
+| [`data/jjm/`](data/jjm/README.md), [`scripts/build_jjm.py`](scripts/build_jjm.py), [`web/jjm.html`](web/jjm.html) | The JJM WQMIS lab-sample extract, its hash, and the page that reads it from Arkiv |
 
 ## Limits
 
 - This is research evidence, not household safety advice. A survey value describes one place and time. Test your own water at an accredited lab.
 - The dataset is what NeerTathya's library held, not every report published for West Bengal. It is mostly fluoride (1,139 rows); arsenic has 34 rows, mainly in Nadia.
-- WB PHED's figures are block totals, not per-source results; per-source results with dates are not public. The report prints no date range, so they are labelled as of the download date.
+- WB PHED's figures are block totals, not per-source results; per-source results with dates are not public from WB PHED. JJM WQMIS lists only the samples it flags as contaminated, so its 220 samples show where arsenic was found, not which sources are safe. The report prints no date range, so they are labelled as of the download date.
 - The labs and sources in Nadia marked *demo* are synthetic. They are there so judges can see every status, and they are labelled on chain (`demo = true`) and in the app. No real lab has been registered yet.
 - Tiramisu is a testnet.
 

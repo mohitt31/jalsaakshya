@@ -48,10 +48,18 @@ const checks: Check[] = [
     },
   },
   {
+    title: "220 government lab results from Jal Jeevan Mission WQMIS, sealed",
+    evidence: `Every Nadia sample the JJM WQMIS contaminant-wise report flags for arsenic (FY 2025-26), one readonly entity each; extract and SHA-256 in ${link("https://github.com/mohitt31/jalsaakshya/tree/main/data/jjm", "data/jjm/")}; listed on ${link("jjm.html", "this page")}.`,
+    run: async () => {
+      const [cur, sealed] = await Promise.all([count([kind("jjmsample")], by(CURATOR)), count([kind("jjmsample")], by(CURATOR) + owned(SEAL))])
+      return pass(cur === 220 && sealed === 220, `${cur} samples created by the curator, ${sealed} owned by 0x…dEaD.`)
+    },
+  },
+  {
     title: "No official record can be deleted, not even by the curator",
     evidence: `Each was handed to ${link(addrLink(SEAL), "0x…dEaD")} (no key exists for it), for example ${link(txLink(TX.seal1), "this seal tx")}.`,
     run: async () => {
-      const k = [or([kind("obs"), kind("source"), kind("blockstat")])]
+      const k = [or([kind("obs"), kind("source"), kind("blockstat"), kind("jjmsample")])]
       const [all, still, sealed] = await Promise.all([count(k, by(CURATOR)), count(k, by(CURATOR) + owned(CURATOR)), count(k, by(CURATOR) + owned(SEAL))])
       return pass(all > 0 && still === 0 && sealed === all, `${fmt(sealed)} of ${fmt(all)} owned by 0x…dEaD; ${still} still owned by the curator.`)
     },

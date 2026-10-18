@@ -36,10 +36,15 @@ const sum = (k) => reg.entities.reduce((s, e) => s + Number(e.attributes?.[k]?.v
 const tested = sum("tested"), beyond = sum("beyond")
 check(tested === 124297 && beyond === 76665, "PHED Nadia: 1,24,297 arsenic tests, 76,665 beyond 10 µg/L", `${tested.toLocaleString("en-IN")} / ${beyond.toLocaleString("en-IN")}`)
 
+// 2b. Jal Jeevan Mission WQMIS lab samples for Nadia (data/jjm/)
+const jjm = await count([kind("jjmsample")], by(CURATOR))
+const jjmSealed = await count([kind("jjmsample")], by(CURATOR) + owned(SEAL))
+check(jjm === 220 && jjmSealed === 220, "220 JJM WQMIS arsenic lab samples for Nadia, created by the curator and sealed", `${jjm} / ${jjmSealed} sealed`)
+
 // 3. Sealed: the curator owns none of what it created; 0x…dEaD owns all of it
-const curAll = await count([or([kind("obs"), kind("source"), kind("blockstat")])], by(CURATOR))
-const curStillOwned = await count([or([kind("obs"), kind("source"), kind("blockstat")])], by(CURATOR) + owned(CURATOR))
-const curSealed = await count([or([kind("obs"), kind("source"), kind("blockstat")])], by(CURATOR) + owned(SEAL))
+const curAll = await count([or([kind("obs"), kind("source"), kind("blockstat"), kind("jjmsample")])], by(CURATOR))
+const curStillOwned = await count([or([kind("obs"), kind("source"), kind("blockstat"), kind("jjmsample")])], by(CURATOR) + owned(CURATOR))
+const curSealed = await count([or([kind("obs"), kind("source"), kind("blockstat"), kind("jjmsample")])], by(CURATOR) + owned(SEAL))
 check(curStillOwned === 0 && curSealed === curAll, "every official record is sealed: the curator can no longer delete any of them",
   `${curSealed} of ${curAll} owned by 0x…dEaD, ${curStillOwned} still owned by the curator`)
 
