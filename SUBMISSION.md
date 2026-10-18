@@ -192,6 +192,8 @@ Any judge who adds a test from the app creates `site`/`test` entities from their
 
 ## How can judges reproduce our Arkiv usage?
 
+**Proof in one click:** https://mohitt31.github.io/jalsaakshya/proof.html checks every on-chain claim below live from Tiramisu in your browser, each linked to its transaction.
+
 **One command, chain only.** `git clone https://github.com/mohitt31/jalsaakshya && cd jalsaakshya/web && npm ci && npm run verify` reads Tiramisu directly, with no app, no backend and no key of ours ([verify.mjs](web/verify.mjs)). It checks: 1,173 survey rows from the curator; 18 WB PHED block figures summing to 1,24,297 tests and 76,665 beyond the limit; all 1,204 official records sealed (0 still owned by the curator); every live test sealed; every source `readonly` + `permissionlessExtension` and sealed; and the query in step 2. Last run 19 Oct 2026: 8 of 8 PASS.
 
 1. **Records and `$creator`.** Open https://mohitt31.github.io/jalsaakshya/?district=Purulia and pick *Fluoride* with *Only above the drinking-water limit* ticked.

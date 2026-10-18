@@ -1,6 +1,6 @@
 # JalSaakshya · জল সাক্ষ্য · जल साक्ष्य
 
-**Live app:** https://mohitt31.github.io/jalsaakshya/ (English, हिन्दी, বাংলা; works on a phone) · **Demo video (2:58):** https://youtu.be/mJCgExx-z0E (also in [media/](media/jalsaakshya-demo.mp4); first cut: https://youtu.be/Ft-rx4UmQiE)
+**Live app:** https://mohitt31.github.io/jalsaakshya/ (English, हिन्दी, বাংলা; works on a phone) · **Proof from the chain:** https://mohitt31.github.io/jalsaakshya/proof.html (every on-chain claim, checked live) · **Demo video (2:58):** https://youtu.be/mJCgExx-z0E (also in [media/](media/jalsaakshya-demo.mp4); first cut: https://youtu.be/Ft-rx4UmQiE)
 
 <p>
 <img src="media/screens/0-phed.jpg" width="200" alt="Official WB PHED arsenic tests for every Nadia block">
@@ -132,6 +132,8 @@ python3 scripts/check_data.py         # integrity checks: totals match the print
 ```
 
 ## Check our claims from the chain alone
+
+In the browser: [proof.html](https://mohitt31.github.io/jalsaakshya/proof.html) runs the checks below live against Tiramisu and links each to its transaction. From a terminal:
 
 ```bash
 git clone https://github.com/mohitt31/jalsaakshya && cd jalsaakshya/web && npm ci && npm run verify
