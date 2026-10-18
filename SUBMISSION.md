@@ -114,6 +114,42 @@ The product is evidence. Its value is that a reading can be traced to who wrote 
 - **Translations and the district list.** They are static assets.
 - **Anything personal.** The form refuses phone numbers and emails, and testers are wallets, not names.
 
+## Trust boundaries (part of "Why Arkiv?")
+
+Arkiv moves trust from "whoever runs the database" to a few named wallets. It does not remove trust, so here is exactly where it sits.
+
+**The curator wallet (`0x048A…3760`) can:**
+- publish official records. Only entities it created show as official (`createdBy(curator)`);
+- register a wallet as a lab, or delist one. A lab listing is not sealed, so the curator can delete it or let it lapse. The app reads the registry as it is now, so a delisted lab's past results drop back to kit-level screening;
+- stop publishing. Its records then leave Arkiv when their lifetimes end, so the app stops showing them instead of showing a stale value.
+
+**The curator wallet cannot:**
+- edit or delete an official record. All 1,204 are owned by `0x…dEaD`, and none is still owned by the curator (`npm run verify`);
+- edit or delete a tester's test, or a source. Testers create those; they are sealed in the transaction that creates them, and the curator never owned them;
+- make a copied record look official, or change who created anything. `$creator` is set by the chain;
+- stop anyone from renewing a source (`permissionlessExtension`).
+
+**What Arkiv does not prove:**
+- that a kit was used correctly, or that the water came from the source named. A signature proves which wallet published a reading and when, not the physical truth of the measurement;
+- that two tester wallets are two people. The app says "different tester wallets", not "independent testers";
+- that a registered lab is a real, accredited lab. That rests on the curator, which is why the registry is public and every lab's results are shown with its wallet.
+
+What Arkiv adds is that none of these trust decisions can be changed quietly after the fact: a delisting, a new lab and every reading are public entities with a creator and a time.
+
+## Evidence at a glance
+
+| Claim | Code | On chain | Expected | Observed |
+|---|---|---|---|---|
+| Only the curator's records show as official | [main.ts#L143](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/main.ts#L143) | spoof probe tx `0xbfe422c5…3c45` | a copy with identical attributes is excluded by `createdBy(curator)` | 0 results with `createdBy`, found without it (17 Oct) |
+| Official records cannot be deleted, even by the curator | [curator.ts#L139](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/curator.ts#L139) | 13 seal txs in [onchain.md](https://github.com/mohitt31/jalsaakshya/blob/main/arkiv/onchain.md) | owner `0x…dEaD` | 1,204 of 1,204 sealed, 0 owned by the curator (`npm run verify`, 19 Oct) |
+| A test and a new source are sealed in the transaction that creates them | [writes.ts#L62](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/writes.ts#L62) | tx `0x421282c5…e904` | both owned by `0x…dEaD`; the creator's delete fails | both sealed; delete refused: "owned by 0x…dEaD, not 0x83EF…" (19 Oct) |
+| Anyone can keep a sealed source alive | [writes.ts#L42](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/writes.ts#L42) | tx `0x292a022e…92db` | another wallet extends it; owner unchanged | expiry block 753,649 → 755,458, owner still `0x…dEaD` (19 Oct) |
+| `readonly` alone does not stop deletion | friction #9 | txs `0x0eaa40fa…0e91`, `0xf02255b3…5566` | the owner can delete | deleted by its own wallet (19 Oct) |
+| WB PHED figures are as printed | [curator.ts#L100](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/curator.ts#L100) | txs `0xa9b0c596…ae27`, `0xc986a812…71e9` | 18 blocks, 1,24,297 tests, 76,665 beyond 10 µg/L | same totals read back from chain (`npm run verify`, 19 Oct) |
+| A kit warning closes only with a later lab result for the same contaminant | [model.ts#L58](https://github.com/mohitt31/jalsaakshya/blob/main/web/src/model.ts#L58) | — | a newer fluoride lab result does not clear an arsenic warning | 12 of 12 unit tests pass (`npm test`) |
+
+All "observed" results above were produced by us. Anyone can re-run the chain checks with `cd web && npm ci && npm run verify`.
+
 ## How do you use Arkiv?
 
 Each feature, what the user sees, and the code:
