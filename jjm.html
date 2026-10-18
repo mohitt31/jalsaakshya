@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>JalSaakshya: government lab results, Nadia</title>
+<meta name="description" content="Every arsenic-contaminated lab sample the Jal Jeevan Mission lists for Nadia, FY 2025-26, read live from Arkiv.">
+<link rel="icon" href="icon-192.png">
+<style>
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:6px 8px;border-top:1px solid var(--line);vertical-align:top}
+th{font-weight:600;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.03em}
+td.n{font-variant-numeric:tabular-nums;white-space:nowrap}
+.x{font-weight:700;color:var(--bad)}
+.tw{overflow-x:auto}
+.big{font-size:20px;font-weight:600;margin:4px 0}
+select{font:inherit;padding:6px 8px}
+</style>
+  <script type="module" crossorigin src="/jalsaakshya/assets/jjm-BYwcb56G.js"></script>
+  <link rel="modulepreload" crossorigin href="/jalsaakshya/assets/writes-SjSvrgJT.js">
+  <link rel="modulepreload" crossorigin href="/jalsaakshya/assets/config-D-oCWdie.js">
+  <link rel="stylesheet" crossorigin href="/jalsaakshya/assets/writes-BXE3V2WL.css">
+</head>
+<body><main class="wrap narrow">
+<p><a href="./">← JalSaakshya</a> · <a href="proof.html">Proof from the chain</a></p>
+<h1>Government lab results, Nadia</h1>
+<p>The Jal Jeevan Mission's own water-quality system (<a href="https://ejalshakti.gov.in/WQMIS/Report/Contaminantwise" target="_blank" rel="noopener">JJM WQMIS</a>, Ministry of Jal Shakti) lists every lab sample from Nadia district that it flags for arsenic in FY 2025-26 (at or above the 0.01 mg/L limit). We copied that list onto Arkiv, one entity per sample, and sealed it. This page reads it back live from the chain. Nobody can now edit or delete these results before they expire, not even us, and anyone can query them without our app.</p>
+<div class="card"><p class="big" id="sum">Reading from Arkiv…</p><p class="small muted" id="meta"></p>
+<p><label>Block <select id="block"><option value="">All blocks</option></select></label></p>
+<div class="tw"><table><thead><tr><th>Village</th><th>Gram panchayat</th><th>Block</th><th>Arsenic</th><th>Tested</th><th>Sample ID</th></tr></thead><tbody id="rows"></tbody></table></div></div>
+<p class="small muted">Values are as printed in the report, in mg/L; the permissible limit is 0.01 mg/L (10 µg/L). Every sample is from a deep tubewell, the source usually installed as the arsenic-safe option. The report's free-text location is left out on purpose, because it can name a household. The report's per-village totals add up to 217 samples; its sample lists hold 220 distinct sample IDs, and we publish the 220 as listed. Extract and hash: <a href="https://github.com/mohitt31/jalsaakshya/tree/main/data/jjm">data/jjm/</a>.</p>
+</main>
+</body></html>

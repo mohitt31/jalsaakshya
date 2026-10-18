@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>JalSaakshya: proof from the chain</title>
+<meta name="description" content="Every on-chain claim JalSaakshya makes, checked live from Arkiv Tiramisu in your browser.">
+<link rel="icon" href="icon-192.png">
+<style>
+.chk{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:start;padding:12px 0;border-top:1px solid var(--line)}
+.chk:first-of-type{border-top:0}
+.st{font:700 12px/1 system-ui;padding:5px 8px;border-radius:6px;letter-spacing:.04em;margin-top:2px;white-space:nowrap}
+.st.run{background:var(--line);color:var(--muted)}.st.pass{background:var(--goodbg);color:var(--good)}.st.fail{background:var(--badbg);color:var(--bad)}.st.note{background:var(--line);color:var(--warn)}
+.chk h3{margin:0;font-size:16px}.chk p{margin:4px 0 0}
+.sum{font-size:18px;font-weight:600;margin:6px 0 0}
+</style>
+  <script type="module" crossorigin src="/jalsaakshya/assets/proof-Bmk3z17J.js"></script>
+  <link rel="modulepreload" crossorigin href="/jalsaakshya/assets/writes-SjSvrgJT.js">
+  <link rel="modulepreload" crossorigin href="/jalsaakshya/assets/config-D-oCWdie.js">
+  <link rel="stylesheet" crossorigin href="/jalsaakshya/assets/writes-BXE3V2WL.css">
+</head>
+<body><main class="wrap narrow">
+<p><a href="./">← JalSaakshya</a></p>
+<h1>Proof from the chain</h1>
+<p>This page checks every on-chain claim JalSaakshya makes. It runs in your browser and reads Arkiv Tiramisu directly. It uses no server of ours, and nothing on this page is pre-computed: each number is counted or queried live, and each check links to the transaction or address you can inspect on the explorer.</p>
+<p class="small muted">The same checks run from a terminal: <span class="mono">git clone https://github.com/mohitt31/jalsaakshya; cd jalsaakshya/web; npm ci; npm run verify</span></p>
+<div class="card"><p class="sum" id="sum">Checking…</p><p class="small muted" id="meta"></p><div id="checks"></div></div>
+<p class="small muted">What these checks do not prove: that a kit was used correctly, or that the water came from the source named. A signature proves which wallet published a reading and when. See <a href="https://github.com/mohitt31/jalsaakshya#trust-boundaries">trust boundaries</a>.</p>
+</main>
+</body></html>

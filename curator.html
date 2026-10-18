@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>JalSaakshya curator console</title>  <script type="module" crossorigin src="/jalsaakshya/assets/curator-CKsBL4YZ.js"></script>
+  <link rel="modulepreload" crossorigin href="/jalsaakshya/assets/writes-SjSvrgJT.js">
+  <link rel="stylesheet" crossorigin href="/jalsaakshya/assets/writes-BXE3V2WL.css">
+</head>
+<body><main class="wrap narrow">
+<p><a href="./">← JalSaakshya</a></p>
+<h1>Curator console</h1>
+<p class="muted">Publishes the cited survey dataset to Arkiv. The signing key is generated in this browser and never leaves it. Only the curator needs this page.</p>
+<div class="card">
+<p>Curator wallet: <span id="addr" class="mono"></span></p>
+<p>Balance: <b id="bal">…</b> · <a href="https://hub.arkiv.network/faucet" target="_blank" rel="noopener">Tiramisu faucet</a> · <button id="refresh" class="link">refresh</button></p>
+<p><label>Entities per batch <input id="batch" type="number" value="25" min="1" max="100"></label>
+<label>Max transactions <input id="maxtx" type="number" value="1" min="1"></label></p>
+<button id="go" class="primary">Publish missing records</button>
+</div>
+<div class="card"><h3>Official WB PHED block figures</h3>
+<p class="small muted">Arsenic tests per block from WB PHED's public Nadia comprehensive report (<code>data/phed/</code>). Read-only, one year from the download date. Skips figures already on Arkiv.</p>
+<button id="phed-go" class="secondary">Publish PHED block figures</button></div>
+<div class="card"><h3>Official JJM WQMIS lab samples</h3>
+<p class="small muted">Every arsenic-contaminated sample the Jal Jeevan Mission WQMIS contaminant-wise report lists for Nadia, FY 2025-26 (<code>data/jjm/</code>), one entity per lab sample. Read-only, sealed after publishing, one year from the download date. Skips samples already on Arkiv.</p>
+<button id="jjm-go" class="secondary">Publish and seal JJM samples</button></div>
+<div class="card"><h3>Seal</h3>
+<p class="small muted">Hands every official record (obs, source, blockstat) and every demo test still owned by these wallets to 0x…dEaD, so nobody can delete them before they expire. The lab registry is not sealed (the curator must be able to delist a lab).</p>
+<button id="seal-go" class="secondary">Seal official records and demo tests</button></div>
+<div class="card"><h3>Lab registry</h3>
+<p class="small muted">Demo lab wallet in this browser: <span id="demo-lab" class="mono"></span></p>
+<p><label>Lab wallet <input id="lab-wallet" size="44"></label> <label>Name <input id="lab-name" value="Demo lab (synthetic, for judging)"></label>
+<label>District <input id="lab-district" value="Nadia"></label> <label class="check"><input id="lab-demo" type="checkbox" checked> demo</label></p>
+<button id="lab-go" class="secondary">Register lab</button></div>
+<div class="card"><h3>Synthetic demo data</h3>
+<p class="small muted">Clearly labelled demo sources in Nadia so judges can see every status. Not real measurements.</p>
+<button id="fund" class="secondary">Fund demo wallets (0.1 GLM each)</button> <button id="seed" class="secondary">Seed demo sources</button></div>
+<div class="card"><h3>Tester kits</h3>
+<p class="small muted">Makes fresh tester wallets, funds each with 0.05 test GLM, and gives a link to send on WhatsApp. Opening it on a phone makes that wallet the page's test wallet: no faucet, no captcha, no crypto app. The key is in the link's #fragment, which never reaches a server; treat the link as personal.</p>
+<p><label>How many <input id="kit-n" type="number" value="1" min="1" max="10"></label> <label>District <input id="kit-district" value="Nadia"></label></p>
+<button id="kit-go" class="secondary">Make tester kits</button></div>
+<div class="card"><h3>Friction probes</h3><button id="probe" class="secondary">Run probes</button></div>
+<ol id="log" class="log"></ol>
+</main></body></html>
