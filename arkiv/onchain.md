@@ -51,6 +51,13 @@ From the curator console (*Seal official records and demo tests*): every entity 
 
 The lab registry is not sealed, so the curator can still delist a lab. After sealing, nobody can delete these entities; they leave Arkiv when their lifetimes end (sources can still be renewed by anyone, through `permissionlessExtension`).
 
+## Tester kit (19 Oct 2026)
+
+The curator console made tester kit wallet `0xC44cd7E0C52dD3f676853C6c8d3C203ed0204270` and funded it with 0.05 test GLM.
+Opening the kit link loaded that wallet in the app, which published a synthetic 2 µg/L arsenic kit reading on the
+Hooghly source *Offline queue test (synthetic)*, sealed in the same transaction:
+- tx `0x7e5bc62985ecb5b97137a1e3a11836bbe8ca8acb04037bb50af43d6199421c7a`.
+
 ## Sealed sources (19 Oct 2026)
 
 A source's creator could delete it, and its sealed tests would drop out of the list with it. So a new
