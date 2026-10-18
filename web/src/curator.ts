@@ -134,7 +134,7 @@ async function publishPhed() {
 
 // ---- seal: hand official records and our demo tests to an address nobody holds a key for ----------
 // readonly stops edits; ownership is what allows deletion. After this, nobody (us included) can delete
-// an official record or a demo test before its lifetime ends. Resumable: it only picks up what each
+// an official record, a demo test or a source before its lifetime ends. Resumable: it only picks up what each
 // wallet still owns (createdBy + ownedBy), 100 ownership changes per atomic batch.
 async function sealOwned(w: any, label: string, kinds: string[]) {
   const a = w.account!.address
@@ -152,7 +152,7 @@ async function sealAll() {
   ;($("seal-go") as HTMLButtonElement).disabled = true
   try {
     await sealOwned(wallet, "curator records", ["obs", "source", "blockstat"])
-    for (const [name, w] of Object.entries(demoWallets)) await sealOwned(w, `demo ${name} tests`, ["test"])
+    for (const [name, w] of Object.entries(demoWallets)) await sealOwned(w, `demo ${name} tests and sources`, ["test", "site"])
     log("Seal: done.")
   } catch (err: any) { log(`<b>Error:</b> ${String(err?.shortMessage || err?.message || err).slice(0, 400)}`) }
   finally { ;($("seal-go") as HTMLButtonElement).disabled = false }

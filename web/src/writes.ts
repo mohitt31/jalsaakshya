@@ -55,16 +55,16 @@ export function testBatch(t: TestInput, existingSiteKey?: `0x${string}`) {
 export const SEAL = "0x000000000000000000000000000000000000dEaD" as const
 
 /**
- * The same atomic batch, with the test sealed: its key is predicted before sending, and the batch that
- * creates it also hands its ownership to SEAL. A lab under pressure cannot quietly withdraw an "unsafe"
- * result, and neither can we. ($creator stays the tester; corrections are new tests.)
+ * The same atomic batch, sealed: the keys are predicted before sending, and the batch that creates the test
+ * (and a new source) hands them to SEAL. Nobody can withdraw an "unsafe" result or delist its source, us
+ * included; permissionlessExtension still lets anyone renew the source. ($creator stays the tester.)
  */
 export async function sealedTestBatch(t: TestInput, existingSiteKey: `0x${string}` | undefined, signer: `0x${string}`) {
   const b: any = testBatch(t, existingSiteKey)
   const keys = await (publicClient as any).predictEntityKeys({ owner: signer, count: b.creates.length })
   b.creates.forEach((c: any, i: number) => { c.salt = keys[i].salt })
   const testKey = keys[b.creates.length - 1].key as `0x${string}`   // the test is always the last create
-  return { batch: { ...b, ownershipChanges: [{ entityKey: testKey, newOwner: SEAL }] }, testKey }
+  return { batch: { ...b, ownershipChanges: keys.map((k: any) => ({ entityKey: k.key, newOwner: SEAL })) }, testKey }
 }
 
 export function labCreate(l: { wallet: `0x${string}`; name: string; district: string; demo?: boolean }) {
