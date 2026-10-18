@@ -50,10 +50,12 @@ const testsSealed = await count([kind("test")], owned(SEAL))
 if (testsSealed === tests) check(tests > 0, "every live test result is sealed (owner 0x…dEaD)", `${testsSealed} of ${tests}`)
 else console.log(`NOTE  ${testsSealed} of ${tests} live tests are sealed; the rest were written outside the app, by wallets the app does not seal`)
 
-// 5. Creation flags as the schema says: sources renewable by anyone, nothing editable
+// 5. Sources: renewable by anyone (permissionlessExtension), editable by nobody, deletable by nobody
 const sites = await c.select({ key: true, creationFlags: true, owner: true }).where(eq("app", str(APP)), kind("site")).limit(200).fetch()
 const flagsOk = sites.entities.length > 0 && sites.entities.every((e) => e.creationFlags?.readonly && e.creationFlags?.permissionlessExtension)
 check(flagsOk, "every source (site) is readonly + permissionlessExtension", `${sites.entities.length} sources`)
+const sitesSealed = sites.entities.filter((e) => String(e.owner).toLowerCase() === SEAL.toLowerCase()).length
+check(sitesSealed === sites.entities.length, "every source is sealed: nobody can delist it, anyone can still renew it", `${sitesSealed} of ${sites.entities.length}`)
 
 // 6. The query from SUBMISSION.md step 2
 const r = await c.select({ attributes: true, creator: true })
